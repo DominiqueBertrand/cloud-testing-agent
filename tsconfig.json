@@ -4,6 +4,7 @@
     "paths": {
       "@collection/*": ["src/postman/collection/*"],
       "@env/*": ["src/postman/env/*"],
+      "@src/*": ["src/*"],
   },
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
