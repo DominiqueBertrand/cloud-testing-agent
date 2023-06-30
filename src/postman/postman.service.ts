@@ -8,7 +8,7 @@ export class PostmanService {
     private tests: PostmanModel[] = [],
     private envList: any[] = [],
     private collectionList: any[] = [],
-    private testList: Object[] = [],
+    private testList: object[] = [],
   ) {}
 
   // Collections services

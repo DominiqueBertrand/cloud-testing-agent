@@ -9,7 +9,7 @@ export class PostmanController {
   // Collections
   @Post('collections_list')
   // create a list of all collections
-  addCollectionsList(): Object {
+  addCollectionsList(): object {
     return this.postmanService.insertCollectionsList();
   }
 
@@ -22,7 +22,7 @@ export class PostmanController {
   // Environnements
   @Post('environnement_list')
   // create a list of all environnements
-  addEnvironnementList(): Object {
+  addEnvironnementList(): object {
     return this.postmanService.insertEnvironnementList();
   }
 
@@ -35,7 +35,7 @@ export class PostmanController {
   // Tests
   @Post('create_newman')
   // Create newman test
-  addTest(@Body('id') id: string, @Body('gobal_env_id') env_id: string, @Body('tests') test: tests): Object {
+  addTest(@Body('id') id: string, @Body('gobal_env_id') env_id: string, @Body('tests') test: tests): object {
     return this.postmanService.insertTest(id, env_id, test);
   }
 

@@ -4,24 +4,24 @@ import { setDate } from '../widgets/setDate';
 import { TestRunner } from './postmanRunner';
 
 function getEnv(id: string) {
-  const data: Object = getEnvById(id);
+  const data: object = getEnvById(id);
 
   return data;
 }
 
 function getCollection(id: string) {
-  const data: Object = getCollectionById(id);
+  const data: object = getCollectionById(id);
 
   return data;
 }
 
 // Launch newman test
-export function testLauncher(title: string, env_id: string, test: object): Object {
+export function testLauncher(title: string, env_id: string, test: object): object {
   // get environnement and collection files in correct folders
-  const envJSON: Object = getEnv(env_id);
-  const collectionJSON: Object = getCollection(test[0].id_collection);
+  const envJSON: object = getEnv(env_id);
+  const collectionJSON: object = getCollection(test[0].id_collection);
   const testChecking: Array<any> = [];
-  let testsResult: Object = [];
+  let testsResult: object = [];
   const id = Math.random();
 
   // run test
