@@ -1,13 +1,13 @@
 export function setDate() {
-    let ts = Date.now();
+  const ts = Date.now();
 
-    let date_time = new Date(ts);
-    let date = date_time.getDate();
-    let month = date_time.getMonth() + 1;
-    let year = date_time.getFullYear();
-    let hours = date_time.getHours();
-    let minutes = date_time.getMinutes();
-    let seconds = date_time.getSeconds();
+  const date_time = new Date(ts);
+  const date = date_time.getDate();
+  const month = date_time.getMonth() + 1;
+  const year = date_time.getFullYear();
+  const hours = date_time.getHours();
+  const minutes = date_time.getMinutes();
+  const seconds = date_time.getSeconds();
 
-    return (year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds)
+  return year + '-' + month + '-' + date + ' ' + hours + ':' + minutes + ':' + seconds;
 }

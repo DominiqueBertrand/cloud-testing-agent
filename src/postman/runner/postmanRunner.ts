@@ -16,11 +16,11 @@ export class TestRunner {
           if (err) {
             reject(err);
           } else {
-            resolve(summary)
-            this.testResult = summary
+            resolve(summary);
+            this.testResult = summary;
           }
-        }
-      )
+        },
+      );
     });
   }
 }
