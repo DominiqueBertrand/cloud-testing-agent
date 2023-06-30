@@ -6,48 +6,49 @@ import { tests } from './postman.model';
 export class PostmanController {
   constructor(private postmanService: PostmanService) {}
 
+// Collections
   @Post('collections_list')
+  // create a list of all collections
   addCollectionsList(): Object {
-     const collections =  this.postmanService.insertCollectionsList()
-     return collections
+     return this.postmanService.insertCollectionsList()
   }
-  @Post('environnement_list')
-  addEnvironnementList(): Object {
-     const environment =  this.postmanService.insertEnvironnementList()
-     return environment
-  }
-
+  
   @Get('collections_list')
+  // get a list of all collections
   getCollectionsList() {
     return this.postmanService.getCollectionsList();
   }
+  
+// Environnements
+  @Post('environnement_list')
+  // create a list of all environnements
+  addEnvironnementList(): Object {
+     return this.postmanService.insertEnvironnementList()
+  }
+
   @Get('environnement_list')
+  // get a list of all environnements
   getEnvironnementList() {
-    return this.postmanService.getCollectionsList();
+    return this.postmanService.getEnvironnementList();
   }
 
-  @Post('collections')
-  addCollections(): any {
-     const collections = this.postmanService.insertCollections()
-     return {collections}
-  }
-  @Get('collections')
-  getAllCollections() {
-    return this.postmanService.getTests();
-  }
-
+// Tests
   @Post('create_newman')
+  // Create newman test
   addTest(@Body('id') id: string, @Body('gobal_env_id') env_id: string, @Body('tests') test: tests): Object {
-     const testRender=  this.postmanService.insertTest(id, env_id, test)
-     return testRender
+    return this.postmanService.insertTest(id, env_id, test)
   }
 
   @Get('test')
+  // get a list of all tests
   getAllTest() {
     return this.postmanService.getTests();
   }
 
+
+//TODO
   @Get('test/:id')
+  // get test by ID
   getTest(@Param('id') testID :string) {
     return this.postmanService.getSingleTest(testID);
   }

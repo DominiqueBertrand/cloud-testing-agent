@@ -1,20 +1,18 @@
 import {  NotFoundException } from '@nestjs/common';
-// import { TestRunner } from './runner/postmanRunner'
-// import { NewmanRunSummary } from 'newman';
 import { PostmanModel } from './postman.model';
-import { fileFinder } from './runner/fileDetector';
-import { getCollectionId } from './runner/getCollectionId';
-import { postAllCollections } from './Post/postAllCollections';
 import { postAllCollectionsList, postAllEnvironnementList } from './Post/postAllCollectionsList';
-import { setDate } from './widgets/setDate';
 import { testLauncher } from './runner/testLauncher';
 
 export class PostmanService {
 
-  private tests: PostmanModel[] = []
-  private collection : any[] = []
-  private envList : any[] = []
-  private collectionList : any[] = []
+  constructor(
+    private tests: PostmanModel[] = [],
+    private envList : any[] = [],
+    private collectionList : any[] = [],
+    private testList: Object[] = []
+  ) {};
+
+// Collections services
 
   insertCollectionsList() {
     const collectionList = postAllCollectionsList()
@@ -23,6 +21,12 @@ export class PostmanService {
 
     return collectionList
   }
+  
+  getCollectionsList() {
+    return this.collectionList
+  }
+
+// Environnements services
 
   insertEnvironnementList() {
     const envlist = postAllEnvironnementList()
@@ -32,45 +36,23 @@ export class PostmanService {
     return envlist
   }
 
-
-  insertCollections() {
-    const collections = postAllCollections()
-
-    this.collection.push(collections)
-
-    return collections
-  }
-
-  getCollections() {
-    return [...this.collection]
-  }
-
-  getCollectionsList() {
-    return this.collectionList
-  }
-
   getEnvironnementList() {
     return this.envList
   }
 
-  insertTest(title: string,env_id: string, test: object) {
-    const prodId = Math.random().toString()
-    const collectionId = getCollectionId(title)
-    const createAt = setDate()
-    const newTest = new PostmanModel(prodId, title, collectionId, createAt)
+// Tests services
 
+  insertTest(title: string,env_id: string, test: object) {
     const testResult = testLauncher(title, env_id, test)
-    
-    this.tests.push(newTest);
-    
+
+    if (testResult["status"] === "finished")
+      this.testList.push(testResult)
+
     return testResult
   }
 
-  getTests() {
-    
-    fileFinder()
-    
-    return [...this.tests]
+  getTests() {  
+    return [...this.testList]
   }
 
   getSingleTest(testId : string) {
