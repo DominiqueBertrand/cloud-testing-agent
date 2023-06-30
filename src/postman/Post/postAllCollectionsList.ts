@@ -6,6 +6,7 @@ export function postAllCollectionsList() {
   const folders = fs.readdirSync(folderP);
   var folderJsonContent : Array<any> = [];
   
+  // Search all directories in 'src/postman/collection/'
   folders.forEach(folder => {
     if (fs.lstatSync(folderP + folder).isDirectory()) {
       const result = {[folder] :readFolderJSONContent(folderP + folder)}
@@ -16,12 +17,14 @@ export function postAllCollectionsList() {
   function readFolderJSONContent(folderPath: string){
     const files = fs.readdirSync(folderPath);
     const jsonContent: any[] = [];
-  
+
+    // Find all JSON files in folder
     const jsonFiles = files.filter(file => path.extname(file) === '.json');
     jsonFiles.forEach(file => {
       const filePath = path.join(folderPath, file);
       const fileContent = fs.readFileSync(filePath, 'utf8');
       const jsonData = JSON.parse(fileContent);
+      // Get datas from each JSON
       const collectionInfos = {
         id: jsonData.info._postman_id,
         name : jsonData.info.name,
@@ -29,7 +32,6 @@ export function postAllCollectionsList() {
       }
       jsonContent.push(collectionInfos);
     });
-    // console.log("list ", jsonContent)  
     return jsonContent;
   }
 
@@ -41,6 +43,7 @@ export function postAllEnvironnementList() {
   const folders = fs.readdirSync(folderP);
   var folderJsonContent : Array<any> = [];
   
+  // Search all directories in 'src/postman/env/'
   folders.forEach(folder => {
     if (fs.lstatSync(folderP + folder).isDirectory()) {
       const result = {[folder] :readFolderJSONContent(folderP + folder)}
@@ -51,12 +54,14 @@ export function postAllEnvironnementList() {
   function readFolderJSONContent(folderPath: string){
     const files = fs.readdirSync(folderPath);
     const jsonContent: any[] = [];
-  
+
+    // Find all JSON files in folder
     const jsonFiles = files.filter(file => path.extname(file) === '.json');
     jsonFiles.forEach(file => {
       const filePath = path.join(folderPath, file);
       const fileContent = fs.readFileSync(filePath, 'utf8');
       const jsonData = JSON.parse(fileContent);
+      // Get datas from each JSON
       const collectionInfos = {
         id: jsonData.id,
         name : jsonData.name,
