@@ -4,19 +4,19 @@ import * as path from 'path';
 export function getEnvById(id: string) {
   const folderP = 'src/postman/env/';
   const folders = fs.readdirSync(folderP);
-  var folderJsonContent : Array<any> = [];
-  
+  let folderJsonContent: Array<any> = [];
+
   // Search all directories in 'src/postman/env/'
   folders.forEach(folder => {
     if (fs.lstatSync(folderP + folder).isDirectory()) {
-      folderJsonContent = readFolderJSONContent(folderP + folder)
+      folderJsonContent = readFolderJSONContent(folderP + folder);
     }
   });
-  
-  function readFolderJSONContent(folderPath: string){
+
+  function readFolderJSONContent(folderPath: string) {
     const files = fs.readdirSync(folderPath);
     const jsonContent: any[] = [];
-  
+
     const jsonFiles = files.filter(file => path.extname(file) === '.json');
     // Find all JSON files in folder
     jsonFiles.forEach(file => {
@@ -32,5 +32,5 @@ export function getEnvById(id: string) {
     return jsonContent;
   }
 
-  return folderJsonContent
+  return folderJsonContent;
 }

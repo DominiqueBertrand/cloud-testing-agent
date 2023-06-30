@@ -4,17 +4,17 @@ import * as path from 'path';
 export function postAllCollectionsList() {
   const folderP = 'src/postman/collection/';
   const folders = fs.readdirSync(folderP);
-  var folderJsonContent : Array<any> = [];
-  
+  const folderJsonContent: Array<any> = [];
+
   // Search all directories in 'src/postman/collection/'
   folders.forEach(folder => {
     if (fs.lstatSync(folderP + folder).isDirectory()) {
-      const result = {[folder] :readFolderJSONContent(folderP + folder)}
-      folderJsonContent.push(result)
+      const result = { [folder]: readFolderJSONContent(folderP + folder) };
+      folderJsonContent.push(result);
     }
   });
-  
-  function readFolderJSONContent(folderPath: string){
+
+  function readFolderJSONContent(folderPath: string) {
     const files = fs.readdirSync(folderPath);
     const jsonContent: any[] = [];
 
@@ -27,31 +27,31 @@ export function postAllCollectionsList() {
       // Get datas from each JSON
       const collectionInfos = {
         id: jsonData.info._postman_id,
-        name : jsonData.info.name,
-        collection : folderPath
-      }
+        name: jsonData.info.name,
+        collection: folderPath,
+      };
       jsonContent.push(collectionInfos);
     });
     return jsonContent;
   }
 
-  return folderJsonContent
+  return folderJsonContent;
 }
 
 export function postAllEnvironnementList() {
   const folderP = 'src/postman/env/';
   const folders = fs.readdirSync(folderP);
-  var folderJsonContent : Array<any> = [];
-  
+  const folderJsonContent: Array<any> = [];
+
   // Search all directories in 'src/postman/env/'
   folders.forEach(folder => {
     if (fs.lstatSync(folderP + folder).isDirectory()) {
-      const result = {[folder] :readFolderJSONContent(folderP + folder)}
-      folderJsonContent.push(result)
+      const result = { [folder]: readFolderJSONContent(folderP + folder) };
+      folderJsonContent.push(result);
     }
   });
-  
-  function readFolderJSONContent(folderPath: string){
+
+  function readFolderJSONContent(folderPath: string) {
     const files = fs.readdirSync(folderPath);
     const jsonContent: any[] = [];
 
@@ -64,12 +64,12 @@ export function postAllEnvironnementList() {
       // Get datas from each JSON
       const collectionInfos = {
         id: jsonData.id,
-        name : jsonData.name,
-      }
+        name: jsonData.name,
+      };
       jsonContent.push(collectionInfos);
     });
     return jsonContent;
   }
 
-  return folderJsonContent
+  return folderJsonContent;
 }

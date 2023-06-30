@@ -1,65 +1,63 @@
-import {  NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import { PostmanModel } from './postman.model';
 import { postAllCollectionsList, postAllEnvironnementList } from './Post/postAllCollectionsList';
 import { testLauncher } from './runner/testLauncher';
 
 export class PostmanService {
-
   constructor(
     private tests: PostmanModel[] = [],
-    private envList : any[] = [],
-    private collectionList : any[] = [],
-    private testList: Object[] = []
-  ) {};
+    private envList: any[] = [],
+    private collectionList: any[] = [],
+    private testList: Object[] = [],
+  ) {}
 
-// Collections services
+  // Collections services
 
   insertCollectionsList() {
-    const collectionList = postAllCollectionsList()
+    const collectionList = postAllCollectionsList();
 
-    this.collectionList.push(collectionList)
+    this.collectionList.push(collectionList);
 
-    return collectionList
+    return collectionList;
   }
-  
+
   getCollectionsList() {
-    return this.collectionList
+    return this.collectionList;
   }
 
-// Environnements services
+  // Environnements services
 
   insertEnvironnementList() {
-    const envlist = postAllEnvironnementList()
+    const envlist = postAllEnvironnementList();
 
-    this.envList.push(envlist)
+    this.envList.push(envlist);
 
-    return envlist
+    return envlist;
   }
 
   getEnvironnementList() {
-    return this.envList
+    return this.envList;
   }
 
-// Tests services
+  // Tests services
 
-  insertTest(title: string,env_id: string, test: object) {
-    const testResult = testLauncher(title, env_id, test)
+  insertTest(title: string, env_id: string, test: object) {
+    const testResult = testLauncher(title, env_id, test);
 
-    if (testResult["status"] === "finished")
-      this.testList.push(testResult)
+    if (testResult['status'] === 'finished') this.testList.push(testResult);
 
-    return testResult
+    return testResult;
   }
 
-  getTests() {  
-    return [...this.testList]
+  getTests() {
+    return [...this.testList];
   }
 
-  getSingleTest(testId : string) {
-    const test = this.tests.find((res) => res.id == testId)
+  getSingleTest(testId: string) {
+    const test = this.tests.find(res => res.id == testId);
     if (!test) {
-      throw new NotFoundException('No test corresponding.')
+      throw new NotFoundException('No test corresponding.');
     }
-    return {...test}
+    return { ...test };
   }
 }
