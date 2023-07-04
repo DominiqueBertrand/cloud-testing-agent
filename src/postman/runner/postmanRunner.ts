@@ -4,7 +4,7 @@ export class TestRunner {
   static testResult: NewmanRunSummary;
 
   static async newmanRunner(collect, env): Promise<NewmanRunSummary> {
-    // run and return newman test
+    // run and return Promise newman test result
     return new Promise((resolve, reject) => {
       newman.run(
         {
@@ -17,6 +17,7 @@ export class TestRunner {
             reject(err);
           } else {
             resolve(summary);
+            //put summary of test in static testResult
             this.testResult = summary;
           }
         },
