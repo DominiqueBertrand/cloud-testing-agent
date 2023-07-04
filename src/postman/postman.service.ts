@@ -2,62 +2,100 @@ import { NotFoundException } from '@nestjs/common';
 import { PostmanModel } from './postman.model';
 import { postAllCollectionsList, postAllEnvironnementList } from './Post/postAllCollectionsList';
 import { testLauncher } from './runner/testLauncher';
+import crypto from 'crypto';
 
 export class PostmanService {
+  static testId: string;
+  static Id: string;
   constructor(
-    private tests: PostmanModel[] = [],
-    private envList: any[] = [],
-    private collectionList: any[] = [],
-    private testList: object[] = [],
+    private envList: Array<string> = [],
+    private collectionList: Array<string> = [],
+    private testList: PostmanModel[] = [],
   ) {}
 
-  // Collections services
-
-  insertCollectionsList() {
+  /**
+   *
+   * @param none,
+   * @returns string[] => all environnements ids and names
+   */
+  insertCollectionsList(): string[] {
     const collectionList = postAllCollectionsList();
 
-    this.collectionList.push(collectionList);
+    this.collectionList = collectionList;
 
     return collectionList;
   }
 
-  getCollectionsList() {
+  /**
+   *
+   * @param none,
+   * @returns Array<string> => all environnements ids and names
+   */
+  getCollectionsList(): Array<string> {
     return this.collectionList;
   }
 
-  // Environnements services
+  /**
+   *
+   * @param none,
+   * @returns string[] => all environnements ids and names
+   */
+  insertEnvironnementList(): string[] {
+    const envlist: string[] = postAllEnvironnementList();
 
-  insertEnvironnementList() {
-    const envlist = postAllEnvironnementList();
-
-    this.envList.push(envlist);
+    this.envList = envlist;
 
     return envlist;
   }
 
-  getEnvironnementList() {
+  /**
+   *
+   * @param none,
+   * @returns Array<string> => all environnements ids and names
+   */
+  getEnvironnementList(): Array<string> {
     return this.envList;
   }
 
-  // Tests services
+  /**
+   *
+   * @param title: string, env_id: string, test: objec,
+   * @returns PostmanModel => new test -> finish test or pending test
+   */
+  insertTest(title: string, env_id: string, test: object): PostmanModel {
+    const id = crypto.randomUUID();
 
-  insertTest(title: string, env_id: string, test: object) {
-    const testResult = testLauncher(title, env_id, test);
-
-    if (testResult['status'] === 'finished') this.testList.push(testResult);
-
+    const testResult: PostmanModel = testLauncher(id, title, env_id, test);
+    if (testResult['status'] === 'pending') {
+      console.log('is pending');
+      PostmanService.Id = id;
+    }
+    if (testResult['status'] === 'finished') {
+      this.testList.push(testResult);
+      PostmanService.Id = id;
+    }
     return testResult;
   }
 
-  getTests() {
-    return [...this.testList];
+  /**
+   *
+   * @param none,
+   * @returns array of PostmanModel => all tests
+   */
+  getTests(): PostmanModel[] {
+    return this.testList;
   }
 
-  getSingleTest(testId: string) {
-    const test = this.tests.find(res => res.id == testId);
+  /**
+   *
+   * @param testId,
+   * @returns PostmanModel => test by id
+   */
+  getSingleTest(testId: string): PostmanModel {
+    const test = this.testList.find(res => res.id.toString() == testId);
     if (!test) {
       throw new NotFoundException('No test corresponding.');
     }
-    return { ...test };
+    return test;
   }
 }

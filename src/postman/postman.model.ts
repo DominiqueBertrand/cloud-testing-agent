@@ -3,7 +3,15 @@ export class tests {
 }
 
 export class PostmanModel {
-  constructor(public id: string, public title: string, public collectionId: string, public createAt: string) {}
+  constructor(
+    public id: string,
+    public title: string,
+    public status: string,
+    public createdAt: string,
+    public collectionId: string,
+    public envId: string,
+    public run: object,
+  ) {}
 }
 
 export class collectionsList {
