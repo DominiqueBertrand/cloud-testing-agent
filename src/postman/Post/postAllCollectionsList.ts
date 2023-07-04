@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function postAllCollectionsList() {
+export function postAllCollectionsList(): string[] {
   const folderP = 'src/postman/collection/';
   const folders = fs.readdirSync(folderP);
   const folderJsonContent: Array<any> = [];
@@ -38,7 +38,7 @@ export function postAllCollectionsList() {
   return folderJsonContent;
 }
 
-export function postAllEnvironnementList() {
+export function postAllEnvironnementList(): string[] {
   const folderP = 'src/postman/env/';
   const folders = fs.readdirSync(folderP);
   const folderJsonContent: Array<any> = [];

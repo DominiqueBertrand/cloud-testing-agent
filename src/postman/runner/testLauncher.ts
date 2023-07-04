@@ -1,37 +1,48 @@
+import { PostmanModel } from '../postman.model';
+import { PostmanService } from '../postman.service';
 import { getCollectionById } from '../widgets/getCollectionById';
 import { getEnvById } from '../widgets/getEnvById';
 import { setDate } from '../widgets/setDate';
 import { TestRunner } from './postmanRunner';
 
-function getEnv(id: string) {
+function getEnv(id: string): object {
   const data: object = getEnvById(id);
 
   return data;
 }
 
-function getCollection(id: string) {
+function getCollection(id: string): object {
   const data: object = getCollectionById(id);
 
   return data;
 }
 
 // Launch newman test
-export function testLauncher(title: string, env_id: string, test: object): object {
+export function testLauncher(id: string, title: string, env_id: string, test: object): PostmanModel {
   // get environnement and collection files in correct folders
   const envJSON: object = getEnv(env_id);
   const collectionJSON: object = getCollection(test[0].id_collection);
   const testChecking: Array<any> = [];
   let testsResult: object = [];
-  const id = Math.random();
+  console.log(PostmanService.testId);
 
   // run test
   TestRunner.newmanRunner(collectionJSON[0], envJSON[0]);
+  console.log('test', TestRunner.newmanRunner(collectionJSON[0], envJSON[0]));
+  console.log('test1', TestRunner.testResult);
+  const tst = TestRunner.newmanRunner(collectionJSON[0], envJSON[0]);
+  console.log(tst);
+
   if (!TestRunner.testResult) {
     //return object "pending" if the test is not finished
     return {
       id: id,
       title: title,
       status: 'pending',
+      createdAt: setDate(),
+      collectionId: '',
+      envId: '',
+      run: {},
     };
   } else {
     // map executions details
@@ -52,9 +63,10 @@ export function testLauncher(title: string, env_id: string, test: object): objec
       prerequest_scripts: TestRunner.testResult.run.stats.prerequestScripts,
       assertions: TestRunner.testResult.run.stats.assertions,
     };
+    TestRunner.testResult;
     // return all test details
     return {
-      id: id,
+      id: PostmanService.Id,
       title: title,
       status: 'finished',
       createdAt: setDate(),
