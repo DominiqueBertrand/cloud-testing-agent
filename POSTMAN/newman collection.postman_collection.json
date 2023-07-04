@@ -1,0 +1,185 @@
+{
+	"info": {
+		"_postman_id": "90805410-f2bf-4941-b14b-8b956ad16894",
+		"name": "newman collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26866807"
+	},
+	"item": [
+		{
+			"name": "generate collections list",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}postman/collections_list",
+					"host": [
+						"{{url}}postman"
+					],
+					"path": [
+						"collections_list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate environnement list",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}postman/environnement_list",
+					"host": [
+						"{{url}}postman"
+					],
+					"path": [
+						"environnement_list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get collections list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}postman/collections_list",
+					"host": [
+						"{{url}}postman"
+					],
+					"path": [
+						"collections_list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get environnement list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}postman/environnement_list",
+					"host": [
+						"{{url}}postman"
+					],
+					"path": [
+						"environnement_list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create test",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var body = pm.response.json();",
+							"",
+							"pm.collectionVariables.set(\"id\", body.id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"1\",\n    \"gobal_env_id\": \"de004466-88b3-4b96-850a-e198950adbfb\",\n    \"tests\": [\n        {\n            \"id_collection\": \"90796b28-3c30-4935-ab0e-d7370039a01d\",\n            \"titre\": \"test\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}postman/create_newman/",
+					"host": [
+						"{{url}}postman"
+					],
+					"path": [
+						"create_newman",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all test",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}postman/test/",
+					"host": [
+						"{{url}}postman"
+					],
+					"path": [
+						"test",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get test by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}postman/test/ce0cb995-1ccf-4816-b994-a231f8f0a1a4",
+					"host": [
+						"{{url}}postman"
+					],
+					"path": [
+						"test",
+						"ce0cb995-1ccf-4816-b994-a231f8f0a1a4"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://127.0.0.1:7000/",
+			"type": "string"
+		},
+		{
+			"key": "id",
+			"value": ""
+		}
+	]
+}

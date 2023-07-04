@@ -3,10 +3,10 @@ import { PostmanModel } from './postman.model';
 import { postAllCollectionsList, postAllEnvironnementList } from './Post/postAllCollectionsList';
 import { testLauncher } from './runner/testLauncher';
 import crypto from 'crypto';
+import { setDate } from './widgets/setDate';
 
 export class PostmanService {
   static testId: string;
-  static Id: string;
   constructor(
     private envList: Array<string> = [],
     private collectionList: Array<string> = [],
@@ -62,17 +62,13 @@ export class PostmanService {
    * @param title: string, env_id: string, test: objec,
    * @returns PostmanModel => new test -> finish test or pending test
    */
-  insertTest(title: string, env_id: string, test: object): PostmanModel {
+  async insertTest(title: string, env_id: string, test: object): Promise<PostmanModel> {
     const id = crypto.randomUUID();
+    const date = setDate();
 
-    const testResult: PostmanModel = testLauncher(id, title, env_id, test);
-    if (testResult['status'] === 'pending') {
-      console.log('is pending');
-      PostmanService.Id = id;
-    }
+    const testResult: PostmanModel = await testLauncher(id, date, title, env_id, test);
     if (testResult['status'] === 'finished') {
       this.testList.push(testResult);
-      PostmanService.Id = id;
     }
     return testResult;
   }
