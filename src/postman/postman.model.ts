@@ -1,17 +1,46 @@
+import { ApiProperty } from '@nestjs/swagger';
 export class tests {
   constructor(public id_collection: string, public title: string) {}
 }
 
-export class PostmanModel {
+export interface IPostmanModel {
+  id: string;
+  title: string;
+  status: string;
+  createdAt: string;
+  collectionId: string;
+  envId: string;
+  run: object;
+}
+
+export class PostmanModel implements IPostmanModel {
+  @ApiProperty({ example: 1, description: 'The ID of the Postman' })
+  id: string;
+  @ApiProperty({ example: 'title', description: 'The title of the Postman' })
+  title: string;
+  status: string;
+  createdAt: string;
+  collectionId: string;
+  envId: string;
+  run: object;
+
   constructor(
-    public id: string,
-    public title: string,
-    public status: string,
-    public createdAt: string,
-    public collectionId: string,
-    public envId: string,
-    public run: object,
-  ) {}
+    id: string,
+    title: string,
+    status: string,
+    createdAt: string,
+    collectionId: string,
+    envId: string,
+    run: object,
+  ) {
+    this.id = id;
+    this.title = title;
+    this.status = status;
+    this.createdAt = createdAt;
+    this.collectionId = collectionId;
+    this.envId = envId;
+    this.run = run;
+  }
 }
 
 export class collectionsList {
