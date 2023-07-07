@@ -2,8 +2,8 @@
   "compilerOptions": {
     "module": "commonjs",
     "paths": {
-      "@collection/*": ["src/postman/collection/*"],
-      "@env/*": ["src/postman/env/*"],
+      "@collection/*": ["src/modules/postman/collection/*"],
+      "@env/*": ["src/modules/postman/env/*"],
       "@src/*": ["src/*"],
   },
     "esModuleInterop": true,

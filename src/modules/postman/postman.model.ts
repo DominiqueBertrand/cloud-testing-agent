@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+
 export class tests {
   constructor(public id_collection: string, public title: string) {}
 }
