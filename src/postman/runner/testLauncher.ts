@@ -1,80 +1,46 @@
-import { PostmanModel } from '../postman.model';
-import { getCollectionById } from '../widgets/getCollectionById';
-import { getEnvById } from '../widgets/getEnvById';
-import { TestRunner } from './postmanRunner';
+import { Status } from '../postman.model';
+import { TestRunner } from './newmanRunner';
+import crypto from 'crypto';
+import { setDate } from '../widgets/setDate';
+import { getCollection, getEnv } from '../widgets/collectionParserById';
+import { TestList } from '../postman.types';
+// import * as fs from 'fs';
 
-function getEnv(id: string): object {
-  const data: object = getEnvById(id);
+function tasksInstancer(test: object, env_id: string) {
+  const testsList: Array<TestList> = [];
 
-  return data;
-}
-
-function getCollection(id: string): object {
-  const data: object = getCollectionById(id);
-
-  return data;
-}
-
-// Launch newman test
-export async function testLauncher(
-  id: string,
-  date: string,
-  title: string,
-  env_id: string,
-  test: object,
-): Promise<PostmanModel> {
-  // get environnement and collection files in correct folders
-  const envJSON: object = getEnv(env_id);
-  const collectionJSON: object = getCollection(test[0].id_collection);
-  const testChecking: Array<any> = [];
-  let testsResult: object = [];
-
-  // run test and set TestRunner.testResult
-  await TestRunner.newmanRunner(collectionJSON[0], envJSON[0]);
-
-  // check if the summary in the promise is empty
-  if (!TestRunner.testResult) {
-    //return object "pending" if the test is not finished
-    return {
-      id: id,
-      title: title,
-      status: 'pending',
-      createdAt: date,
-      collectionId: '',
-      envId: '',
-      run: {},
-    };
-  } else {
-    // map executions details
-    TestRunner.testResult.run.executions.map(function (value) {
-      testChecking.push({
-        id: value.item.id,
-        name: value.item.name,
-        response: value.response.status,
-        code: value.response.code,
-        responseTime: value.response.responseTime,
-        responseSize: value.response.responseSize,
-      });
-    });
-    testsResult = {
-      iterations: TestRunner.testResult.run.stats.iterations,
-      requests: TestRunner.testResult.run.stats.requests,
-      test_scripts: TestRunner.testResult.run.stats.testScripts,
-      prerequest_scripts: TestRunner.testResult.run.stats.prerequestScripts,
-      assertions: TestRunner.testResult.run.stats.assertions,
-    };
-    // return all test details
-    return {
-      id: id,
-      title: title,
-      status: 'finished',
-      createdAt: date,
-      collectionId: test[0].id_collection,
+  for (let i = 0; i < Object.keys(test).length; i++) {
+    const singleTask: TestList = {
+      taskId: crypto.randomUUID(),
+      createdAt: setDate(),
+      modifiedAt: setDate(),
+      status: Status.created,
+      collectionId: test[i].id_collection,
       envId: env_id,
-      run: {
-        stats: testsResult,
-        execution: testChecking,
-      },
     };
+    testsList.push(singleTask);
   }
+  return testsList;
+}
+
+async function runTask(taskData: TestList): Promise<TestList> {
+  const collectionJSON: object = getCollection(taskData.collectionId);
+  const enironmentJSON: object = getEnv(taskData.envId);
+
+  taskData.modifiedAt = setDate();
+  taskData.status = Status.running;
+  await TestRunner.newmanRunner(collectionJSON[0], enironmentJSON);
+  taskData.modifiedAt = setDate();
+  taskData.status = Status.finished;
+
+  return taskData;
+}
+
+export async function testLauncher(env_id: string, test: object): Promise<object> {
+  const testList: Array<TestList> = tasksInstancer(test, env_id);
+  testList.forEach(function (value: TestList) {
+    runTask(value);
+  });
+
+  return testList;
 }
