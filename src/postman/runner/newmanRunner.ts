@@ -1,9 +1,10 @@
 import newman, { NewmanRunSummary } from 'newman';
 
 export class TestRunner {
-  static testResult: NewmanRunSummary;
+  static testResult;
+  static counter;
 
-  static async newmanRunner(collect, env): Promise<NewmanRunSummary> {
+  static async newmanRunner(collect: object, env: object): Promise<NewmanRunSummary> {
     // run and return Promise newman test result
     return new Promise((resolve, reject) => {
       newman.run(

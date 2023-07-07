@@ -3,11 +3,20 @@ export class tests {
   constructor(public id_collection: string, public title: string) {}
 }
 
+export enum Status {
+  created,
+  failed,
+  aborded,
+  running,
+  finished,
+}
+
 export interface IPostmanModel {
-  id: string;
+  Id: string;
   title: string;
-  status: string;
   createdAt: string;
+  modifiedAt: string;
+  status: Status;
   collectionId: string;
   envId: string;
   run: object;
@@ -15,28 +24,31 @@ export interface IPostmanModel {
 
 export class PostmanModel implements IPostmanModel {
   @ApiProperty({ example: 1, description: 'The ID of the Postman' })
-  id: string;
+  Id: string;
   @ApiProperty({ example: 'title', description: 'The title of the Postman' })
   title: string;
-  status: string;
   createdAt: string;
+  modifiedAt: string;
+  status: Status;
   collectionId: string;
   envId: string;
   run: object;
 
   constructor(
-    id: string,
+    Id: string,
     title: string,
-    status: string,
     createdAt: string,
+    modifiedAt: string,
+    status: Status,
     collectionId: string,
     envId: string,
     run: object,
   ) {
-    this.id = id;
+    this.Id = Id;
     this.title = title;
-    this.status = status;
     this.createdAt = createdAt;
+    this.modifiedAt = modifiedAt;
+    this.status = status;
     this.collectionId = collectionId;
     this.envId = envId;
     this.run = run;
@@ -44,5 +56,5 @@ export class PostmanModel implements IPostmanModel {
 }
 
 export class collectionsList {
-  constructor(public id: string, public name: string, public collection: string) {}
+  constructor(public Id: string, public name: string, public collection: string) {}
 }

@@ -1,16 +1,13 @@
-import { NotFoundException } from '@nestjs/common';
-import { PostmanModel } from './postman.model';
+// import { NotFoundException } from '@nestjs/common';
 import { postAllCollectionsList, postAllEnvironnementList } from './Post/postAllCollectionsList';
 import { testLauncher } from './runner/testLauncher';
-import crypto from 'crypto';
-import { setDate } from './widgets/setDate';
 
 export class PostmanService {
   static testId: string;
   constructor(
     private envList: Array<string> = [],
     private collectionList: Array<string> = [],
-    private testList: PostmanModel[] = [],
+    private testList: Array<object> = [],
   ) {}
 
   /**
@@ -62,14 +59,10 @@ export class PostmanService {
    * @param title: string, env_id: string, test: objec,
    * @returns PostmanModel => new test -> finish test or pending test
    */
-  async insertTest(title: string, env_id: string, test: object): Promise<PostmanModel> {
-    const id = crypto.randomUUID();
-    const date = setDate();
-
-    const testResult: PostmanModel = await testLauncher(id, date, title, env_id, test);
-    if (testResult['status'] === 'finished') {
-      this.testList.push(testResult);
-    }
+  async insertTest(title: string, env_id: string, test: object): Promise<object> {
+    const testResult: object = await testLauncher(env_id, test);
+    console.log(title);
+    this.testList.push(testResult);
     return testResult;
   }
 
@@ -78,7 +71,7 @@ export class PostmanService {
    * @param none,
    * @returns array of PostmanModel => all tests
    */
-  getTests(): PostmanModel[] {
+  getTests(): Array<object> {
     return this.testList;
   }
 
@@ -87,11 +80,11 @@ export class PostmanService {
    * @param testId,
    * @returns PostmanModel => test by id
    */
-  getSingleTest(testId: string): PostmanModel {
-    const test = this.testList.find(res => res.id.toString() == testId);
-    if (!test) {
-      throw new NotFoundException('No test corresponding.');
-    }
-    return test;
-  }
+  // getSingleTest(testId: string): PostmanModel {
+  //   const test = this.testList.find(res => res.Id.toString() == testId);
+  //   if (!test) {
+  //     throw new NotFoundException('No test corresponding.');
+  //   }
+  //   return test;
+  // }
 }
