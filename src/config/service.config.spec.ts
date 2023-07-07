@@ -18,5 +18,6 @@ describe('sendgridConfig', () => {
 
   it('should contains expiresIn and secret key', async () => {
     expect(config.port).toBeTruthy();
+    expect(config.jsonParserLimit).toBeTruthy();
   });
 });

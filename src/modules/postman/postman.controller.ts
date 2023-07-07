@@ -4,7 +4,7 @@ import { PostmanService } from './postman.service';
 import { tests, PostmanModel } from './postman.model';
 
 @Controller('postman')
-@ApiTags('Postman')
+@ApiTags('Postman/Runner')
 @Controller('postman')
 export class PostmanController {
   constructor(private postmanService: PostmanService) {}
