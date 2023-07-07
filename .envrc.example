@@ -1,4 +1,6 @@
 #!/bin/sh
 
 # server configuration variable
-export SERVER_PORT=7000
+# OPTIONAL VARIABLES
+export SERVER_PORT=7000 # default to 3000
+export JSON_PARSER_LIMIT=20mb # default to 20mb
