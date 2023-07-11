@@ -1,8 +1,10 @@
-import { Cascade, Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Cascade, Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 // import { ApiProperty } from '@nestjs/swagger';
 
-import { PmCollection, PmReport } from './index';
+import { PmCollection, PmEnvironment, PmReport } from './index';
 import { BaseEntity } from './BaseEntity';
+import { TaskStatus } from '@src/modules/task/task-status.enum';
+import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 
 @Entity()
 export class Task extends BaseEntity {
@@ -10,14 +12,25 @@ export class Task extends BaseEntity {
   @ManyToOne(() => PmCollection)
   collection?: PmCollection;
 
-  @ManyToOne(() => PmReport, { cascade: [Cascade.PERSIST, Cascade.REMOVE], nullable: true })
+  @ManyToOne(() => PmCollection)
+  environment?: PmEnvironment;
+
+  @OneToOne(() => PmReport, { cascade: [Cascade.PERSIST, Cascade.REMOVE], nullable: true })
   report?: PmReport;
 
   @Property({ nullable: true })
   options?: object;
 
-  constructor(collection: PmCollection) {
+  @Property({ nullable: true })
+  status?: TaskStatus;
+
+  @Property({ nullable: true })
+  testStatus?: TestStatus;
+
+  constructor(collection: PmCollection, environment: PmEnvironment, status?: TaskStatus) {
     super();
     this.collection = collection;
+    this.environment = environment;
+    this.status = status ?? TaskStatus.OPEN;
   }
 }

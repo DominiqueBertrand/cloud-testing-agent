@@ -1,15 +1,19 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { EntityRepository, QueryOrder, wrap } from '@mikro-orm/core';
+import { EntityRepository, QueryOrder } from '@mikro-orm/core';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Task } from '../../entities';
+import { CreateOrUpdateElementDto } from './dto';
+import { TaskService } from './task.service';
 
 @Controller('task')
 @ApiTags('Task')
-@Controller('task')
 export class TaskController {
-  constructor(@InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>) {}
+  constructor(
+    @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
+    private readonly taskService: TaskService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get a list of all tasks' })
@@ -31,30 +35,30 @@ export class TaskController {
 
   @Post()
   @ApiOperation({ summary: 'Create a task' })
-  async create(@Body() body: Task) {
+  async create(@Body() body: CreateOrUpdateElementDto) {
     if (!body.collection) {
       throw new HttpException('{collection} object is missing', HttpStatus.BAD_REQUEST);
     }
+    if (!body.environment) {
+      throw new HttpException('{environmemt} object is missing', HttpStatus.BAD_REQUEST);
+    }
 
-    const task = this.taskRepository.create(body);
-    wrap(task.collection, true).__initialized = true;
-    await this.taskRepository.persist(task).flush();
-
-    return task;
+    return this.taskService.create({
+      collection: body.collection,
+      environment: body.environment,
+      ref: body.ref,
+    });
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a task' })
-  async update(@Param() id: string, @Body() body: any) {
-    const task = await this.taskRepository.findOne(id);
-
-    if (!task) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+  async update(@Param() id: string, @Body() body: CreateOrUpdateElementDto) {
+    if (!body.collection && !body.environment) {
+      throw new HttpException('At least {collection} or {environment} should be defined', HttpStatus.BAD_REQUEST);
     }
-
-    wrap(task).assign(body);
-    await this.taskRepository.persist(task);
-
-    return task;
+    return this.taskService.update(id, {
+      collection: body.collection,
+      environment: body.environment,
+    });
   }
 }

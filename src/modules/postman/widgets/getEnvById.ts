@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export function getEnvById(id: string) {
-  const folderP = 'src/postman/env/';
+  const folderP = 'src/modules/postman/env/';
   const folders = fs.readdirSync(folderP);
   let folderJsonContent: Array<any> = [];
 

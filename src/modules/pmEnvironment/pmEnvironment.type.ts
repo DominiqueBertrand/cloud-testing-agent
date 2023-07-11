@@ -7,9 +7,9 @@ export interface IPmEnvironment {
 }
 
 export interface IEnvironment {
-  info: IInfo;
-  event: object;
-  variable: object;
+  id: string;
+  name: string;
+  values: object[];
 }
 
 export interface IInfo {
@@ -18,8 +18,3 @@ export interface IInfo {
   schema: string;
   _exporter_id: string;
 }
-
-export type PagingMeta =
-  | { pagingType: 'forward'; after?: string; first: number }
-  | { pagingType: 'backward'; before?: string; last: number }
-  | { pagingType: 'none' };

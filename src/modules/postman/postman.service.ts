@@ -61,7 +61,7 @@ export class PostmanService {
    */
   async insertTest(title: string, env_id: string, test: object): Promise<object> {
     const testResult: object = await testLauncher(env_id, test);
-    console.log(title);
+    console.log('launch test', title);
     this.testList.push(testResult);
     return testResult;
   }

@@ -40,11 +40,11 @@ export class PmEnvironmentController {
     if (!body.environment) {
       throw new HttpException('"environment" object is missing', HttpStatus.BAD_REQUEST);
     }
-    if (!body.environment?.info?._postman_id || !body.environment?.info?.name) {
+    if (!body.environment?.id || !body.environment?.name) {
       throw new HttpException('"environment" object is in wrong format', HttpStatus.BAD_REQUEST);
     }
 
-    const id = body.environment?.info?._postman_id;
+    const id = body.environment?.id;
     const ref = body.ref ?? id;
 
     return this.pmEnvironmentService.create({ environment: body.environment, ref, id });
@@ -56,7 +56,7 @@ export class PmEnvironmentController {
     if (!body.environment) {
       throw new HttpException('"environment" object is missing', HttpStatus.BAD_REQUEST);
     }
-    if (!body.environment?.info?._postman_id || !body.environment?.info?.name) {
+    if (!body.environment?.id || !body.environment?.name) {
       throw new HttpException('"environment" object is in wrong format', HttpStatus.BAD_REQUEST);
     }
     const ref = body.ref;
