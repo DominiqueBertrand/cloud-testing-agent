@@ -1,13 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
-import { IPmCollection, ICollection } from '@src/modules/pmCollection/pmCollection.type';
+import { IPmCollection } from '@src/modules/pmCollection/pmCollection.type';
+import { IEnvironment, IPmEnvironment } from '@src/modules/pmEnvironment/pmEnvironment.type';
 
-export class CreateOrUpdateElementDto implements Partial<IPmCollection> {
+interface iCollection extends Partial<IPmCollection> {
+  id: string;
+  environment?: IEnvironment;
+}
+
+interface iEnvironment extends Partial<IPmEnvironment> {
+  id: string;
+}
+
+export class CreateOrUpdateElementDto {
   @IsString()
   @ApiProperty({
     required: false,
-    description:
-      'By default, this value is extracted from the collection, so set this value to change the default value',
+    description: 'By default, this value is equal to the id, so set this value to change the default value',
   })
   readonly ref!: string;
 
@@ -15,5 +24,11 @@ export class CreateOrUpdateElementDto implements Partial<IPmCollection> {
     required: true,
     description: 'Postman collection in json format',
   })
-  readonly collection!: ICollection;
+  readonly collection!: iCollection;
+
+  @ApiProperty({
+    required: true,
+    description: 'Postman environment in json format',
+  })
+  readonly environment!: iEnvironment;
 }

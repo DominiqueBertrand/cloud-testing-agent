@@ -3,18 +3,21 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
 
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
-import { PmReport } from '@src/entities';
-import { FindAllElementsQueryDto } from './dto';
+import { PmCollection, PmEnvironment, Task } from '@src/entities';
+import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
+import { taskInit } from './middleware/taskManager';
 
 @Injectable()
-export class PmReportService {
+export class TaskService {
   constructor(
-    @InjectRepository(PmReport) private readonly pmReportRepository: EntityRepository<PmReport>,
-    // private readonly pmReportRepository: PmReportRepository,
+    @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
+    @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
+    @InjectRepository(PmEnvironment) private readonly PmEnvironmentRepository: EntityRepository<PmEnvironment>,
+    // private readonly taskRepository: taskRepository,
     private readonly em: EntityManager,
   ) {}
 
-  async findAll({ limit, offset, orderBy: orderbyKey }: FindAllElementsQueryDto): Promise<PmReport[]> {
+  async findAll({ limit, offset, orderBy: orderbyKey }: FindAllElementsQueryDto): Promise<Task[]> {
     let orderBy: any;
 
     switch (orderbyKey) {
@@ -36,47 +39,56 @@ export class PmReportService {
         break;
       }
     }
-    return this.pmReportRepository.findAll({
+    return this.taskRepository.findAll({
       //   populate: ['report', 'report'],
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
-      fields: ['id', 'status', 'createdAt', 'updatedAt'],
+      fields: ['id', 'createdAt', 'updatedAt', 'collection', 'environment'],
     });
   }
 
-  async findOne(id: string): Promise<PmReport | null> {
-    const report: PmReport | null = await this.pmReportRepository.findOne({ id });
+  async findOne(id: string): Promise<Task | null> {
+    const report: Task | null = await this.taskRepository.findOne({ id });
     return report;
   }
 
-  async create({ report, status, id }) {
+  async create({ collection, environment, ref }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
     try {
-      const pmReport: PmReport = new PmReport(report, status, id);
-      this.em.persist(pmReport);
-      await this.em.flush();
-
-      return { pmReport };
+      const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
+      if (!pmCollection) {
+        throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
+      }
+      const pmEnvironment = this.PmEnvironmentRepository.findOne({ id: environment?.id });
+      if (!pmEnvironment) {
+        throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
+      }
+      const task: Task = await taskInit(collection, environment, ref);
+      console.log(ref);
+      return task;
     } catch (error: any) {
+      console.error(error);
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async update({ report, status, id }) {
+  async update(id, { collection, environment }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
     try {
-      const _report: PmReport | null = await this.pmReportRepository.findOne({ id });
-      if (!_report) {
-        throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
+      const task: Task | null = await this.taskRepository.findOne({ id });
+      if (!task) {
+        throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
-      if (!report?.id !== id) {
-        throw new HttpException('Report id mistmatch', HttpStatus.NOT_FOUND);
+      const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
+      const pmEnvironment = this.PmEnvironmentRepository.findOne({ id: environment?.id });
+      if (!pmCollection && !pmEnvironment) {
+        throw new HttpException('Collecion or Environement not found', HttpStatus.NOT_FOUND);
       }
-      const pmReport: PmReport = new PmReport(report, status, id);
-      this.em.persist(pmReport);
+      const updatedTask: Task = { ...task, ...pmCollection, ...pmEnvironment };
+      this.em.persist(updatedTask);
       await this.em.flush();
 
-      return { pmReport };
+      return updatedTask;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
@@ -86,7 +98,7 @@ export class PmReportService {
   async delete(id: string) {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const report = await this.pmReportRepository.findOne({ id });
+      const report = await this.taskRepository.findOne({ id });
 
       if (!report) {
         throw new HttpException('Report not found', HttpStatus.NOT_FOUND);

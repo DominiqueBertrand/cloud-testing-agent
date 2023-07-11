@@ -2,12 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export function getCollectionById(id: string) {
-  const folderP = 'src/postman/collection/';
+  const folderP = 'src/modules/postman/collection/';
   const folders = fs.readdirSync(folderP);
   let folderJsonContent: Array<any> = [];
 
   // Search all directories in 'src/postman/collection/'
   folders.forEach(folder => {
+    console.log(folder);
     if (fs.lstatSync(folderP + folder).isDirectory()) {
       folderJsonContent = readFolderJSONContent(folderP + folder);
     }
