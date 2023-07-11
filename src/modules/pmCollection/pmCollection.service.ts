@@ -46,7 +46,7 @@ export class PmCollectionService {
   }
 
   async findOne(collectionId: string): Promise<PmCollection | null> {
-    const collection: PmCollection | null = await this.pmCollectionRepository.findOne({ ref: collectionId });
+    const collection: PmCollection | null = await this.pmCollectionRepository.findOne({ id: collectionId });
     return collection;
   }
 
