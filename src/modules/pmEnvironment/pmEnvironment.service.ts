@@ -52,7 +52,7 @@ export class PmEnvironmentService {
 
   async create({ environment, ref, id }) {
     try {
-      const name = environment?.info?.name;
+      const name = environment?.name;
       const pmEnvironment: PmEnvironment = new PmEnvironment(environment, id, ref, name);
       this.em.persist(pmEnvironment);
       await this.em.flush();

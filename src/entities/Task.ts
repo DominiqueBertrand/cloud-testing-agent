@@ -1,11 +1,10 @@
-import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
+import { Entity, Index, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 // import { ApiProperty } from '@nestjs/swagger';
 
 import { PmCollection, PmEnvironment, PmReport } from './index';
 import { BaseEntity } from './BaseEntity';
 import { TaskStatus } from '@src/modules/task/task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
-
 @Entity()
 export class Task extends BaseEntity {
   @ManyToOne(() => PmCollection)
@@ -21,6 +20,7 @@ export class Task extends BaseEntity {
   options?: object;
 
   @Property({ nullable: true })
+  @Index()
   status?: TaskStatus;
 
   @Property({ nullable: true })
