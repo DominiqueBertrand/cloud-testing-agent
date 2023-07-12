@@ -53,18 +53,20 @@ export class TaskService {
     return report;
   }
 
-  async create({ collection, environment, ref }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
+  async create({ collection, environment }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
     try {
       const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
+      const pmEnvironment = this.PmEnvironmentRepository.findOne({ id: environment?.id });
       if (!pmCollection) {
         throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
       }
-      const pmEnvironment = this.PmEnvironmentRepository.findOne({ id: environment?.id });
       if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-      const task: Task = await taskInit(collection, environment, ref);
-      console.log(ref);
+      const task: Task = await taskInit(collection, environment);
+      this.em.persist(task);
+      await this.em.flush();
+
       return task;
     } catch (error: any) {
       console.error(error);
@@ -73,7 +75,7 @@ export class TaskService {
     }
   }
 
-  async update(id, { collection, environment }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
+  async update(id: string, { collection, environment }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
     try {
       const task: Task | null = await this.taskRepository.findOne({ id });
       if (!task) {
@@ -84,11 +86,10 @@ export class TaskService {
       if (!pmCollection && !pmEnvironment) {
         throw new HttpException('Collecion or Environement not found', HttpStatus.NOT_FOUND);
       }
-      const updatedTask: Task = { ...task, ...pmCollection, ...pmEnvironment };
-      this.em.persist(updatedTask);
+      this.em.persist(task);
       await this.em.flush();
 
-      return updatedTask;
+      return task;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
