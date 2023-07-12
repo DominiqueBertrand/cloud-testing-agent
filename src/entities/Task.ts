@@ -1,4 +1,4 @@
-import { Cascade, Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 // import { ApiProperty } from '@nestjs/swagger';
 
 import { PmCollection, PmEnvironment, PmReport } from './index';
@@ -11,10 +11,10 @@ export class Task extends BaseEntity {
   @ManyToOne(() => PmCollection)
   collection?: PmCollection;
 
-  @ManyToOne(() => PmCollection)
+  @ManyToOne(() => PmEnvironment)
   environment?: PmEnvironment;
 
-  @OneToOne(() => PmReport, { cascade: [Cascade.PERSIST, Cascade.REMOVE], nullable: true })
+  @OneToOne(() => PmReport)
   report?: PmReport;
 
   @Property({ nullable: true })
