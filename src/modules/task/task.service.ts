@@ -44,7 +44,18 @@ export class TaskService {
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
-      fields: ['id', 'createdAt', 'updatedAt', 'collection', 'environment'],
+      fields: [
+        'id',
+        'createdAt',
+        'updatedAt',
+        'status',
+        'testStatus',
+        'collection.id',
+        'collection.name',
+        'environment.id',
+        'environment.name',
+        'report.id',
+      ],
     });
   }
 
