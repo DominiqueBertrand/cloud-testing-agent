@@ -8,7 +8,6 @@ import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 
 @Entity()
 export class Task extends BaseEntity {
-  //   @ApiProperty({ example: { collection: { id: '1' } }, description: 'The Id of the Collection' })
   @ManyToOne(() => PmCollection)
   collection?: PmCollection;
 
@@ -27,10 +26,11 @@ export class Task extends BaseEntity {
   @Property({ nullable: true })
   testStatus?: TestStatus;
 
-  constructor(collection: PmCollection, environment: PmEnvironment, status?: TaskStatus) {
+  constructor(collection: PmCollection, environment: PmEnvironment, status?: TaskStatus, testStatus?: TestStatus) {
     super();
     this.collection = collection;
     this.environment = environment;
     this.status = status ?? TaskStatus.OPEN;
+    this.testStatus = testStatus ?? TestStatus.PENDING;
   }
 }

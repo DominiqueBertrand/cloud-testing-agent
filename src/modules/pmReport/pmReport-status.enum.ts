@@ -5,6 +5,11 @@ export enum TestStatus {
   /**
    * The test is running.
    */
+  PENDING = 'PENDING',
+
+  /**
+   * The test is running.
+   */
   RUNNING = 'RUNNING',
 
   /**

@@ -1,10 +1,10 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { EntityRepository, QueryOrder } from '@mikro-orm/core';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+import { EntityRepository } from '@mikro-orm/core';
+import { ApiCreatedResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Task } from '../../entities';
-import { CreateOrUpdateElementDto } from './dto';
+import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import { TaskService } from './task.service';
 
 @Controller('task')
@@ -17,25 +17,31 @@ export class TaskController {
 
   @Get()
   @ApiOperation({ summary: 'Get a list of all tasks' })
-  async find() {
-    return await this.taskRepository.findAll({
-      //   populate: ['collection', 'report'],
-      orderBy: { updatedAt: QueryOrder.DESC },
-      limit: 20,
-    });
+  @ApiQuery({
+    description:
+      'By default, the number of results is limited to 20, so set this value if you want to change this limit',
+    name: 'limit',
+    required: false,
+    type: Number,
+  })
+  async find(@Query() query: FindAllElementsQueryDto) {
+    return await this.taskService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a task by id' })
   async findOne(@Param() id: string) {
-    return await this.taskRepository.findOneOrFail(id, {
-      populate: ['collection', 'report'],
-    });
+    return await this.taskRepository.findOne(id);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create a task' })
-  async create(@Body() body: CreateOrUpdateElementDto) {
+  @ApiCreatedResponse({
+    status: 200,
+    description: 'The task has been successfully created.',
+    type: Task,
+  })
+  async create(@Body() body: CreateOrUpdateElementDto): Promise<Task> {
     if (!body.collection) {
       throw new HttpException('{collection} object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -52,7 +58,7 @@ export class TaskController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a task' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateElementDto) {
+  async update(@Param() id: string, @Body() body: CreateOrUpdateElementDto): Promise<Task> {
     if (!body.collection && !body.environment) {
       throw new HttpException('At least {collection} or {environment} should be defined', HttpStatus.BAD_REQUEST);
     }
