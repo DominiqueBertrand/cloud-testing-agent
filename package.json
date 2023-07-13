@@ -24,9 +24,9 @@
   },
   "dependencies": {
     "@mikro-orm/core": "^5.7.12",
-    "@mikro-orm/mongodb": "^5.7.12",
-    "@mikro-orm/mysql": "^5.7.12",
+    "@mikro-orm/postgresql": "^5.7.12",
     "@mikro-orm/nestjs": "^5.2.0",
+    "@mikro-orm/sql-highlighter": "^1.0.1",
     "@mikro-orm/sqlite": "^5.7.12",
     "@nestjs/common": "^10.0.4 ",
     "@nestjs/config": "^3.0.0",
@@ -80,5 +80,12 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "mikro-orm": {
+    "useTsNode": true,
+    "configPaths": [
+      "./src/mikro-orm.config.ts",
+      "./dist/mikro-orm.config.js"
+    ]
   }
 }
