@@ -5,14 +5,13 @@ import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmCollection, PmEnvironment, Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
-import { taskInit } from './middleware/taskManager';
 
 @Injectable()
 export class TaskService {
   constructor(
     @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
     @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
-    @InjectRepository(PmEnvironment) private readonly PmEnvironmentRepository: EntityRepository<PmEnvironment>,
+    @InjectRepository(PmEnvironment) private readonly pmEnvironmentRepository: EntityRepository<PmEnvironment>,
     // private readonly taskRepository: taskRepository,
     private readonly em: EntityManager,
   ) {}
@@ -66,16 +65,19 @@ export class TaskService {
 
   async create({ collection, environment }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
     try {
-      const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
-      const pmEnvironment = this.PmEnvironmentRepository.findOne({ id: environment?.id });
+      const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne({ id: collection?.id });
+      const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({ id: environment?.id });
       if (!pmCollection) {
         throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
       }
       if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-      const task: Task = await taskInit(collection, environment);
-      this.em.persist(task);
+      const taskRepository = this.em.getRepository(Task);
+
+      const task = taskRepository.create(new Task(pmCollection, pmEnvironment));
+      pmCollection.tasks.add(task);
+      pmEnvironment.tasks.add(task);
       await this.em.flush();
 
       return task;
@@ -93,7 +95,7 @@ export class TaskService {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
       const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
-      const pmEnvironment = this.PmEnvironmentRepository.findOne({ id: environment?.id });
+      const pmEnvironment = this.pmEnvironmentRepository.findOne({ id: environment?.id });
       if (!pmCollection && !pmEnvironment) {
         throw new HttpException('Collecion or Environement not found', HttpStatus.NOT_FOUND);
       }

@@ -10,7 +10,6 @@ import { ElementsQueryDto } from './dto';
 export class PmCollectionService {
   constructor(
     @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
-    // private readonly pmCollectionRepository: PmCollectionRepository,
     private readonly em: EntityManager,
   ) {}
 
