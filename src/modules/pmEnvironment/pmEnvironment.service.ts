@@ -10,7 +10,6 @@ import { ElementsQueryDto } from './dto';
 export class PmEnvironmentService {
   constructor(
     @InjectRepository(PmEnvironment) private readonly pmEnvironmentRepository: EntityRepository<PmEnvironment>,
-    // private readonly pmEnvironmentRepository: PmEnvironmentRepository,
     private readonly em: EntityManager,
   ) {}
 
@@ -41,7 +40,7 @@ export class PmEnvironmentService {
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
-      fields: ['id', 'ref', 'name', 'createdAt', 'updatedAt'],
+      fields: ['id', 'ref', 'name', 'createdAt', 'updatedAt', 'tasks'],
     });
   }
 

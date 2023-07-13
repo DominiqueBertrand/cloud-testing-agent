@@ -20,13 +20,13 @@ export class PmEnvironmentController {
     type: Number,
   })
   async find(@Query() query: ElementsQueryDto) {
-    return this.pmEnvironmentService.findAll(query);
+    return await this.pmEnvironmentService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a environment by the id' })
   async findOne(@Param('id') id: string) {
-    return this.pmEnvironmentService.findOne(id);
+    return await this.pmEnvironmentService.findOne(id);
   }
 
   @Post()
@@ -47,7 +47,7 @@ export class PmEnvironmentController {
     const id = body.environment?.id;
     const ref = body.ref ?? id;
 
-    return this.pmEnvironmentService.create({ environment: body.environment, ref, id });
+    return await this.pmEnvironmentService.create({ environment: body.environment, ref, id });
   }
 
   @Patch(':id')
@@ -61,7 +61,7 @@ export class PmEnvironmentController {
     }
     const ref = body.ref;
 
-    return this.pmEnvironmentService.create({ environment: body.environment, ref, id });
+    return await this.pmEnvironmentService.create({ environment: body.environment, ref, id });
   }
 
   @Delete(':id')

@@ -1,6 +1,7 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, OneToOne, Property } from '@mikro-orm/core';
 import { BaseEntity } from './BaseEntity';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
+import { Task } from './Task';
 
 @Entity()
 export class PmReport extends BaseEntity {
@@ -9,6 +10,9 @@ export class PmReport extends BaseEntity {
 
   @Property({ nullable: true })
   status?: TestStatus;
+
+  @OneToOne(() => Task, task => task.report)
+  task?: Task;
 
   constructor(report: object, status?: TestStatus, id?: string) {
     super();
