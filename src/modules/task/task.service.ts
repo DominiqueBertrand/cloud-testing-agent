@@ -5,6 +5,9 @@ import { EntityRepository } from '@mikro-orm/core';
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmCollection, PmEnvironment, Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
+import { TaskStatus } from './task-status.enum';
+import { TestStatus } from '../pmReport/pmReport-status.enum';
+import { TestRunner } from './middleware/testRunner';
 
 @Injectable()
 export class TaskService {
@@ -74,6 +77,7 @@ export class TaskService {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
       const taskRepository = this.em.getRepository(Task);
+      console.log(pmCollection, pmEnvironment);
 
       const task = taskRepository.create(new Task(pmCollection, pmEnvironment));
       pmCollection.tasks.add(task);
@@ -119,6 +123,52 @@ export class TaskService {
       } else {
         await this.em.removeAndFlush(report);
       }
+    } catch (error: any) {
+      console.table(error);
+      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async run(id: string) {
+    try {
+      console.log(id);
+      // using reference is enough, no need for a fully initialized entity
+      const test = await this.taskRepository.findOne(id);
+      if (!test) {
+        throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
+      } else {
+        console.log('report', test);
+      }
+      if (!id) {
+        throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
+      }
+
+      const taskRepository = this.em.getRepository(Task);
+      const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
+        { id: test.collection?.id },
+        { populate: ['collection'] },
+      );
+      const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({
+        id: test.environment?.id,
+      });
+      if (!pmCollection) {
+        throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
+      }
+      if (!pmEnvironment) {
+        throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
+      }
+      console.log('data', typeof pmCollection);
+      console.log('data', typeof pmCollection.collection);
+      TestRunner(pmCollection.collection, pmEnvironment.environment);
+
+      const task = taskRepository.merge(
+        new Task(pmCollection, pmEnvironment, TaskStatus.IN_PROGRESS, TestStatus.RUNNING),
+      );
+      pmCollection.tasks.add(task);
+      pmEnvironment.tasks.add(task);
+      await this.em.flush();
+
+      return task;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);

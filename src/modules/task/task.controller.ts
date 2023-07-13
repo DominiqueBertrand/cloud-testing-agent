@@ -67,4 +67,13 @@ export class TaskController {
       environment: body.environment,
     });
   }
+
+  @Post(':id/actions/run')
+  @ApiOperation({ summary: 'Create a test for the task' })
+  async createTest(@Param() id: string) {
+    if (!id) {
+      throw new HttpException('An task Id should be put as argument', HttpStatus.BAD_REQUEST);
+    }
+    return this.taskService.run(id);
+  }
 }
