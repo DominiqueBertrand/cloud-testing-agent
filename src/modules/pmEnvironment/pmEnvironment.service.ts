@@ -45,7 +45,12 @@ export class PmEnvironmentService {
   }
 
   async findOne(environmentId: string): Promise<PmEnvironment | null> {
-    const environment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({ id: environmentId });
+    const environment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne(
+      { id: environmentId },
+      {
+        fields: ['id', 'ref', 'name', 'createdAt', 'updatedAt', 'tasks'],
+      },
+    );
     return environment;
   }
 
