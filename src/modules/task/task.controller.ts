@@ -1,6 +1,6 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/core';
-import { ApiCreatedResponse, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Task } from '../../entities';
@@ -30,6 +30,12 @@ export class TaskController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a task by id' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The id of the task',
+  })
   async findOne(@Param() id: string) {
     return await this.taskRepository.findOne(id);
   }
@@ -58,6 +64,12 @@ export class TaskController {
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a task' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The id of the task',
+  })
   async update(@Param() id: string, @Body() body: CreateOrUpdateElementDto): Promise<Task> {
     if (!body.collection && !body.environment) {
       throw new HttpException('At least {collection} or {environment} should be defined', HttpStatus.BAD_REQUEST);
@@ -70,6 +82,12 @@ export class TaskController {
 
   @Post(':id/actions/run')
   @ApiOperation({ summary: 'Create a test for the task' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The id of the task',
+  })
   async createTest(@Param() id: string) {
     if (!id) {
       throw new HttpException('An task Id should be put as argument', HttpStatus.BAD_REQUEST);
