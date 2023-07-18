@@ -136,9 +136,6 @@ export class TaskService {
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
-      if (!id) {
-        throw new HttpException('Id does not exist', HttpStatus.NOT_FOUND);
-      }
       const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
         { id: task.collection?.id },
         { populate: ['collection'] },
@@ -155,12 +152,10 @@ export class TaskService {
       wrap(task).assign({ status: TaskStatus.IN_PROGRESS, testStatus: TestStatus.RUNNING });
       await this.em.flush();
       const report = await TestRunner(pmCollection.collection, pmEnvironment.environment);
-      const newTask = wrap(task).assign({ report, status: TaskStatus.DONE, testStatus: TestStatus.SUCCESS });
-      pmCollection.tasks.add(task);
-      pmEnvironment.tasks.add(task);
+      wrap(task).assign({ report, status: TaskStatus.DONE, testStatus: TestStatus.SUCCESS });
       await this.em.flush();
 
-      return newTask;
+      return task;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);

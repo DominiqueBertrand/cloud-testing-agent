@@ -40,7 +40,7 @@ export class PmCollectionService {
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
-      fields: ['id', 'ref', 'name', 'createdAt', 'updatedAt'],
+      fields: ['id', 'ref', 'name', 'createdAt', 'updatedAt', 'tasks'],
     });
   }
 
