@@ -22,8 +22,12 @@ export class PmTest extends BaseEntity {
   @Property({ nullable: true })
   testStatus?: TestStatus;
 
-  constructor(testStatus?: TestStatus) {
+  @Property({ nullable: false })
+  taskId: string;
+
+  constructor(taskId: string, testStatus?: TestStatus) {
     super();
     this.testStatus = testStatus ?? TestStatus.PENDING;
+    this.taskId = taskId;
   }
 }

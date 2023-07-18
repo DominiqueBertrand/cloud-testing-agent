@@ -28,11 +28,18 @@ export class Task extends BaseEntity {
   @Property({ nullable: true })
   testStatus?: TestStatus;
 
-  constructor(collection: PmCollection, environment: PmEnvironment, status?: TaskStatus, testStatus?: TestStatus) {
+  constructor(
+    collection: PmCollection,
+    environment: PmEnvironment,
+    status?: TaskStatus,
+    testStatus?: TestStatus,
+    report?: PmReport,
+  ) {
     super();
     this.collection = wrap(collection).toReference();
     this.environment = wrap(environment).toReference();
     this.status = status ?? TaskStatus.OPEN;
     this.testStatus = testStatus ?? TestStatus.PENDING;
+    this.report = report;
   }
 }

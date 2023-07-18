@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, wrap } from '@mikro-orm/core';
 
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmCollection, PmEnvironment, Task } from '@src/entities';
@@ -131,25 +131,20 @@ export class TaskService {
 
   async run(id: string) {
     try {
-      console.log(id);
       // using reference is enough, no need for a fully initialized entity
-      const test = await this.taskRepository.findOne(id);
-      if (!test) {
-        throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
-      } else {
-        console.log('report', test);
+      const task = await this.taskRepository.findOne(id);
+      if (!task) {
+        throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
       if (!id) {
-        throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Id does not exist', HttpStatus.NOT_FOUND);
       }
-
-      const taskRepository = this.em.getRepository(Task);
       const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
-        { id: test.collection?.id },
+        { id: task.collection?.id },
         { populate: ['collection'] },
       );
       const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({
-        id: test.environment?.id,
+        id: task.environment?.id,
       });
       if (!pmCollection) {
         throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
@@ -157,18 +152,15 @@ export class TaskService {
       if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-      console.log('data', typeof pmCollection);
-      console.log('data', typeof pmCollection.collection);
-      TestRunner(pmCollection.collection, pmEnvironment.environment);
-
-      const task = taskRepository.merge(
-        new Task(pmCollection, pmEnvironment, TaskStatus.IN_PROGRESS, TestStatus.RUNNING),
-      );
+      wrap(task).assign({ status: TaskStatus.IN_PROGRESS, testStatus: TestStatus.RUNNING });
+      await this.em.flush();
+      const report = await TestRunner(pmCollection.collection, pmEnvironment.environment);
+      const newTask = wrap(task).assign({ report, status: TaskStatus.DONE, testStatus: TestStatus.SUCCESS });
       pmCollection.tasks.add(task);
       pmEnvironment.tasks.add(task);
       await this.em.flush();
 
-      return task;
+      return newTask;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);
