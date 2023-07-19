@@ -45,7 +45,14 @@ export class PmCollectionService {
   }
 
   async findOne(collectionId: string): Promise<PmCollection | null> {
-    const collection: PmCollection | null = await this.pmCollectionRepository.findOne({ id: collectionId });
+    const collection: PmCollection | null = await this.pmCollectionRepository.findOne(
+      {
+        id: collectionId,
+      },
+      {
+        fields: ['id', 'ref', 'name', 'createdAt', 'updatedAt', 'tasks'],
+      },
+    );
     return collection;
   }
 
