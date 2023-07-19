@@ -6,6 +6,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { Task } from '../../entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import { TaskService } from './task.service';
+import { RunBatch } from './dto/run-batch';
 
 @Controller('task')
 @ApiTags('Task')
@@ -93,5 +94,14 @@ export class TaskController {
       throw new HttpException('An task Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
     return this.taskService.run(id);
+  }
+
+  @Post('actions/run/batch')
+  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  async createTestBatch(@Body() body: RunBatch) {
+    if (!body.tasks) {
+      throw new HttpException('A batch of task Id should be put as argument', HttpStatus.BAD_REQUEST);
+    }
+    return this.taskService.runBatch(body.tasks);
   }
 }
