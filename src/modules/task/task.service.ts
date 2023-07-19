@@ -8,6 +8,9 @@ import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import { TaskStatus } from './task-status.enum';
 import { TestStatus } from '../pmReport/pmReport-status.enum';
 import { TestRunner } from './middleware/testRunner';
+import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
+// import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
+import { Worker } from 'worker_threads';
 
 @Injectable()
 export class TaskService {
@@ -156,6 +159,56 @@ export class TaskService {
       await this.em.flush();
 
       return task;
+    } catch (error: any) {
+      console.table(error);
+      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async runBatch(tasksIds: Array<string>) {
+    try {
+      const tasksData: Array<object> = [];
+
+      await resolvePromisesSeq(
+        tasksIds.map(async taskId => {
+          const taskLoaded = await this.taskRepository.findOne(
+            { id: taskId },
+            // { populate: ['collection', 'environment'] },
+          );
+          const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
+            { id: taskLoaded?.collection?.id },
+            { populate: ['collection'] },
+          );
+          const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({
+            id: taskLoaded?.environment?.id,
+          });
+          if (!pmCollection) {
+            throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
+          }
+          if (!pmEnvironment) {
+            throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
+          }
+          if (!taskLoaded) {
+            throw new HttpException('Task not found : ' + { taskId }, HttpStatus.NOT_FOUND);
+          }
+          tasksData.push({ id: taskId, collection: pmCollection.collection, environment: pmEnvironment.environment });
+        }),
+      );
+
+      // console.log(tasksData);
+      tasksData.map(task => {
+        const worker = new Worker('./dist/modules/task/worker/worker.js', {
+          workerData: {
+            value: task,
+            path: './worker.ts',
+          },
+        });
+        worker.on('message', result => {
+          console.log('res:', result);
+        });
+      });
+      if (tasksData) return { tasksData };
+      else return [];
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);

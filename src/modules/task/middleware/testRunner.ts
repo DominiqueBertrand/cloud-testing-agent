@@ -41,5 +41,4 @@ export async function TestRunner(collection, environment) {
   const report = new PmReport(reportTest, TestStatus.RUNNING);
 
   return report;
-  //   const testList: PmTest = new PmTest(TestStatus.RUNNING);
 }
