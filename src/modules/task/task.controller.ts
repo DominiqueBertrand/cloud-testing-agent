@@ -78,6 +78,8 @@ export class TaskController {
     return this.taskService.update(id, {
       collection: body.collection,
       environment: body.environment,
+      status: body.status,
+      testStatus: body.testStatus,
     });
   }
 

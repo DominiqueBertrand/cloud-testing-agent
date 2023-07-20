@@ -9,7 +9,7 @@ import { TaskStatus } from './task-status.enum';
 import { TestStatus } from '../pmReport/pmReport-status.enum';
 import { TestRunner } from './middleware/testRunner';
 import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
-// import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
+// import { resolvePromisesSeq } from '.TaskService/middleware/resolvePromiseSeq';
 import { Worker } from 'worker_threads';
 
 @Injectable()
@@ -95,18 +95,25 @@ export class TaskService {
     }
   }
 
-  async update(id: string, { collection, environment }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
+  async update(
+    id: string,
+    { collection, environment, status, testStatus }: Partial<CreateOrUpdateElementDto>,
+  ): Promise<Task> {
     try {
-      const task: Task | null = await this.taskRepository.findOne({ id });
+      const task: Task | null = await this.taskRepository.findOne(id);
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
       const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
       const pmEnvironment = this.pmEnvironmentRepository.findOne({ id: environment?.id });
       if (!pmCollection && !pmEnvironment) {
-        throw new HttpException('Collecion or Environement not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Collecion or Environment not found', HttpStatus.NOT_FOUND);
       }
-      this.em.persist(task);
+      // this.em.persist(task);
+      if (status && testStatus) {
+        wrap(task).assign({ status: status, testStatus: testStatus });
+      }
+      wrap(task).assign({ collection, environment });
       await this.em.flush();
 
       return task;
@@ -119,7 +126,7 @@ export class TaskService {
   async delete(id: string) {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const report = await this.taskRepository.findOne({ id });
+      const report = await this.taskRepository.findOne(id);
 
       if (!report) {
         throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
@@ -167,6 +174,8 @@ export class TaskService {
 
   async runBatch(tasksIds: Array<string>) {
     try {
+      console.log(tasksIds);
+
       const tasksData: Array<object> = [];
 
       await resolvePromisesSeq(
