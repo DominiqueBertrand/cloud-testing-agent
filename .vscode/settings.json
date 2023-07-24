@@ -2,5 +2,16 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
-    "eslint.validate": ["javascript"]
+    "eslint.validate": [
+        "javascript"
+    ],
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "database": "${workspaceFolder:coog-cloud-agent}/coog-cloud-agent.sqlite.db",
+            "name": "coog-cloud-agent/"
+        }
+    ]
 }

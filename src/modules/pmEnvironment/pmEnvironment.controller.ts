@@ -61,7 +61,7 @@ export class PmEnvironmentController {
     }
     const ref = body.ref;
 
-    return await this.pmEnvironmentService.create({ environment: body.environment, ref, id });
+    return await this.pmEnvironmentService.update({ environment: body.environment, ref, id });
   }
 
   @Delete(':id')
