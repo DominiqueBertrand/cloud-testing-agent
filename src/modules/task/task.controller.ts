@@ -1,20 +1,16 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
-import { EntityRepository } from '@mikro-orm/core';
 import { ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { Task } from '../../entities';
+import { Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
+
 import { TaskService } from './task.service';
 import { RunBatch } from './dto/run-batch';
 
 @Controller('task')
 @ApiTags('Task')
 export class TaskController {
-  constructor(
-    @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
-    private readonly taskService: TaskService,
-  ) {}
+  constructor(private readonly taskService: TaskService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get a list of all tasks' })
@@ -38,7 +34,7 @@ export class TaskController {
     description: 'The id of the task',
   })
   async findOne(@Param() id: string) {
-    return await this.taskRepository.findOne(id);
+    return await this.taskService.findOne(id);
   }
 
   @Post()
