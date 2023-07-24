@@ -1,14 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { IPmReport } from '@src/modules/pmReport/pmReport.type';
+import { TestStatus } from '../pmReport-status.enum';
 
 export class CreateOrUpdateReportDto implements Partial<IPmReport> {
   @IsString()
   @ApiProperty({
     required: false,
-    description: 'By default, this value is extracted from the report, so set this value to change the default value',
+    description: 'By default, this value is set to TestStatus.PENDING',
   })
-  readonly ref!: string;
+  readonly status!: TestStatus;
 
   @ApiProperty({
     required: true,

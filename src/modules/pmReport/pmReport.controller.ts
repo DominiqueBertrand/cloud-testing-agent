@@ -1,58 +1,71 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put } from '@nestjs/common';
-import { EntityRepository, QueryOrder, wrap } from '@mikro-orm/core';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { InjectRepository } from '@mikro-orm/nestjs';
-import { PmReport } from '../../entities';
+import { PmReportService } from './pmReport.service';
+import { PmReport } from '@src/entities';
+import { ElementsQueryDto, CreateOrUpdateReportDto } from './dto';
 
 @Controller('report')
 @ApiTags('Report')
-@Controller('report')
 export class PmReportController {
-  constructor(@InjectRepository(PmReport) private readonly reportRepository: EntityRepository<PmReport>) {}
+  constructor(private readonly pmReportService: PmReportService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get a list of all reports' })
-  async find() {
-    return await this.reportRepository.findAll({
-      //   populate: ['collection', 'report'],
-      orderBy: { updatedAt: QueryOrder.DESC },
-      limit: 20,
-    });
+  @ApiQuery({
+    description:
+      'By default, the number of results is limited to 20, so set this value if you want to change this limit',
+    name: 'limit',
+    required: false,
+    type: Number,
+  })
+  @ApiQuery({
+    description: 'The default value of the offset is 0, so set this value if you want to change the offeset',
+    name: 'offset',
+    required: false,
+    type: Number,
+  })
+  async find(@Query() query: ElementsQueryDto): Promise<PmReport[]> {
+    return await this.pmReportService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a report by id' })
-  async findOne(@Param() id: string) {
-    return await this.reportRepository.findOneOrFail(id, {});
+  async findOne(@Param('id') id: string) {
+    return await this.pmReportService.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a report' })
-  async create(@Body() body: PmReport) {
+  @ApiOperation({ summary: 'Create a new report' })
+  @ApiCreatedResponse({
+    status: 200,
+    description: 'The environment has been successfully created.',
+    type: PmReport,
+  })
+  async create(@Body() body: CreateOrUpdateReportDto) {
     if (!body.report) {
-      throw new HttpException('{collection} object is missing', HttpStatus.BAD_REQUEST);
+      throw new HttpException('"report" object is missing', HttpStatus.BAD_REQUEST);
     }
 
-    const report = this.reportRepository.create(body);
-    wrap(report.report, true).__initialized = true;
-    await this.reportRepository.persist(report).flush();
-
-    return report;
+    return await this.pmReportService.create({ report: body.report, status: body?.status });
   }
 
-  @Put(':id')
-  @ApiOperation({ summary: 'Update a report' })
-  async update(@Param() id: string, @Body() body: PmReport) {
-    const report = await this.reportRepository.findOne(id);
-
-    if (!report) {
-      throw new HttpException('Collection not found', HttpStatus.NOT_FOUND);
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update an existing report' })
+  async update(@Param() id: string, @Body() body: CreateOrUpdateReportDto) {
+    if (!body.report) {
+      throw new HttpException('"report" object is missing', HttpStatus.BAD_REQUEST);
+    }
+    if (!body.status) {
+      throw new HttpException('"status" is missing', HttpStatus.BAD_REQUEST);
     }
 
-    wrap(report).assign(body);
-    await this.reportRepository.persist(report);
+    return await this.pmReportService.update({ report: body.report, status: body.status, id });
+  }
 
-    return report;
+  @Delete(':id')
+  @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
+  async delete(@Param('id') id: string) {
+    return this.pmReportService.delete(id);
   }
 }

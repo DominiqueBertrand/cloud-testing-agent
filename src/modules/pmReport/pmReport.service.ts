@@ -46,7 +46,7 @@ export class PmReportService {
   }
 
   async findOne(reportId: string): Promise<PmReport | null> {
-    const report: PmReport | null = await this.pmReportRepository.findOne({ id: reportId });
+    const report: PmReport | null = await this.pmReportRepository.findOne({ id: reportId }, { populate: ['task'] });
     return report;
   }
 
