@@ -3,14 +3,13 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, wrap } from '@mikro-orm/core';
 
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
-import { PmCollection, PmEnvironment, Task } from '@src/entities';
+import { PmCollection, PmEnvironment, PmReport, Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import { TaskStatus } from './task-status.enum';
 import { TestStatus } from '../pmReport/pmReport-status.enum';
 import { TestRunner } from './middleware/testRunner';
 import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
-// import { resolvePromisesSeq } from '.TaskService/middleware/resolvePromiseSeq';
-import { Worker } from 'worker_threads';
+import Piscina from 'piscina';
 
 @Injectable()
 export class TaskService {
@@ -18,7 +17,7 @@ export class TaskService {
     @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
     @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
     @InjectRepository(PmEnvironment) private readonly pmEnvironmentRepository: EntityRepository<PmEnvironment>,
-    // private readonly taskRepository: taskRepository,
+    @InjectRepository(PmReport) private readonly pmReportRepository: EntityRepository<PmReport>,
     private readonly em: EntityManager,
   ) {}
 
@@ -97,7 +96,7 @@ export class TaskService {
 
   async update(
     id: string,
-    { collection, environment, status, testStatus }: Partial<CreateOrUpdateElementDto>,
+    { collection, environment, status, testStatus, report }: Partial<CreateOrUpdateElementDto>,
   ): Promise<Task> {
     try {
       const task: Task | null = await this.taskRepository.findOne(id);
@@ -106,12 +105,16 @@ export class TaskService {
       }
       const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
       const pmEnvironment = this.pmEnvironmentRepository.findOne({ id: environment?.id });
+      const pmReport = await this.pmReportRepository.findOne({ id: report?.id });
       if (!pmCollection && !pmEnvironment) {
         throw new HttpException('Collecion or Environment not found', HttpStatus.NOT_FOUND);
       }
       // this.em.persist(task);
       if (status && testStatus) {
         wrap(task).assign({ status: status, testStatus: testStatus });
+      }
+      if (!pmReport && report) {
+        // wrap(task).assign({ report });
       }
       wrap(task).assign({ collection, environment });
       await this.em.flush();
@@ -126,12 +129,12 @@ export class TaskService {
   async delete(id: string) {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const report = await this.taskRepository.findOne(id);
+      const task = await this.taskRepository.findOne(id);
 
-      if (!report) {
+      if (!task) {
         throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
       } else {
-        await this.em.removeAndFlush(report);
+        await this.em.removeAndFlush(task);
       }
     } catch (error: any) {
       console.table(error);
@@ -162,7 +165,7 @@ export class TaskService {
       wrap(task).assign({ status: TaskStatus.IN_PROGRESS, testStatus: TestStatus.RUNNING });
       await this.em.flush();
       const report = await TestRunner(pmCollection.collection, pmEnvironment.environment);
-      wrap(task).assign({ report, status: TaskStatus.DONE, testStatus: TestStatus.SUCCESS });
+      wrap(task).assign({ report, status: TaskStatus.DONE, testStatus: report.status });
       await this.em.flush();
 
       return task;
@@ -204,20 +207,29 @@ export class TaskService {
         }),
       );
 
+      // Create a thread pool with a maximum of 4 worker threads
       // console.log(tasksData);
-      tasksData.map(task => {
-        const worker = new Worker('./dist/modules/task/worker/worker.js', {
-          workerData: {
-            value: task,
-            path: './worker.ts',
-          },
-        });
-        worker.on('message', result => {
-          console.log('res:', result);
-        });
+      const worker = new Piscina({
+        // workerData: {
+        //   value: task,
+        // },
+        filename: './dist/modules/task/worker/worker.js',
+        maxThreads: 4,
+        // workerData: {
+        //   path: './worker.ts',
+        // },
       });
+      (async () => {
+        await Promise.all([
+          tasksData.map(async task => {
+            await worker.run(task);
+            if (task) console.log('toto'); // Prints 10
+          }),
+        ]);
+      })();
       if (tasksData) return { tasksData };
       else return [];
+      // else return [];
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);
