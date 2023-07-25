@@ -35,7 +35,6 @@ export async function taskWorker(task) {
   if (!task) {
     throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
   } else {
-    console.log('tester : ', parseCollection.info._postman_id);
     await updateTask(
       'http://127.0.0.1:7000',
       task.id,
@@ -46,7 +45,6 @@ export async function taskWorker(task) {
     );
     // taskService.update(task.collection, task.environment, TaskStatus.IN_PROGRESS, TestStatus.RUNNING);
     const report = await TestRunner(task.collection, task.environment);
-    console.log(report);
     await updateTask(
       'http://127.0.0.1:7000',
       task.id,
@@ -62,9 +60,10 @@ export async function taskWorker(task) {
 // console.log(workerData);
 
 module.exports = async (workerData: any) => {
+  console.log(workerData);
   // Fake some async activity
   await taskWorker(workerData);
-  return 'test';
+  return 'Worker launched';
 };
 
 // parentPort?.postMessage(taskWorker(workerData.value));
