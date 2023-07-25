@@ -37,6 +37,8 @@
     "axios": "^1.4.0",
     "class-validator": "^0.14.0",
     "newman": "^5.3.2",
+    "node-worker-threads-pool": "^1.5.1",
+    "piscina": "^4.0.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
