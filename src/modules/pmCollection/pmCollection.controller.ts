@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PmCollectionService } from './pmCollection.service';
 import { ElementsQueryDto, CreateOrUpdateCollectionDto } from './dto';
 import { PmCollection } from '@src/entities';
 
 @Controller('postman/collection')
+@ApiBearerAuth()
 @ApiTags('Postman/Collection')
 export class PmCollectionController {
   constructor(private readonly pmCollectionService: PmCollectionService) {}
