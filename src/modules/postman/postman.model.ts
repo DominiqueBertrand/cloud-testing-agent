@@ -1,7 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class tests {
-  constructor(public id_collection: string, public title: string) {}
+  constructor(
+    public id_collection: string,
+    public title: string,
+  ) {}
 }
 
 export enum Status {
@@ -57,5 +60,9 @@ export class PostmanModel implements IPostmanModel {
 }
 
 export class collectionsList {
-  constructor(public Id: string, public name: string, public collection: string) {}
+  constructor(
+    public Id: string,
+    public name: string,
+    public collection: string,
+  ) {}
 }
