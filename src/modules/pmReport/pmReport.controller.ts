@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PmReportService } from './pmReport.service';
 import { PmReport } from '@src/entities';
 import { ElementsQueryDto, CreateOrUpdateReportDto } from './dto';
 
 @Controller('report')
+@ApiBearerAuth()
 @ApiTags('Report')
 export class PmReportController {
   constructor(private readonly pmReportService: PmReportService) {}
