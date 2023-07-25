@@ -77,6 +77,7 @@ export class TaskController {
       environment: body.environment,
       status: body.status,
       testStatus: body.testStatus,
+      report: body.report,
     });
   }
 
