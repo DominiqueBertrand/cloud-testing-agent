@@ -4,7 +4,7 @@ import { PmReport } from '@src/entities';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import newman, { NewmanRunSummary } from 'newman';
 
-async function newmanRunner(collection: object, environment): Promise<NewmanRunSummary> {
+async function newmanRunner(collection: object, environment: object): Promise<NewmanRunSummary> {
   // run and return Promise newman test result
   return new Promise((resolve, reject) => {
     newman.run(
@@ -25,20 +25,22 @@ async function newmanRunner(collection: object, environment): Promise<NewmanRunS
   });
 }
 
-function testParser(test) {
+function testParser(test: newman.NewmanRunSummary): object[] {
   const report: Array<object> = [];
   if (test) {
-    console.log(test);
+    console.log(test.run.stats.assertions.total);
     report.push({ stats: test.run.stats, failure: test.run, execution: test.run.executions });
   }
   console.log(report);
   return report;
 }
 
-export async function TestRunner(collection, environment) {
+export async function TestRunner(collection, environment): Promise<PmReport> {
   const testResult = await newmanRunner(JSON.parse(collection), JSON.parse(environment));
   const reportTest = testParser(testResult);
-  const report = new PmReport(reportTest, TestStatus.RUNNING);
-
-  return report;
+  if (testResult.run.stats.assertions.total === 0) {
+    return new PmReport(reportTest, TestStatus.FAILED);
+  } else {
+    return new PmReport(reportTest, TestStatus.SUCCESS);
+  }
 }

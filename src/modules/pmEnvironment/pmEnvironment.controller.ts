@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PmEnvironmentService } from './pmEnvironment.service';
 import { ElementsQueryDto, CreateOrUpdateEnvironmentDto } from './dto';
 import { PmEnvironment } from '@src/entities';
 
 @Controller('postman/environment')
+@ApiBearerAuth()
 @ApiTags('Postman/Environment')
 export class PmEnvironmentController {
   constructor(private readonly pmEnvironmentService: PmEnvironmentService) {}

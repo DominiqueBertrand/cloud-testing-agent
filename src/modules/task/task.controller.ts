@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
@@ -8,6 +8,7 @@ import { TaskService } from './task.service';
 import { RunBatch } from './dto/run-batch';
 
 @Controller('task')
+@ApiBearerAuth()
 @ApiTags('Task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
@@ -76,6 +77,7 @@ export class TaskController {
       environment: body.environment,
       status: body.status,
       testStatus: body.testStatus,
+      report: body.report,
     });
   }
 

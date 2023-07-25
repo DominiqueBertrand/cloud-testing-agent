@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { TestRunner } from '../middleware/testRunner';
-import { workerData } from 'worker_threads';
+// import { workerData } from 'worker_threads';
 import { TaskStatus } from '../task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import axios from 'axios';
@@ -29,13 +29,12 @@ async function updateTask(url, id, parseEnvironment, parseCollection, taskSatus,
     });
 }
 
-async function taskWorker(task) {
+export async function taskWorker(task) {
   const parseEnvironment = JSON.parse(task.environment);
   const parseCollection = JSON.parse(task.collection);
   if (!task) {
     throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
   } else {
-    console.log('tester : ', parseCollection.info._postman_id);
     await updateTask(
       'http://127.0.0.1:7000',
       task.id,
@@ -52,12 +51,19 @@ async function taskWorker(task) {
       parseEnvironment,
       parseCollection,
       TaskStatus.DONE,
-      TestStatus.SUCCESS,
+      report.status,
       report,
     );
     return task;
   }
 }
-taskWorker(workerData.value);
+// console.log(workerData);
+
+module.exports = async (workerData: any) => {
+  console.log(workerData);
+  // Fake some async activity
+  await taskWorker(workerData);
+  return 'Worker launched';
+};
 
 // parentPort?.postMessage(taskWorker(workerData.value));
