@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, wrap } from '@mikro-orm/core';
-
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmCollection, PmEnvironment, PmReport, Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import Piscina from 'piscina';
+import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
+import { UpdateReportDto } from './dto/update-report';
 
 @Injectable()
 export class TaskService {
@@ -115,7 +116,6 @@ export class TaskService {
       if (!pmCollection && !pmEnvironment) {
         throw new HttpException('Collecion or Environment not found', HttpStatus.NOT_FOUND);
       }
-      // this.em.persist(task);
       if (status && testStatus) {
         wrap(task).assign({ status: status, testStatus: testStatus });
       }
@@ -123,6 +123,27 @@ export class TaskService {
         // wrap(task).assign({ report });
       }
       wrap(task).assign({ collection, environment });
+      await this.em.flush();
+
+      return task;
+    } catch (error: any) {
+      console.table(error);
+      throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async updateReport(id: string, { status, testStatus, report }: Partial<UpdateReportDto>): Promise<Task> {
+    try {
+      const task: Task | null = await this.taskRepository.findOne(id);
+      if (!task) {
+        throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      }
+      const pmReport = await this.pmReportRepository.findOne({ id: report?.id });
+      // this.em.persist(task);
+      wrap(task).assign({ status: status, testStatus: testStatus });
+      if (!pmReport && report) {
+        wrap(task).assign({ report });
+      }
       await this.em.flush();
 
       return task;
@@ -171,7 +192,6 @@ export class TaskService {
       const taskData: Array<object> = [];
 
       taskData.push({ id: id, collection: pmCollection.collection, environment: pmEnvironment.environment });
-      console.log(typeof taskData, taskData);
       await TaskService.pool.run({
         id: id,
         collection: pmCollection.collection,
@@ -187,40 +207,40 @@ export class TaskService {
 
   async runBatch(tasksIds: Array<string>) {
     try {
-      console.log(tasksIds);
-
       const tasksData: Array<object> = [];
-
-      await tasksIds.map(async taskId => {
-        const taskLoaded = await this.taskRepository.findOne(
-          { id: taskId },
-          // { populate: ['collection', 'environment'] },
-        );
-        const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
-          { id: taskLoaded?.collection?.id },
-          { populate: ['collection'] },
-        );
-        const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({
-          id: taskLoaded?.environment?.id,
-        });
-        if (!pmCollection) {
-          throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
-        }
-        if (!pmEnvironment) {
-          throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
-        }
-        if (!taskLoaded) {
-          throw new HttpException('Task not found : ' + { taskId }, HttpStatus.NOT_FOUND);
-        }
-        tasksData.push({ id: taskId, collection: pmCollection.collection, environment: pmEnvironment.environment });
-      }),
-        (async () => {
-          await Promise.all([
-            tasksData.map(async task => {
-              await TaskService.pool.run(task);
-            }),
-          ]);
-        })();
+      await resolvePromisesSeq(
+        await tasksIds.map(async taskId => {
+          console.log(taskId);
+          const taskLoaded = await this.taskRepository.findOne(
+            { id: taskId },
+            // { populate: ['collection', 'environment'] },
+          );
+          const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
+            { id: taskLoaded?.collection?.id },
+            { populate: ['collection'] },
+          );
+          const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({
+            id: taskLoaded?.environment?.id,
+          });
+          if (!pmCollection) {
+            throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
+          }
+          if (!pmEnvironment) {
+            throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
+          }
+          if (!taskLoaded) {
+            throw new HttpException('Task not found : ' + { taskId }, HttpStatus.NOT_FOUND);
+          }
+          tasksData.push({ id: taskId, collection: pmCollection.collection, environment: pmEnvironment.environment });
+        }),
+      );
+      (async () => {
+        await Promise.all([
+          tasksData.map(async task => {
+            await TaskService.pool.run(task);
+          }),
+        ]);
+      })();
       if (tasksData) return { tasksData };
       else return [];
       // else return [];
