@@ -1,5 +1,5 @@
 import { ICollection } from '@src/modules/pmCollection/pmCollection.type';
-import { TaskStatus } from './task-status.enum';
+import { TaskStatus, TaskType } from './task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import { PmReport } from '@src/entities';
 import { IEnvironment } from '../pmEnvironment/pmEnvironment.type';
@@ -12,7 +12,8 @@ export interface ITask {
   environment: IEnvironment;
   status: TaskStatus;
   testStatus: TestStatus;
-  report: PmReport;
+  type: TaskType;
+  reports: PmReport[];
 }
 
 // export enum Status {
