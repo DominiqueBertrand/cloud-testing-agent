@@ -1,14 +1,11 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-// import { TestRunner } from '../middleware/testRunner';
-// import { workerData } from 'worker_threads';
+import { TestRunner } from '../middleware/testRunner';
 import { TaskStatus } from '../task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
+import { PmReport, Task } from '@src/entities';
 import axios from 'axios';
-// import { PmReport } from '@src/entities';
-// import { MessageChannel } from 'worker_threads';
-// const { port1, port2 } = new MessageChannel();
 
-async function updateTask(url: string, id: string, taskSatus, testStatus, report?) {
+async function updateTask(url: string, id: string, taskSatus?: TaskStatus, testStatus?: TestStatus, report?: PmReport) {
   await axios({
     url: url + '/task/' + id + '/actions/report',
     method: 'PUT',
@@ -26,25 +23,19 @@ async function updateTask(url: string, id: string, taskSatus, testStatus, report
     });
 }
 
-export async function taskWorker(task) {
-  // const parseEnvironment = JSON.parse(task.environment);
-  // const parseCollection = JSON.parse(task.collection);
+export async function taskWorker(task: Task): Promise<object> {
   if (!task) {
     throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
   } else {
     await updateTask('http://127.0.0.1:7000', task.id, TaskStatus.IN_PROGRESS, TestStatus.RUNNING);
-    // taskService.update(task.collection, task.environment, TaskStatus.IN_PROGRESS, TestStatus.RUNNING);
-    // const report = await TestRunner(task.collection, task.environment);
-    // await updateTask('http://127.0.0.1:7000', task.id, TaskStatus.DONE, report.status, report);
+    const report = await TestRunner(task.collection, task.environment);
+    await updateTask('http://127.0.0.1:7000', task.id, TaskStatus.DONE, report.status, report);
+
     return task;
   }
 }
 // console.log(workerData);
 
-module.exports = async workerData => {
-  // Fake some async activity
-  await taskWorker(workerData);
-  return 'Worker launched';
+module.exports = async (workerData: Task) => {
+  return await taskWorker(workerData);
 };
-
-// parentPort?.postMessage(taskWorker(workerData.value));
