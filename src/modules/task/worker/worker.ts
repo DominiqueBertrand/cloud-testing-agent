@@ -4,8 +4,10 @@ import { TestRunner } from '../middleware/testRunner';
 import { TaskStatus } from '../task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import axios from 'axios';
+// import { MessageChannel } from 'worker_threads';
+// const { port1, port2 } = new MessageChannel();
 
-async function updateTask(url, id, parseEnvironment, parseCollection, taskSatus, testStatus, report?) {
+async function updateTask(url: string, id: string, parseEnvironment, parseCollection, taskSatus, testStatus, report?) {
   await axios({
     url: url + '/task/' + id,
     method: 'PUT',
@@ -59,8 +61,7 @@ export async function taskWorker(task) {
 }
 // console.log(workerData);
 
-module.exports = async (workerData: any) => {
-  console.log(workerData);
+module.exports = async workerData => {
   // Fake some async activity
   await taskWorker(workerData);
   return 'Worker launched';
