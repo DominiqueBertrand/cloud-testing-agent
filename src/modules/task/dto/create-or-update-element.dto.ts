@@ -3,8 +3,7 @@ import { IsString } from 'class-validator';
 import { IPmCollection } from '@src/modules/pmCollection/pmCollection.type';
 import { IEnvironment, IPmEnvironment } from '@src/modules/pmEnvironment/pmEnvironment.type';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
-import { TaskStatus } from '../task-status.enum';
-import { PmReport } from '@src/entities';
+import { TaskStatus, TaskType } from '../task-status.enum';
 
 interface iCollection extends Partial<IPmCollection> {
   id: string;
@@ -36,19 +35,17 @@ export class CreateOrUpdateElementDto {
   readonly environment!: iEnvironment;
 
   @ApiProperty({
-    required: true,
-    description: 'Postman environment in json format',
+    required: false,
   })
   readonly status?: TaskStatus;
 
   @ApiProperty({
-    required: true,
-    description: 'Postman environment in json format',
+    required: false,
+  })
+  readonly type?: TaskType;
+
+  @ApiProperty({
+    required: false,
   })
   readonly testStatus?: TestStatus;
-  @ApiProperty({
-    required: true,
-    description: 'Postman environment in json format',
-  })
-  readonly report?: PmReport;
 }

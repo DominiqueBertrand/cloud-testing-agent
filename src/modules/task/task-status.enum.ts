@@ -17,3 +17,8 @@ export enum TaskStatus {
    */
   DONE = 'DONE',
 }
+
+export enum TaskType {
+  ONESHOT = 'ONESHOT',
+  SCHEDULED = 'SCHEDULED',
+}

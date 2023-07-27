@@ -1,9 +1,9 @@
-import { Entity, Index, ManyToOne, OneToOne, Property, Ref, wrap } from '@mikro-orm/core';
+import { Cascade, Collection, Entity, Index, ManyToOne, OneToMany, Property, Ref, wrap } from '@mikro-orm/core';
 // import { ApiProperty } from '@nestjs/swagger';
 
 import { PmCollection, PmEnvironment, PmReport } from './index';
 import { BaseEntity } from './BaseEntity';
-import { TaskStatus } from '@src/modules/task/task-status.enum';
+import { TaskStatus, TaskType } from '@src/modules/task/task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import { IsOptional } from 'class-validator';
 @Entity()
@@ -14,9 +14,9 @@ export class Task extends BaseEntity {
   @ManyToOne(() => PmEnvironment)
   environment?: Ref<PmEnvironment>;
 
-  @OneToOne(() => PmReport, { nullable: true })
+  @OneToMany(() => PmReport, report => report.task, { cascade: [Cascade.ALL] })
   @IsOptional()
-  report?: PmReport;
+  reports: Collection<PmReport> = new Collection<PmReport>(this);
 
   @Property({ nullable: true })
   options?: object;
@@ -28,18 +28,21 @@ export class Task extends BaseEntity {
   @Property({ nullable: true })
   testStatus?: TestStatus;
 
+  @Property({ nullable: true })
+  type?: TaskType;
+
   constructor(
     collection: PmCollection,
     environment: PmEnvironment,
+    type?: TaskType,
     status?: TaskStatus,
     testStatus?: TestStatus,
-    report?: PmReport,
   ) {
     super();
     this.collection = wrap(collection).toReference();
     this.environment = wrap(environment).toReference();
+    this.type = type ?? TaskType.ONESHOT;
     this.status = status ?? TaskStatus.OPEN;
     this.testStatus = testStatus ?? TestStatus.PENDING;
-    this.report = report;
   }
 }

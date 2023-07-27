@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, wrap } from '@mikro-orm/core';
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
-import { PmCollection, PmEnvironment, PmReport, Task } from '@src/entities';
+import { PmCollection, PmEnvironment, Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import Piscina from 'piscina';
 import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
@@ -15,7 +15,6 @@ export class TaskService {
     @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
     @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
     @InjectRepository(PmEnvironment) private readonly pmEnvironmentRepository: EntityRepository<PmEnvironment>,
-    @InjectRepository(PmReport) private readonly pmReportRepository: EntityRepository<PmReport>,
     private readonly em: EntityManager,
   ) {
     TaskService.pool = TaskService.pool ? TaskService.pool : TaskService.poolInstance();
@@ -60,12 +59,12 @@ export class TaskService {
         'createdAt',
         'updatedAt',
         'status',
+        'type',
         'testStatus',
         'collection.id',
         'collection.name',
         'environment.id',
         'environment.name',
-        'report.id',
       ],
     });
   }
@@ -75,7 +74,7 @@ export class TaskService {
     return report;
   }
 
-  async create({ collection, environment }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
+  async create({ collection, environment, type }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
     try {
       const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne({ id: collection?.id });
       const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({ id: environment?.id });
@@ -88,7 +87,7 @@ export class TaskService {
       const taskRepository = this.em.getRepository(Task);
       console.log(pmCollection, pmEnvironment);
 
-      const task = taskRepository.create(new Task(pmCollection, pmEnvironment));
+      const task = taskRepository.create(new Task(pmCollection, pmEnvironment, type));
       pmCollection.tasks.add(task);
       pmEnvironment.tasks.add(task);
       await this.em.flush();
@@ -103,7 +102,7 @@ export class TaskService {
 
   async update(
     id: string,
-    { collection, environment, status, testStatus, report }: Partial<CreateOrUpdateElementDto>,
+    { collection, environment, status, testStatus }: Partial<CreateOrUpdateElementDto>,
   ): Promise<Task> {
     try {
       const task: Task | null = await this.taskRepository.findOne(id);
@@ -112,15 +111,11 @@ export class TaskService {
       }
       const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
       const pmEnvironment = this.pmEnvironmentRepository.findOne({ id: environment?.id });
-      const pmReport = await this.pmReportRepository.findOne({ id: report?.id });
       if (!pmCollection && !pmEnvironment) {
         throw new HttpException('Collecion or Environment not found', HttpStatus.NOT_FOUND);
       }
       if (status && testStatus) {
         wrap(task).assign({ status: status, testStatus: testStatus });
-      }
-      if (!pmReport && report) {
-        // wrap(task).assign({ report });
       }
       wrap(task).assign({ collection, environment });
       await this.em.flush();
