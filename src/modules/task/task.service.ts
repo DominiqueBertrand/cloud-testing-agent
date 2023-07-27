@@ -15,6 +15,7 @@ export class TaskService {
     @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
     @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
     @InjectRepository(PmEnvironment) private readonly pmEnvironmentRepository: EntityRepository<PmEnvironment>,
+
     private readonly em: EntityManager,
   ) {
     TaskService.pool = TaskService.pool ? TaskService.pool : TaskService.poolInstance();
@@ -133,12 +134,9 @@ export class TaskService {
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
-      const pmReport = await this.pmReportRepository.findOne({ id: report?.id });
       // this.em.persist(task);
       wrap(task).assign({ status: status, testStatus: testStatus });
-      if (!pmReport && report) {
-        wrap(task).assign({ report });
-      }
+      if (report) wrap(task).assign({ reports: { report } });
       await this.em.flush();
 
       return task;

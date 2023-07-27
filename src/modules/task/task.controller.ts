@@ -94,9 +94,7 @@ export class TaskController {
     if (!body.status && !body.testStatus) {
       throw new HttpException('At least {status} or {testStatus} should be defined', HttpStatus.BAD_REQUEST);
     }
-    return this.taskService.updateReport(id, {
-      report: body.report,
-    });
+    return this.taskService.updateReport(id, { status: body.status, testStatus: body.testStatus, report: body.report });
   }
 
   @Post(':id/actions/run')
