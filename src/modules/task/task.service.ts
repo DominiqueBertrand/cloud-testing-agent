@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, wrap } from '@mikro-orm/core';
-import { EntityManager, QueryOrder } from '@mikro-orm/core';
+import { EntityRepository, wrap, EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmCollection, PmEnvironment, Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import Piscina from 'piscina';
