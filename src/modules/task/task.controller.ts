@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { Task } from '@src/entities';
@@ -7,7 +19,9 @@ import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import { TaskService } from './task.service';
 import { RunBatch } from './dto/run-batch';
 import { UpdateReportDto } from './dto/update-report';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('task')
 @ApiBearerAuth()
 @ApiTags('Task')
