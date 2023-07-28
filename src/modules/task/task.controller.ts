@@ -81,9 +81,9 @@ export class TaskController {
     });
   }
 
+  @HttpCode(HttpStatus.OK)
   @Put(':id/actions/report')
   @ApiOperation({ summary: 'Update a task report' })
-  @HttpCode(HttpStatus.OK)
   @ApiParam({
     name: 'id',
     type: String,
