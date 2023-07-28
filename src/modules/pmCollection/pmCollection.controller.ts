@@ -1,10 +1,24 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PmCollectionService } from './pmCollection.service';
 import { ElementsQueryDto, CreateOrUpdateCollectionDto } from './dto';
 import { PmCollection } from '@src/entities';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('postman/collection')
 @ApiBearerAuth()
 @ApiTags('Postman/Collection')
