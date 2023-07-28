@@ -1,16 +1,31 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PmReportService } from './pmReport.service';
 import { PmReport } from '@src/entities';
 import { ElementsQueryDto, CreateOrUpdateReportDto } from './dto';
-
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import { Public } from '../common/decorators';
+@UseGuards(JwtAuthGuard)
 @Controller('report')
 @ApiBearerAuth()
 @ApiTags('Report')
 export class PmReportController {
   constructor(private readonly pmReportService: PmReportService) {}
 
+  @Public()
   @Get()
   @ApiOperation({ summary: 'Get a list of all reports' })
   @ApiQuery({

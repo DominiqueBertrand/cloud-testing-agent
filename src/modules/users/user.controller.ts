@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { UserService } from './user.service';
 import { User } from '@src/entities';
+import { LocalAuthGuard } from '../auth/local/local-auth.guard';
 
 @Controller()
+@UseGuards(LocalAuthGuard)
 export class UserController {
   constructor(private userService: UserService) {}
 
