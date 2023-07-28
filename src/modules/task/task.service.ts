@@ -133,8 +133,7 @@ export class TaskService {
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
-      // this.em.persist(task);
-      wrap(task).assign({ status: status, testStatus: testStatus });
+      if (status && testStatus) wrap(task).assign({ status: status, testStatus: testStatus });
       if (report) wrap(task).assign({ reports: { report } });
       await this.em.flush();
 
@@ -161,13 +160,14 @@ export class TaskService {
     }
   }
 
-  async run(id: string) {
+  async run(id: string): Promise<Task> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const task = await this.taskRepository.findOne(id);
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
+      console.log(task.type);
       const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
         { id: task.collection?.id },
         { populate: ['collection'] },
@@ -201,7 +201,7 @@ export class TaskService {
     try {
       const tasksData: Array<object> = [];
       await resolvePromisesSeq(
-        await tasksIds.map(async taskId => {
+        tasksIds.map(async taskId => {
           console.log(taskId);
           const taskLoaded = await this.taskRepository.findOne(
             { id: taskId },
