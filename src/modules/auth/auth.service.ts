@@ -40,7 +40,7 @@ export class AuthService {
 
   async login(login: LoginDto) {
     const user: User = await this.userService.getUserByUsername(login.username);
-    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username });
+    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username, roles: user.roles });
     const refreshToken = await this.generateRefreshToken({ id: user.id });
 
     await this.createRefreshSession(user, refreshToken);
@@ -70,7 +70,11 @@ export class AuthService {
     return session;
   }
 
-  async generateAccessToken(payload: { id: string; username: string | undefined }): Promise<string> {
+  async generateAccessToken(payload: {
+    id: string;
+    username: string | undefined;
+    roles: string[] | undefined;
+  }): Promise<string> {
     const expiresIn = this.configService.get<string>('service.jwt.jwtAccessExpiresIn');
     const subject = String(payload.id);
     const opts: SignOptions = {
@@ -81,6 +85,8 @@ export class AuthService {
     return this.jwtService.signAsync(
       {
         username: payload.username,
+        userid: payload.id,
+        roles: payload.roles,
         sid: v4(), // token uniqueness
       },
       opts,
@@ -114,7 +120,7 @@ export class AuthService {
     const session: RefreshSession | null = await this.sessionRepository.findOne({ refreshToken: token });
     if (!session) throw new UnauthorizedException();
 
-    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username });
+    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username, roles: user.roles });
     const refreshToken = await this.generateRefreshToken({ id: user.id });
 
     const decodeNewToken: any = this.jwtService.decode(refreshToken);
