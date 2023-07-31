@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { User } from '@src/entities';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -9,6 +9,7 @@ import { RolesGuard } from '@src/modules/common/guards';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { HasRoles } from '@src/modules/common/decorators';
 import { UserRole } from './user.enum';
+import { FindAllElementsQueryDto } from './dto';
 
 @Controller('user')
 @HasRoles(UserRole.SUPERADMIN)
@@ -19,8 +20,8 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  async getUsers(): Promise<User[]> {
-    return await this.userService.getAllUsers();
+  async getUsers(@Query() query: FindAllElementsQueryDto): Promise<User[]> {
+    return await this.userService.getAllUsers(query);
   }
 
   @Get(':id')

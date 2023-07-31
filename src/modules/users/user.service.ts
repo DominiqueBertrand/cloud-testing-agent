@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { EntityRepository, EntityManager } from '@mikro-orm/core';
+import { EntityRepository, EntityManager, QueryOrder } from '@mikro-orm/core';
 import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from './dto/CreateUser.dto';
@@ -9,6 +9,7 @@ import { User } from '@src/entities';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { UserRole } from './user.enum';
 import { sanitizeUser } from './user.utils';
+import { FindAllElementsQueryDto } from './dto';
 
 @Injectable()
 export class UserService {
@@ -18,8 +19,32 @@ export class UserService {
     private readonly em: EntityManager,
   ) {}
 
-  async getAllUsers(): Promise<User[]> {
-    return await this.userRepository.findAll({
+  async getAllUsers({ limit, offset, orderBy: orderbyKey }: FindAllElementsQueryDto): Promise<User[]> {
+    let orderBy: any;
+
+    switch (orderbyKey) {
+      case 'updatedAt': {
+        orderBy = { updatedAt: QueryOrder.DESC };
+        break;
+      }
+      case 'createdAt': {
+        orderBy = { createdAt: QueryOrder.DESC };
+        break;
+      }
+      case 'id': {
+        orderBy = { id: QueryOrder.DESC };
+        break;
+      }
+
+      default: {
+        orderBy = { updatedAt: QueryOrder.DESC };
+        break;
+      }
+    }
+    return await this.userRepository.findAll({ 
+      orderBy,
+      limit: limit ?? 20,
+      offset: offset ?? 0,
       fields: ['id', 'username', 'roles', 'email'],
     });
   }
