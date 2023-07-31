@@ -41,7 +41,7 @@ export class UserService {
         break;
       }
     }
-    return await this.userRepository.findAll({ 
+    return await this.userRepository.findAll({
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
