@@ -7,7 +7,7 @@ import { ElementsQueryDto, CreateOrUpdateScheduletDto } from './dto';
 
 @Controller('schedule')
 @ApiBearerAuth()
-@ApiTags('schedule')
+@ApiTags('Schedule')
 export class PmScheduleController {
   constructor(private readonly pmSqueduleService: PmScheduleService) {}
 
@@ -47,8 +47,10 @@ export class PmScheduleController {
     if (!body.schedule) {
       throw new HttpException('"schedule" object is missing', HttpStatus.BAD_REQUEST);
     }
-
-    return await this.pmSqueduleService.create({ pSchedule: body.schedule });
+    if (!body.taskId) {
+      throw new HttpException('"id" object is missing', HttpStatus.BAD_REQUEST);
+    }
+    return await this.pmSqueduleService.create({ pSchedule: body.schedule, id: body.taskId });
   }
 
   @Patch(':id')

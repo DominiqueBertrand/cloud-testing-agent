@@ -121,7 +121,7 @@ export class TaskController {
   })
   async createTest(@Param() id: string) {
     if (!id) {
-      throw new HttpException('An task Id should be put as argument', HttpStatus.BAD_REQUEST);
+      throw new HttpException('A task Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
     return this.taskService.run(id);
   }
@@ -133,5 +133,14 @@ export class TaskController {
       throw new HttpException('A batch of task Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
     return this.taskService.runBatch(body.tasks);
+  }
+
+  @Post('actions/run/schedule')
+  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  async createScheduledTask(@Param() id: string) {
+    if (!id) {
+      throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
+    }
+    return this.taskService.runSchedule(id);
   }
 }

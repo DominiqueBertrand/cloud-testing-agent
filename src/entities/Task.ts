@@ -1,7 +1,7 @@
 import { Cascade, Collection, Entity, Index, ManyToOne, OneToMany, Property, Ref, wrap } from '@mikro-orm/core';
 // import { ApiProperty } from '@nestjs/swagger';
 
-import { PmCollection, PmEnvironment, PmReport } from './index';
+import { PmCollection, PmEnvironment, PmReport, PmSchedule } from './index';
 import { BaseEntity } from './BaseEntity';
 import { TaskStatus, TaskType } from '@src/modules/task/task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
@@ -17,6 +17,10 @@ export class Task extends BaseEntity {
   @OneToMany(() => PmReport, report => report.task, { cascade: [Cascade.ALL] })
   @IsOptional()
   reports: Collection<PmReport> = new Collection<PmReport>(this);
+
+  @OneToMany(() => PmSchedule, schedule => schedule.task, { cascade: [Cascade.ALL] })
+  @IsOptional()
+  schedule: Collection<PmSchedule> = new Collection<PmSchedule>(this);
 
   @Property({ nullable: true })
   options?: object;
