@@ -12,16 +12,20 @@ Coog Cloud Agent is a specialized tool suite for testing and monitoring the enti
 $ yarn install
 ```
 
+Note that if your database has not been initialized yet, especially the 'user' table, you can pre-initialize it by creating a super administrator 'superadmin' and a user 'coog' (with permissions to read, create, delete, and update all objects except 'user').
+
+See section [Seeding](#Seeding) below.
+
 ## Running the app
 
 ```bash
-# development
+# Development - Start application
 $ yarn start
 
-# watch mode
+# Watch mode - Start application in watch mode
 $ yarn start:dev
 
-# production mode
+# Production mode - Start built application
 $ yarn start:prod
 ```
 
@@ -52,6 +56,12 @@ By default, th application running to the port 3000, but you can customize this 
 export SERVER_PORT=7000
 ```
 
+## Seeding
+Seeding is used to insert data into the database. The seeding files are stored in `modules/orm/seeders` directory.
+
+```sh
+    npx cross-env NODE_ENV=dev yarn orm seeder:run   # seeds data
+```
 ## License
 
 Nest is [MIT licensed](LICENSE).

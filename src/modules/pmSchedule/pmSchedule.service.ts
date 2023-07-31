@@ -3,15 +3,17 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/core';
 
 import { EntityManager, QueryOrder } from '@mikro-orm/core';
-import { PmSchedule } from '@src/entities';
+import { PmSchedule, Task } from '@src/entities';
 import { ElementsQueryDto } from './dto';
 import { checkCron } from './middleware/checkCron';
 
 @Injectable()
 export class PmScheduleService {
   constructor(
-    @InjectRepository(PmSchedule) private readonly pmReportRepository: EntityRepository<PmSchedule>,
+    @InjectRepository(PmSchedule) private readonly pmSchedulerepository: EntityRepository<PmSchedule>,
     // private readonly pmReportRepository: PmReportRepository,
+    @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
+
     private readonly em: EntityManager,
   ) {}
 
@@ -37,8 +39,8 @@ export class PmScheduleService {
         break;
       }
     }
-    return this.pmReportRepository.findAll({
-      //   populate: ['report', 'report'],
+    return this.pmSchedulerepository.findAll({
+      //   populate: ['schedule', 'schedule'],
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
@@ -47,18 +49,43 @@ export class PmScheduleService {
   }
 
   async findOne(scheduleId: string): Promise<PmSchedule | null> {
-    const schedule: PmSchedule | null = await this.pmReportRepository.findOne(
+    const schedule: PmSchedule | null = await this.pmSchedulerepository.findOne(
       { id: scheduleId },
       { populate: ['task'] },
     );
     return schedule;
   }
 
-  async create({ pSchedule }) {
+  async create({ pSchedule, id }) {
     try {
-      const pmSchedule: PmSchedule = new PmSchedule(pSchedule, undefined);
-      const scheduler = checkCron(pmSchedule);
-      console.log(scheduler);
+      const task: Task | null = await this.taskRepository.findOne(id);
+      if (!task) {
+        throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      }
+      const pmSchedule: PmSchedule = new PmSchedule(pSchedule, task);
+      console.log(pmSchedule);
+      if (!checkCron(pmSchedule.schedule)) {
+        throw new HttpException('Cron is not valid', HttpStatus.BAD_REQUEST);
+      }
+      this.em.persist(pmSchedule);
+      await this.em.flush();
+
+      return { pmSchedule };
+    } catch (error: any) {
+      console.table(error);
+      console.log('error catched');
+      throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async update({ schedule, id }) {
+    try {
+      const _schedule: PmSchedule | null = await this.pmSchedulerepository.findOne({ id });
+      if (!_schedule) {
+        throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
+      }
+
+      const pmSchedule: PmSchedule = new PmSchedule(schedule, id);
       this.em.persist(pmSchedule);
       await this.em.flush();
 
@@ -69,35 +96,15 @@ export class PmScheduleService {
     }
   }
 
-  async update({ schedule, id }) {
-    try {
-      const _report: PmSchedule | null = await this.pmReportRepository.findOne({ id });
-      if (!_report) {
-        throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
-      }
-      if (!schedule?.id !== id) {
-        throw new HttpException('Report id mistmatch', HttpStatus.NOT_FOUND);
-      }
-      const pmReport: PmSchedule = new PmSchedule(schedule, id);
-      this.em.persist(pmReport);
-      await this.em.flush();
-
-      return { pmReport };
-    } catch (error: any) {
-      console.table(error);
-      throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
-    }
-  }
-
   async delete(id: string) {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const report = await this.pmReportRepository.findOne({ id });
+      const schedule = await this.pmSchedulerepository.findOne({ id });
 
-      if (!report) {
-        throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
+      if (!schedule) {
+        throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       } else {
-        await this.em.removeAndFlush(report);
+        await this.em.removeAndFlush(schedule);
       }
     } catch (error: any) {
       console.table(error);

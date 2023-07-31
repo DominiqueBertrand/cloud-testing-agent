@@ -44,13 +44,15 @@ export class PmEnvironmentService {
     });
   }
 
-  async findOne(environmentId: string): Promise<PmEnvironment | null> {
+  async findOne(environmentId: string): Promise<PmEnvironment> {
     const environment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne(
       { id: environmentId },
       {
         fields: ['id', 'ref', 'name', 'createdAt', 'updatedAt', 'tasks'],
       },
     );
+    if (!environment) throw new HttpException(`Error 404: Environment not found`, HttpStatus.NOT_FOUND);
+
     return environment;
   }
 
@@ -61,7 +63,7 @@ export class PmEnvironmentService {
       this.em.persist(pmEnvironment);
       await this.em.flush();
 
-      return { pmEnvironment };
+      return pmEnvironment;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
@@ -82,7 +84,7 @@ export class PmEnvironmentService {
       this.em.persist(pmEnvironment);
       await this.em.flush();
 
-      return { pmEnvironment };
+      return pmEnvironment;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
@@ -100,8 +102,18 @@ export class PmEnvironmentService {
         await this.em.removeAndFlush(environment);
       }
     } catch (error: any) {
-      console.table(error);
-      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+      switch (error?.errno ?? error?.status) {
+        case 19:
+          throw new HttpException(
+            `Error ${error.errno}: this environment is used by at least one task.`,
+            HttpStatus.FAILED_DEPENDENCY,
+          );
+        case 404:
+          throw new HttpException(`Error ${error.status}: ${error?.message}`, HttpStatus.NOT_FOUND);
+
+        default:
+          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      }
     }
   }
 }

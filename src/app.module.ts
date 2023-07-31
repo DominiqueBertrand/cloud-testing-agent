@@ -10,6 +10,7 @@ import { PmReportModule } from './modules/pmReport/pmReport.module';
 import { PmEnvironmentModule } from './modules/pmEnvironment/pmEnvironment.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/users/user.module';
+import { PmScheduleModule } from './modules/pmSchedule/pmSchedule.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UserModule } from './modules/users/user.module';
     PmCollectionModule,
     PmReportModule,
     PmEnvironmentModule,
+    PmScheduleModule,
     AuthModule,
     UserModule,
   ],
