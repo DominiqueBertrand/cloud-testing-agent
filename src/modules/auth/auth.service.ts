@@ -29,6 +29,7 @@ export class AuthService {
       const isValid = await bcrypt.compare(pass, user.password);
       if (isValid) {
         const dynamicKey = 'password';
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { [dynamicKey]: _, ...rest } = user;
 
         return rest;
@@ -46,6 +47,7 @@ export class AuthService {
     await this.createRefreshSession(user, refreshToken);
 
     const dynamicKey = 'password';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [dynamicKey]: _, ...rest } = user;
 
     return {
