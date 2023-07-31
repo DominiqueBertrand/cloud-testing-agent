@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { User } from '@src/entities';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -34,7 +34,8 @@ export class UserController {
   }
 
   @Delete(':id')
-  async removeUser(@Param('id') id: string): Promise<User> {
+  @HttpCode(204)
+  async removeUser(@Param('id') id: string): Promise<void> {
     return await this.userService.removeUser(id);
   }
 

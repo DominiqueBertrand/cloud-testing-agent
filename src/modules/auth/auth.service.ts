@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UserService } from '../users/user.service';
 import { RefreshSession, User } from '@src/entities';
 import { LoginDto } from './dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class AuthService {
@@ -152,6 +153,17 @@ export class AuthService {
   async profile(userId: string): Promise<User> {
     const user: User = await this.userService.getUserById(userId);
 
+    return user;
+  }
+
+  async updateProfile(userId: string, updateProfileDto: UpdateProfileDto): Promise<User> {
+    const user: User = await this.userService.getUserById(userId);
+    const email = updateProfileDto.email;
+    if (email) {
+      user.email = email;
+      this.em.persist(user);
+      await this.em.flush();
+    }
     return user;
   }
 }

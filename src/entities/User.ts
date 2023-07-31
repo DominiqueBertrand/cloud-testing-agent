@@ -4,9 +4,10 @@ import { Entity, Property, Index, Unique, OneToMany, Cascade, Collection } from 
 import { RefreshSession } from './RefreshSession';
 import { BaseEntity } from './BaseEntity';
 import { UserRole } from '@src/modules/users/user.enum';
+import { iUser } from '@src/modules/users/user.type';
 
 @Entity()
-export class User extends BaseEntity {
+export class User extends BaseEntity implements iUser {
   @Property({ nullable: false })
   @Index()
   @Unique()

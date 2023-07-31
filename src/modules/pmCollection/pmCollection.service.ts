@@ -56,21 +56,21 @@ export class PmCollectionService {
     return collection;
   }
 
-  async create({ collection, ref, id }) {
+  async create({ collection, ref, id }): Promise<PmCollection> {
     try {
       const name = collection?.info?.name;
       const pmCollection: PmCollection = new PmCollection(collection, id, ref, name);
       this.em.persist(pmCollection);
       await this.em.flush();
 
-      return { pmCollection };
+      return pmCollection;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async update({ collection, ref, id }) {
+  async update({ collection, ref, id }): Promise<PmCollection> {
     try {
       const _collection: PmCollection | null = await this.pmCollectionRepository.findOne({ ref: id });
       if (!_collection) {
@@ -84,7 +84,7 @@ export class PmCollectionService {
       this.em.persist(pmCollection);
       await this.em.flush();
 
-      return { pmCollection };
+      return pmCollection;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
@@ -102,8 +102,18 @@ export class PmCollectionService {
         await this.em.removeAndFlush(collection);
       }
     } catch (error: any) {
-      console.table(error);
-      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+      switch (error?.errno ?? error?.status) {
+        case 19:
+          throw new HttpException(
+            `Error ${error.errno}: this environment is used by at least one task.`,
+            HttpStatus.FAILED_DEPENDENCY,
+          );
+        case 404:
+          throw new HttpException(`Error ${error.status}: ${error?.message}`, HttpStatus.NOT_FOUND);
+
+        default:
+          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      }
     }
   }
 }
