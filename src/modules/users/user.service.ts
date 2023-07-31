@@ -1,10 +1,13 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityRepository, EntityManager } from '@mikro-orm/core';
+import * as bcrypt from 'bcrypt';
+
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 
 import { User } from '@src/entities';
 import { InjectRepository } from '@mikro-orm/nestjs';
+import { UserRole } from './user.enum';
 
 @Injectable()
 export class UserService {
@@ -16,12 +19,14 @@ export class UserService {
 
   async getAllUsers(): Promise<User[]> {
     return await this.userRepository.findAll({
-      fields: ['id', 'username'],
+      fields: ['id', 'username', 'roles', 'email'],
     });
   }
 
   async getUserById(id: string): Promise<User> {
-    const user: User | null = await this.userRepository.findOne(id);
+    const user: User | null = await this.userRepository.findOne(id, {
+      fields: ['id', 'username', 'roles', 'email', 'createdAt', 'updatedAt'],
+    });
 
     if (!user) throw new NotFoundException('User is not found');
 
@@ -43,7 +48,33 @@ export class UserService {
     if (!username || !password) {
       throw new HttpException(`Username or password can't be undefined`, HttpStatus.NOT_ACCEPTABLE);
     }
-    const newUser = new User(username, password);
+    // Hash user password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const newUser: User = new User(username, hashedPassword);
+    if (createUserDto.email) {
+      newUser.email = createUserDto.email;
+    }
+    if (Array.isArray(createUserDto.roles)) {
+      const roles: UserRole[] = [];
+      createUserDto.roles.forEach(role => {
+        switch (role) {
+          case UserRole.SUPERADMIN:
+            roles.push(UserRole.SUPERADMIN);
+            break;
+          case UserRole.ADMIN:
+            roles.push(UserRole.ADMIN);
+            break;
+          case UserRole.USER:
+            roles.push(UserRole.USER);
+            break;
+
+          default:
+            break;
+        }
+      });
+      newUser.roles = roles;
+    }
     this.em.persist(newUser);
     await this.em.flush();
 

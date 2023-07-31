@@ -5,6 +5,7 @@ import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { SignOptions } from 'jsonwebtoken';
 import { v4 } from 'uuid';
+import * as bcrypt from 'bcrypt';
 
 import { UserService } from '../users/user.service';
 import { RefreshSession, User } from '@src/entities';
@@ -24,10 +25,15 @@ export class AuthService {
   async validateUser(username: string, pass: string): Promise<any> {
     const user: User = await this.userService.getUserByUsername(username);
 
-    if (user && user.password === pass) {
-      const dynamicKey = 'password';
-      const { [dynamicKey]: _, ...rest } = user;
-      return rest;
+    if (user && user.password) {
+      const isValid = await bcrypt.compare(pass, user.password);
+      if (isValid) {
+        const dynamicKey = 'password';
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [dynamicKey]: _, ...rest } = user;
+
+        return rest;
+      }
     }
 
     return null;
@@ -35,12 +41,13 @@ export class AuthService {
 
   async login(login: LoginDto) {
     const user: User = await this.userService.getUserByUsername(login.username);
-    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username });
+    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username, roles: user.roles });
     const refreshToken = await this.generateRefreshToken({ id: user.id });
 
     await this.createRefreshSession(user, refreshToken);
 
     const dynamicKey = 'password';
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [dynamicKey]: _, ...rest } = user;
 
     return {
@@ -65,7 +72,11 @@ export class AuthService {
     return session;
   }
 
-  async generateAccessToken(payload: { id: string; username: string | undefined }): Promise<string> {
+  async generateAccessToken(payload: {
+    id: string;
+    username: string | undefined;
+    roles: string[] | undefined;
+  }): Promise<string> {
     const expiresIn = this.configService.get<string>('service.jwt.jwtAccessExpiresIn');
     const subject = String(payload.id);
     const opts: SignOptions = {
@@ -76,6 +87,8 @@ export class AuthService {
     return this.jwtService.signAsync(
       {
         username: payload.username,
+        userid: payload.id,
+        roles: payload.roles,
         sid: v4(), // token uniqueness
       },
       opts,
@@ -109,7 +122,7 @@ export class AuthService {
     const session: RefreshSession | null = await this.sessionRepository.findOne({ refreshToken: token });
     if (!session) throw new UnauthorizedException();
 
-    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username });
+    const accessToken = await this.generateAccessToken({ id: user.id, username: user.username, roles: user.roles });
     const refreshToken = await this.generateRefreshToken({ id: user.id });
 
     const decodeNewToken: any = this.jwtService.decode(refreshToken);

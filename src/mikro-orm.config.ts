@@ -13,6 +13,13 @@ const config: Options = {
   logger: logger.log.bind(logger),
   // for highlighting the SQL queries
   highlighter: new SqlHighlighter(),
+  seeder: {
+    path: './modules/orm/seeders', // path to the folder with migrations
+    pathTs: './src/modules/orm/seeders', // path to the folder with TS seeders (if used, we should put path to compiled files in `path`)
+    glob: '!(*.d).{js,ts}', // how to match seeder files (all .js and .ts files, but not .d.ts)
+    emit: 'ts', // seeder generation mode
+    fileName: (className: string) => className, // seeder file naming convention
+  },
 };
 
 export default config;
