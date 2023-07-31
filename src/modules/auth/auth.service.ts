@@ -5,6 +5,7 @@ import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { SignOptions } from 'jsonwebtoken';
 import { v4 } from 'uuid';
+import * as bcrypt from 'bcrypt';
 
 import { UserService } from '../users/user.service';
 import { RefreshSession, User } from '@src/entities';
@@ -24,10 +25,14 @@ export class AuthService {
   async validateUser(username: string, pass: string): Promise<any> {
     const user: User = await this.userService.getUserByUsername(username);
 
-    if (user && user.password === pass) {
-      const dynamicKey = 'password';
-      const { [dynamicKey]: _, ...rest } = user;
-      return rest;
+    if (user && user.password) {
+      const isValid = await bcrypt.compare(pass, user.password);
+      if (isValid) {
+        const dynamicKey = 'password';
+        const { [dynamicKey]: _, ...rest } = user;
+
+        return rest;
+      }
     }
 
     return null;

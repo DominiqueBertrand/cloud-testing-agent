@@ -1,10 +1,13 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityRepository, EntityManager } from '@mikro-orm/core';
+import * as bcrypt from 'bcrypt';
+
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 
 import { User } from '@src/entities';
 import { InjectRepository } from '@mikro-orm/nestjs';
+import { UserRole } from './user.enum';
 
 @Injectable()
 export class UserService {
@@ -43,7 +46,15 @@ export class UserService {
     if (!username || !password) {
       throw new HttpException(`Username or password can't be undefined`, HttpStatus.NOT_ACCEPTABLE);
     }
-    const newUser = new User(username, password);
+    // Hash user password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    let newUser: User;
+    if (username === 'admin') {
+      newUser = new User(username, hashedPassword, [UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.USER]);
+    } else {
+      newUser = new User(username, hashedPassword);
+    }
     this.em.persist(newUser);
     await this.em.flush();
 

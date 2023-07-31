@@ -25,7 +25,6 @@ import { Public } from '../common/decorators';
 export class PmReportController {
   constructor(private readonly pmReportService: PmReportService) {}
 
-  @Public()
   @Get()
   @ApiOperation({ summary: 'Get a list of all reports' })
   @ApiQuery({
@@ -51,6 +50,7 @@ export class PmReportController {
     return await this.pmReportService.findOne(id);
   }
 
+  @Public()
   @Post()
   @ApiOperation({ summary: 'Create a new report' })
   @ApiCreatedResponse({
@@ -66,6 +66,7 @@ export class PmReportController {
     return await this.pmReportService.create({ report: body.report, status: body?.status });
   }
 
+  @Public()
   @Patch(':id')
   @ApiOperation({ summary: 'Update an existing report' })
   async update(@Param() id: string, @Body() body: CreateOrUpdateReportDto) {
