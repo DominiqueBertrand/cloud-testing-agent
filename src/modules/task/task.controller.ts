@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 import { Task } from '@src/entities';
@@ -6,7 +18,10 @@ import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 
 import { TaskService } from './task.service';
 import { RunBatch } from './dto/run-batch';
+import { UpdateReportDto } from './dto/update-report';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('task')
 @ApiBearerAuth()
 @ApiTags('Task')
@@ -77,8 +92,23 @@ export class TaskController {
       environment: body.environment,
       status: body.status,
       testStatus: body.testStatus,
-      report: body.report,
     });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put(':id/actions/report')
+  @ApiOperation({ summary: 'Update a task report' })
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+    description: 'The id of the task',
+  })
+  async updateReport(@Param() id: string, @Body() body: UpdateReportDto): Promise<Task> {
+    if (!body.status && !body.testStatus) {
+      throw new HttpException('At least {status} or {testStatus} should be defined', HttpStatus.BAD_REQUEST);
+    }
+    return this.taskService.updateReport(id, { status: body.status, testStatus: body.testStatus, report: body.report });
   }
 
   @Post(':id/actions/run')

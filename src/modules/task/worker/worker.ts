@@ -1,21 +1,15 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { TestRunner } from '../middleware/testRunner';
-// import { workerData } from 'worker_threads';
 import { TaskStatus } from '../task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
+import { PmReport, Task } from '@src/entities';
 import axios from 'axios';
 
-async function updateTask(url, id, parseEnvironment, parseCollection, taskSatus, testStatus, report?) {
+async function updateTask(url: string, id: string, taskSatus?: TaskStatus, testStatus?: TestStatus, report?: PmReport) {
   await axios({
-    url: url + '/task/' + id,
+    url: url + '/task/' + id + '/actions/report',
     method: 'PUT',
     data: {
-      collection: {
-        id: parseCollection.info._postman_id,
-      },
-      environment: {
-        id: parseEnvironment.id,
-      },
       status: taskSatus,
       testStatus: testStatus,
       report: report,
@@ -29,41 +23,19 @@ async function updateTask(url, id, parseEnvironment, parseCollection, taskSatus,
     });
 }
 
-export async function taskWorker(task) {
-  const parseEnvironment = JSON.parse(task.environment);
-  const parseCollection = JSON.parse(task.collection);
+export async function taskWorker(task: Task): Promise<object> {
   if (!task) {
     throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
   } else {
-    await updateTask(
-      'http://127.0.0.1:7000',
-      task.id,
-      parseEnvironment,
-      parseCollection,
-      TaskStatus.IN_PROGRESS,
-      TestStatus.RUNNING,
-    );
-    // taskService.update(task.collection, task.environment, TaskStatus.IN_PROGRESS, TestStatus.RUNNING);
+    await updateTask('http://127.0.0.1:7000', task.id, TaskStatus.IN_PROGRESS, TestStatus.RUNNING);
     const report = await TestRunner(task.collection, task.environment);
-    await updateTask(
-      'http://127.0.0.1:7000',
-      task.id,
-      parseEnvironment,
-      parseCollection,
-      TaskStatus.DONE,
-      report.status,
-      report,
-    );
+    await updateTask('http://127.0.0.1:7000', task.id, TaskStatus.DONE, report.status, report);
+
     return task;
   }
 }
 // console.log(workerData);
 
-module.exports = async (workerData: any) => {
-  console.log(workerData);
-  // Fake some async activity
-  await taskWorker(workerData);
-  return 'Worker launched';
+module.exports = async (workerData: Task) => {
+  return await taskWorker(workerData);
 };
-
-// parentPort?.postMessage(taskWorker(workerData.value));
