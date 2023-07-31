@@ -5,33 +5,44 @@ import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { UserService } from './user.service';
 import { User } from '@src/entities';
 import { LocalAuthGuard } from '../auth/local/local-auth.guard';
+import { Public } from '../common/decorators';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@Controller()
-@UseGuards(LocalAuthGuard)
+@Controller('user')
+@ApiTags('User')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get('/user')
+  @Public()
+  @Get()
+  @ApiBearerAuth()
   async getUsers(): Promise<User[]> {
     return await this.userService.getAllUsers();
   }
 
-  @Get('/user/:id')
+  @Public()
+  @Get(':id')
+  @ApiBearerAuth()
   async getUser(@Param('id', ParseIntPipe) id: string): Promise<User> {
     return await this.userService.getUserById(id);
   }
 
-  @Post('/user')
+  @Public()
+  @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     return await this.userService.createUser(createUserDto);
   }
 
-  @Delete('/user/:id')
+  @UseGuards(LocalAuthGuard)
+  @Delete(':id')
+  @ApiBearerAuth()
   async removeUser(@Param('id') id: string) {
     return await this.userService.removeUser(id);
   }
 
-  @Put('/user/:id')
+  @UseGuards(LocalAuthGuard)
+  @Put(':id')
+  @ApiBearerAuth()
   async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return await this.userService.updateUser(id, updateUserDto);
   }
