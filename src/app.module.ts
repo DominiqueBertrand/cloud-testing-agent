@@ -9,7 +9,7 @@ import { PmCollectionModule } from './modules/pmCollection/pmCollection.module';
 import { PmReportModule } from './modules/pmReport/pmReport.module';
 import { PmEnvironmentModule } from './modules/pmEnvironment/pmEnvironment.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
+import { UserModule } from './modules/users/user.module';
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { UsersModule } from './modules/users/users.module';
     PmReportModule,
     PmEnvironmentModule,
     AuthModule,
-    UsersModule,
+    UserModule,
   ],
 })
 export class AppModule {}
