@@ -148,4 +148,10 @@ export class AuthService {
       refreshToken,
     };
   }
+
+  async profile(userId: string): Promise<User> {
+    const user: User = await this.userService.getUserById(userId);
+
+    return user;
+  }
 }

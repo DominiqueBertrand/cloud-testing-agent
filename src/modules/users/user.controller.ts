@@ -29,7 +29,7 @@ export class UserController {
   }
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
     return await this.userService.createUser(createUserDto);
   }
 
@@ -39,7 +39,7 @@ export class UserController {
   }
 
   @Put(':id')
-  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return await this.userService.updateUser(id, updateUserDto);
   }
 }

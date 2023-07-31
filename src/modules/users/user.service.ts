@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { User } from '@src/entities';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { UserRole } from './user.enum';
+import { sanitizeUser } from './user.utils';
 
 @Injectable()
 export class UserService {
@@ -78,20 +79,20 @@ export class UserService {
     this.em.persist(newUser);
     await this.em.flush();
 
-    return newUser;
+    return sanitizeUser(newUser);
   }
 
-  async removeUser(id: string) {
+  async removeUser(id: string): Promise<User> {
     const user = await this.userRepository.findOne(id, {
       populate: ['sessions'],
     });
     if (!user) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
     await this.em.removeAndFlush(user);
 
-    return user;
+    return sanitizeUser(user);
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
@@ -103,6 +104,6 @@ export class UserService {
     this.em.persist(user);
     await this.em.flush();
 
-    return user;
+    return sanitizeUser(user);
   }
 }

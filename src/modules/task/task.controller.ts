@@ -21,8 +21,8 @@ import { RunBatch } from './dto/run-batch';
 import { UpdateReportDto } from './dto/update-report';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
-@UseGuards(JwtAuthGuard)
 @Controller('task')
+@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @ApiTags('Task')
 export class TaskController {
