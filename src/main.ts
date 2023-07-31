@@ -32,6 +32,7 @@ async function bootstrap() {
     .addTag('Task', 'Operations about Task')
     .addTag('Report', 'Operations about Report')
     .addTag('Auth', 'Operations about Authentication')
+    .addTag('Schedule', 'Operations about Schedule')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
