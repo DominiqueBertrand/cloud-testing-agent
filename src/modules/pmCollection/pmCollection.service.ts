@@ -94,7 +94,7 @@ export class PmCollectionService {
   async delete(id: string) {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const collection = await this.pmCollectionRepository.findOne({ ref: id });
+      const collection = await this.pmCollectionRepository.findOne(id);
 
       if (!collection) {
         throw new HttpException('Collection not found', HttpStatus.NOT_FOUND);
