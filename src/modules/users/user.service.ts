@@ -1,10 +1,14 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityRepository, EntityManager } from '@mikro-orm/core';
+import * as bcrypt from 'bcrypt';
+
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 
 import { User } from '@src/entities';
 import { InjectRepository } from '@mikro-orm/nestjs';
+import { UserRole } from './user.enum';
+import { sanitizeUser } from './user.utils';
 
 @Injectable()
 export class UserService {
@@ -16,12 +20,14 @@ export class UserService {
 
   async getAllUsers(): Promise<User[]> {
     return await this.userRepository.findAll({
-      fields: ['id', 'username'],
+      fields: ['id', 'username', 'roles', 'email'],
     });
   }
 
   async getUserById(id: string): Promise<User> {
-    const user: User | null = await this.userRepository.findOne(id);
+    const user: User | null = await this.userRepository.findOne(id, {
+      fields: ['id', 'username', 'roles', 'email', 'createdAt', 'updatedAt'],
+    });
 
     if (!user) throw new NotFoundException('User is not found');
 
@@ -43,32 +49,76 @@ export class UserService {
     if (!username || !password) {
       throw new HttpException(`Username or password can't be undefined`, HttpStatus.NOT_ACCEPTABLE);
     }
-    const newUser = new User(username, password);
+    // Hash user password
+    const saltRounds = 12;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const newUser: User = new User(username, hashedPassword);
+    if (createUserDto.email) {
+      newUser.email = createUserDto.email;
+    }
+    if (Array.isArray(createUserDto.roles)) {
+      const roles: UserRole[] = [];
+      createUserDto.roles.forEach(role => {
+        switch (role) {
+          case UserRole.SUPERADMIN:
+            roles.push(UserRole.SUPERADMIN);
+            break;
+          case UserRole.ADMIN:
+            roles.push(UserRole.ADMIN);
+            break;
+          case UserRole.USER:
+            roles.push(UserRole.USER);
+            break;
+
+          default:
+            break;
+        }
+      });
+      newUser.roles = roles;
+    }
     this.em.persist(newUser);
     await this.em.flush();
 
-    return newUser;
+    return sanitizeUser(newUser);
   }
 
-  async removeUser(id: string) {
-    const user = await this.userRepository.findOne(id);
-    if (!user) {
-      throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
-    }
-    await this.em.removeAndFlush(user);
+  async removeUser(id: string): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne(id, {
+        populate: ['sessions'],
+      });
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
 
-    return user;
+      await this.em.removeAndFlush(user);
+    } catch (error: any) {
+      switch (error?.errno ?? error?.status) {
+        case 19:
+          throw new HttpException(
+            `Error ${error.errno}: this environment is used by at least one task.`,
+            HttpStatus.FAILED_DEPENDENCY,
+          );
+        default:
+          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      }
+    }
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto) {
-    const user: User | null = await this.userRepository.findOne(id);
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-    user.password = updateUserDto.password;
-    this.em.persist(user);
-    await this.em.flush();
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    try {
+      const user: User | null = await this.userRepository.findOne(id);
+      if (!user) {
+        throw new HttpException('Error: User not found', HttpStatus.NOT_FOUND);
+      }
+      user.password = updateUserDto.password;
+      this.em.persist(user);
 
-    return user;
+      await this.em.flush();
+
+      return sanitizeUser(user);
+    } catch (error: any) {
+      throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+    }
   }
 }

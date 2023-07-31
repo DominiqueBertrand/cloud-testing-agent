@@ -6,6 +6,5 @@ export interface IPmSchedule {
   schedule: ISchedule;
 }
 export interface ISchedule {
-  id: string;
   cron: string;
 }

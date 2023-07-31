@@ -1,11 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, wrap, EntityManager, QueryOrder } from '@mikro-orm/core';
-import { PmCollection, PmEnvironment, Task } from '@src/entities';
+import { PmCollection, PmEnvironment, PmSchedule, Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import Piscina from 'piscina';
 import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
 import { UpdateReportDto } from './dto/update-report';
+import { Cron } from '@nestjs/schedule';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class TaskService {
@@ -14,7 +16,7 @@ export class TaskService {
     @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
     @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
     @InjectRepository(PmEnvironment) private readonly pmEnvironmentRepository: EntityRepository<PmEnvironment>,
-
+    @InjectRepository(PmSchedule) private readonly pmScheduleRepository: EntityRepository<PmSchedule>,
     private readonly em: EntityManager,
   ) {
     TaskService.pool = TaskService.pool ? TaskService.pool : TaskService.poolInstance();
@@ -70,7 +72,7 @@ export class TaskService {
   }
 
   async findOne(id: string): Promise<Task | null> {
-    const report: Task | null = await this.taskRepository.findOne({ id });
+    const report: Task | null = await this.taskRepository.findOne(id);
     return report;
   }
 
@@ -85,7 +87,6 @@ export class TaskService {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
       const taskRepository = this.em.getRepository(Task);
-      console.log(pmCollection, pmEnvironment);
 
       const task = taskRepository.create(new Task(pmCollection, pmEnvironment, type));
       pmCollection.tasks.add(task);
@@ -160,6 +161,10 @@ export class TaskService {
     }
   }
 
+  @Cron('5 4 * * *', {
+    name: 'run task',
+    timeZone: 'Europe/Paris',
+  })
   async run(id: string): Promise<Task> {
     try {
       // using reference is enough, no need for a fully initialized entity
@@ -236,6 +241,26 @@ export class TaskService {
       if (tasksData) return { tasksData };
       else return [];
       // else return [];
+    } catch (error: any) {
+      console.table(error);
+      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+    }
+  }
+  async runSchedule(id: string) {
+    try {
+      // using reference is enough, no need for a fully initialized entity
+      const scheduleData = await this.pmScheduleRepository.findOne(id);
+
+      if (!scheduleData) {
+        throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
+      } else {
+        console.log(scheduleData);
+        const job = new CronJob(scheduleData.schedule.cron, () => {
+          console.log('job');
+        });
+        console.log(job);
+        // this.schedulerRegistry.addCronJob(schedule.id, job);
+      }
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);

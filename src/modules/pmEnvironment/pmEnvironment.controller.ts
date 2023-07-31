@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -34,13 +35,13 @@ export class PmEnvironmentController {
     required: false,
     type: Number,
   })
-  async find(@Query() query: ElementsQueryDto) {
+  async find(@Query() query: ElementsQueryDto): Promise<PmEnvironment[]> {
     return await this.pmEnvironmentService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a environment by the id' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<PmEnvironment> {
     return await this.pmEnvironmentService.findOne(id);
   }
 
@@ -51,7 +52,7 @@ export class PmEnvironmentController {
     description: 'The environment has been successfully created.',
     type: PmEnvironment,
   })
-  async create(@Body() body: CreateOrUpdateEnvironmentDto) {
+  async create(@Body() body: CreateOrUpdateEnvironmentDto): Promise<PmEnvironment> {
     if (!body.environment) {
       throw new HttpException('"environment" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -67,7 +68,7 @@ export class PmEnvironmentController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a environment' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateEnvironmentDto) {
+  async update(@Param() id: string, @Body() body: CreateOrUpdateEnvironmentDto): Promise<PmEnvironment> {
     if (!body.environment) {
       throw new HttpException('"environment" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -80,8 +81,9 @@ export class PmEnvironmentController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string): Promise<void> {
     return this.pmEnvironmentService.delete(id);
   }
 }
