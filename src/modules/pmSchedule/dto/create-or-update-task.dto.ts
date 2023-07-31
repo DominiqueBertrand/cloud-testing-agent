@@ -8,4 +8,10 @@ export class CreateOrUpdateScheduletDto implements Partial<IPmSchedule> {
     description: 'Postman report in json format',
   })
   readonly schedule!: ISchedule;
+
+  @ApiProperty({
+    required: true,
+    description: 'Postman report in json format',
+  })
+  readonly taskId!: string;
 }
