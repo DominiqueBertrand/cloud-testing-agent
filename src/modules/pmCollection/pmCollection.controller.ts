@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -34,13 +35,13 @@ export class PmCollectionController {
     required: false,
     type: Number,
   })
-  async find(@Query() query: ElementsQueryDto) {
+  async find(@Query() query: ElementsQueryDto): Promise<PmCollection[]> {
     return this.pmCollectionService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a collection by the id' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<PmCollection | null> {
     return this.pmCollectionService.findOne(id);
   }
 
@@ -51,7 +52,7 @@ export class PmCollectionController {
     description: 'The collection has been successfully created.',
     type: PmCollection,
   })
-  async create(@Body() body: CreateOrUpdateCollectionDto) {
+  async create(@Body() body: CreateOrUpdateCollectionDto): Promise<PmCollection> {
     if (!body.collection) {
       throw new HttpException('"collection" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -80,6 +81,7 @@ export class PmCollectionController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
   async delete(@Param('id') id: string) {
     return this.pmCollectionService.delete(id);

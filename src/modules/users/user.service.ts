@@ -82,28 +82,43 @@ export class UserService {
     return sanitizeUser(newUser);
   }
 
-  async removeUser(id: string): Promise<User> {
-    const user = await this.userRepository.findOne(id, {
-      populate: ['sessions'],
-    });
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  async removeUser(id: string): Promise<void> {
+    try {
+      const user = await this.userRepository.findOne(id, {
+        populate: ['sessions'],
+      });
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      await this.em.removeAndFlush(user);
+    } catch (error: any) {
+      switch (error?.errno ?? error?.status) {
+        case 19:
+          throw new HttpException(
+            `Error ${error.errno}: this environment is used by at least one task.`,
+            HttpStatus.FAILED_DEPENDENCY,
+          );
+        default:
+          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      }
     }
-
-    await this.em.removeAndFlush(user);
-
-    return sanitizeUser(user);
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto) {
-    const user: User | null = await this.userRepository.findOne(id);
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-    user.password = updateUserDto.password;
-    this.em.persist(user);
-    await this.em.flush();
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    try {
+      const user: User | null = await this.userRepository.findOne(id);
+      if (!user) {
+        throw new HttpException('Error: User not found', HttpStatus.NOT_FOUND);
+      }
+      user.password = updateUserDto.password;
+      this.em.persist(user);
 
-    return sanitizeUser(user);
+      await this.em.flush();
+
+      return sanitizeUser(user);
+    } catch (error: any) {
+      throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+    }
   }
 }

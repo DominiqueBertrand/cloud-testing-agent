@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { RefreshDto, LoginDto, LoginResponseDto } from './dto';
@@ -7,6 +7,7 @@ import { LocalAuthGuard } from './local/local-auth.guard';
 import { User as UserDecorators, GetCurrentUserId } from '../common/decorators';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 import { User } from '@src/entities';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -31,14 +32,23 @@ export class AuthController {
   }
 
   @Get('logout')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   logout(@GetCurrentUserId() userId: string): Promise<boolean> {
     return this.authService.logout(userId);
   }
 
   @Get('profile')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async profile(@GetCurrentUserId() userId: string): Promise<User> {
     return await this.authService.profile(userId);
+  }
+
+  @Post('profile/actions/update')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async updateProfile(@GetCurrentUserId() userId: string, @Body() updateProfileDto: UpdateProfileDto): Promise<User> {
+    return await this.authService.updateProfile(userId, updateProfileDto);
   }
 }
