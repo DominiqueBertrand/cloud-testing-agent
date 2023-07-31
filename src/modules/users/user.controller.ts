@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { User } from '@src/entities';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -24,7 +24,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async getUser(@Param('id', ParseIntPipe) id: string): Promise<User> {
+  async getUser(@Param('id') id: string): Promise<User> {
     return await this.userService.getUserById(id);
   }
 
@@ -34,7 +34,7 @@ export class UserController {
   }
 
   @Delete(':id')
-  async removeUser(@Param('id') id: string) {
+  async removeUser(@Param('id') id: string): Promise<User> {
     return await this.userService.removeUser(id);
   }
 

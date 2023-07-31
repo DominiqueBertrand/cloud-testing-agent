@@ -24,7 +24,9 @@ export class UserService {
   }
 
   async getUserById(id: string): Promise<User> {
-    const user: User | null = await this.userRepository.findOne(id);
+    const user: User | null = await this.userRepository.findOne(id, {
+      fields: ['id', 'username', 'roles', 'email', 'createdAt', 'updatedAt'],
+    });
 
     if (!user) throw new NotFoundException('User is not found');
 
@@ -49,11 +51,29 @@ export class UserService {
     // Hash user password
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    let newUser: User;
-    if (username === 'admin') {
-      newUser = new User(username, hashedPassword, [UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.USER]);
-    } else {
-      newUser = new User(username, hashedPassword);
+    const newUser: User = new User(username, hashedPassword);
+    if (createUserDto.email) {
+      newUser.email = createUserDto.email;
+    }
+    if (Array.isArray(createUserDto.roles)) {
+      const roles: UserRole[] = [];
+      createUserDto.roles.forEach(role => {
+        switch (role) {
+          case UserRole.SUPERADMIN:
+            roles.push(UserRole.SUPERADMIN);
+            break;
+          case UserRole.ADMIN:
+            roles.push(UserRole.ADMIN);
+            break;
+          case UserRole.USER:
+            roles.push(UserRole.USER);
+            break;
+
+          default:
+            break;
+        }
+      });
+      newUser.roles = roles;
     }
     this.em.persist(newUser);
     await this.em.flush();
