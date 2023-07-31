@@ -13,7 +13,7 @@ export class AdminSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
     const user: User = new User(
       'superadmin', // username
-      '$2b$12$zTzjTKkPS/lijJ1g9ctSJ.Hv6AADekeZAvAFvvsfwPvhSkzl7AABi', // encrypted password (changeme)
+      '$2b$12$idrUtHWd1hWM8z3DT8nP8.sQRwHePijmZlOnLm8EYvlM1Fbq2U9ZO', // encrypted password (changeme)
       [UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.USER], // roles
       'admin@coopengo.com', //email
     );
