@@ -4,7 +4,8 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RefreshDto, LoginDto, LoginResponseDto } from './dto';
 import { LocalAuthGuard } from './local/local-auth.guard';
-import { User } from '../common/decorators';
+import { User, GetCurrentUserId } from '../common/decorators';
+import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -26,5 +27,11 @@ export class AuthController {
   @Post('refresh')
   async refresh(@Body() refreshDto: RefreshDto) {
     return await this.authService.refreshToken(refreshDto.refreshToken);
+  }
+
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  logout(@GetCurrentUserId() userId: string): Promise<boolean> {
+    return this.authService.logout(userId);
   }
 }
