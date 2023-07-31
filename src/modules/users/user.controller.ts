@@ -1,37 +1,44 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { User } from '@src/entities';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { UserService } from './user.service';
-import { User } from '@src/entities';
-import { LocalAuthGuard } from '../auth/local/local-auth.guard';
+import { RolesGuard } from '@src/modules/common/guards';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import { HasRoles } from '@src/modules/common/decorators';
+import { UserRole } from './user.enum';
 
-@Controller()
-@UseGuards(LocalAuthGuard)
+@Controller('user')
+@HasRoles(UserRole.SUPERADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiTags('User')
+@ApiBearerAuth()
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get('/user')
+  @Get()
   async getUsers(): Promise<User[]> {
     return await this.userService.getAllUsers();
   }
 
-  @Get('/user/:id')
-  async getUser(@Param('id', ParseIntPipe) id: string): Promise<User> {
+  @Get(':id')
+  async getUser(@Param('id') id: string): Promise<User> {
     return await this.userService.getUserById(id);
   }
 
-  @Post('/user')
+  @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
     return await this.userService.createUser(createUserDto);
   }
 
-  @Delete('/user/:id')
-  async removeUser(@Param('id') id: string) {
+  @Delete(':id')
+  async removeUser(@Param('id') id: string): Promise<User> {
     return await this.userService.removeUser(id);
   }
 
-  @Put('/user/:id')
+  @Put(':id')
   async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return await this.userService.updateUser(id, updateUserDto);
   }

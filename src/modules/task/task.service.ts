@@ -70,7 +70,7 @@ export class TaskService {
   }
 
   async findOne(id: string): Promise<Task | null> {
-    const report: Task | null = await this.taskRepository.findOne({ id });
+    const report: Task | null = await this.taskRepository.findOne(id);
     return report;
   }
 
@@ -85,7 +85,6 @@ export class TaskService {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
       const taskRepository = this.em.getRepository(Task);
-      console.log(pmCollection, pmEnvironment);
 
       const task = taskRepository.create(new Task(pmCollection, pmEnvironment, type));
       pmCollection.tasks.add(task);
