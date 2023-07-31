@@ -26,7 +26,7 @@ export class AuthController {
     return await this.authService.login(user);
   }
 
-  @Post('refresh')  
+  @Post('refresh')
   @ApiOperation({ summary: 'Refresh JWT Token' })
   @ApiCreatedResponse({
     status: 200,
