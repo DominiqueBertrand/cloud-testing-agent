@@ -15,7 +15,9 @@ export class User extends BaseEntity {
   @Property({ nullable: false })
   password?: string;
 
-  @OneToMany(() => RefreshSession, refreshSession => refreshSession.user, { cascade: [Cascade.ALL] })
+  @OneToMany(() => RefreshSession, refreshSession => refreshSession.user, {
+    cascade: [Cascade.ALL],
+  })
   @IsOptional()
   sessions?: Collection<RefreshSession> = new Collection<RefreshSession>(this);
 

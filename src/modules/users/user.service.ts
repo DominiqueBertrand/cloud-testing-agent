@@ -82,10 +82,13 @@ export class UserService {
   }
 
   async removeUser(id: string) {
-    const user = await this.userRepository.findOne(id);
+    const user = await this.userRepository.findOne(id, {
+      populate: ['sessions'],
+    });
     if (!user) {
       throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
     }
+
     await this.em.removeAndFlush(user);
 
     return user;

@@ -57,6 +57,14 @@ export class AuthService {
     };
   }
 
+  async logout(userId: string): Promise<boolean> {
+    const user: User = await this.userService.getUserById(userId);
+    user?.sessions?.removeAll();
+    this.em.flush();
+
+    return true;
+  }
+
   async createRefreshSession(user: User, token: string) {
     const decodeToken: any = this.jwtService.decode(token);
 
@@ -117,7 +125,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const user: User = await this.userService.getUserById(decodeToken.sub);
+    const user: User = await this.userService.getUserById(decodeToken.userId);
 
     const session: RefreshSession | null = await this.sessionRepository.findOne({ refreshToken: token });
     if (!session) throw new UnauthorizedException();
