@@ -10,8 +10,9 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "database": "${workspaceFolder:coog-cloud-agent}/coog-cloud-agent.sqlite.db",
-            "name": "coog-cloud-agent/"
+            "database": "${workspaceFolder:coog-cloud-agent}/coog-cloud-agent.db.sqlite",
+            "name": "local/coog-cloud-agent",
+            "group": "coog-cloud-agent"
         }
     ]
 }
