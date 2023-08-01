@@ -11,6 +11,7 @@ import { UserService } from '../users/user.service';
 import { RefreshSession, User } from '@src/entities';
 import { LoginDto } from './dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { hashPassword } from '../users/user.utils';
 
 @Injectable()
 export class AuthService {
@@ -158,12 +159,21 @@ export class AuthService {
 
   async updateProfile(userId: string, updateProfileDto: UpdateProfileDto): Promise<User> {
     const user: User = await this.userService.getUserById(userId);
-    const email = updateProfileDto.email;
-    if (email) {
+    const email: string | undefined = updateProfileDto?.email;
+    const password: string | undefined = updateProfileDto?.password;
+
+    if (email && user.email !== email) {
       user.email = email;
       this.em.persist(user);
       await this.em.flush();
     }
+    if (password) {
+      const hashedPassword: string = await hashPassword(password);
+      user.password = hashedPassword;
+      this.em.persist(user);
+      await this.em.flush();
+    }
+
     return user;
   }
 }

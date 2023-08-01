@@ -5,7 +5,13 @@ import { IsString } from 'class-validator';
 export class UpdateProfileDto implements Partial<iUser> {
   @IsString()
   @ApiProperty({
-    required: true,
+    required: false,
   })
-  readonly email!: string;
+  readonly email?: string;
+
+  @IsString()
+  @ApiProperty({
+    required: false,
+  })
+  readonly password?: string;
 }
