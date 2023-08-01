@@ -264,7 +264,6 @@ export class TaskService {
       if (!scheduleData) {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       } else {
-        console.log(scheduleData);
         const job = new CronJob(scheduleData.schedule.cron, () => {
           console.log('job');
         });

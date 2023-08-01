@@ -21,6 +21,7 @@ import { RunBatch } from './dto/run-batch';
 import { UpdateReportDto } from './dto/update-report';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { ITask } from './task.type';
+import { Public } from '../common/decorators';
 
 @Controller('task')
 @UseGuards(JwtAuthGuard)
@@ -97,6 +98,7 @@ export class TaskController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @Public()
   @Put(':id/actions/report')
   @ApiOperation({ summary: 'Update a task report' })
   @ApiParam({
