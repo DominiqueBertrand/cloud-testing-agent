@@ -1,9 +1,9 @@
 export interface IPmCollection {
   id: string;
   ref?: string;
-  createdAt: Date;
+  createdAt?: Date;
   updatedAt?: Date;
-  collection: ICollection;
+  collection?: ICollection;
 }
 
 export interface ICollection {

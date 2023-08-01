@@ -1,40 +1,22 @@
-import { ICollection } from '@src/modules/pmCollection/pmCollection.type';
 import { TaskStatus, TaskType } from './task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
-import { PmReport, PmSchedule } from '@src/entities';
-import { IEnvironment } from '../pmEnvironment/pmEnvironment.type';
+import { PmCollection, PmEnvironment, PmReport, PmSchedule } from '@src/entities';
+import { Collection, Ref } from '@mikro-orm/core';
+import { IPmCollection } from '../pmCollection/pmCollection.type';
+import { IPmEnvironment } from '../pmEnvironment/pmEnvironment.type';
+import { IPmSchedule } from '../pmSchedule/pmSchedule.type';
+import { IPmReport } from '../pmReport/pmReport.type';
 
 export interface ITask {
-  id: string;
-  createdAt: Date;
+  id?: string;
+  createdAt?: Date;
   updatedAt?: Date;
-  collection: ICollection;
-  environment: IEnvironment;
-  status: TaskStatus;
-  testStatus: TestStatus;
-  type: TaskType;
-  reports: PmReport[];
-  schedule: PmSchedule[];
+  collection?: Ref<PmCollection> | IPmCollection;
+  environment?: Ref<PmEnvironment> | IPmEnvironment;
+  reports: Collection<PmReport> | IPmReport[];
+  schedules: Collection<PmSchedule> | IPmSchedule[];
+  options?: object;
+  status?: TaskStatus;
+  testStatus?: TestStatus;
+  type?: TaskType;
 }
-
-// export enum Status {
-//   created,
-//   failed,
-//   aborded,
-//   running,
-//   finished,
-// }
-
-// type PostmanTest = object;
-
-// export { PostmanTest };
-
-// type TaskStatus = {
-//   id: string;
-//   createdAt: string;
-//   modifiedAt: string;
-//   status: Status;
-//   collectionId: string;
-//   // envId: string;
-// };
-// export { TaskStatus };
