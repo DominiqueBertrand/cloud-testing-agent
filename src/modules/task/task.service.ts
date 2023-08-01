@@ -87,6 +87,8 @@ export class TaskService {
         'collection.name',
         'environment.id',
         'environment.name',
+        'reports.id',
+        'schedules.id',
       ],
     });
     return report;
