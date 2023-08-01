@@ -6,7 +6,7 @@ import { Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession } fro
 const logger = new Logger('MikroORM');
 const config: Options = {
   entities: [Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession],
-  dbName: 'coog-cloud-agent.sqlite.db',
+  dbName: 'coog-cloud-agent.db.sqlite',
   type: 'sqlite',
   port: 3307,
   debug: true,

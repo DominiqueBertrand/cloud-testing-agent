@@ -19,7 +19,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Sign in' })
   @ApiCreatedResponse({
     status: 200,
-    description: 'The task has been successfully created.',
+    description: 'Get JWT Token to login.',
     type: LoginResponseDto,
   })
   async login(@Body() @UserDecorators() user: LoginDto): Promise<any> {
@@ -27,6 +27,12 @@ export class AuthController {
   }
 
   @Post('refresh')
+  @ApiOperation({ summary: 'Refresh JWT Token' })
+  @ApiCreatedResponse({
+    status: 200,
+    description: 'Returns a JWT Token and a Refresh Token',
+    type: LoginResponseDto,
+  })
   async refresh(@Body() refreshDto: RefreshDto) {
     return await this.authService.refreshToken(refreshDto.refreshToken);
   }
