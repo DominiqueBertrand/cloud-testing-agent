@@ -1,5 +1,6 @@
 export interface IPmCollection {
   id: string;
+  name?: string;
   ref?: string;
   createdAt?: Date;
   updatedAt?: Date;
