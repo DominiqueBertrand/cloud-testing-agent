@@ -6,7 +6,6 @@ import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
 import Piscina from 'piscina';
 import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
 import { UpdateReportDto } from './dto/update-report';
-import { Cron } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import { sanitizeTask } from './task.utils';
 import { ITask } from './task.type';
@@ -69,12 +68,27 @@ export class TaskService {
         'collection.name',
         'environment.id',
         'environment.name',
+        'reports.id',
+        'schedules.id',
       ],
     });
   }
 
   async findOne(id: string): Promise<Task | null> {
-    const report: Task | null = await this.taskRepository.findOne(id);
+    const report: Task | null = await this.taskRepository.findOne(id, {
+      fields: [
+        'id',
+        'createdAt',
+        'updatedAt',
+        'status',
+        'type',
+        'testStatus',
+        'collection.id',
+        'collection.name',
+        'environment.id',
+        'environment.name',
+      ],
+    });
     return report;
   }
 
@@ -163,10 +177,6 @@ export class TaskService {
     }
   }
 
-  @Cron('5 4 * * *', {
-    name: 'run task',
-    timeZone: 'Europe/Paris',
-  })
   async run(id: string): Promise<ITask> {
     try {
       // using reference is enough, no need for a fully initialized entity

@@ -1,11 +1,11 @@
 import { Logger } from '@nestjs/common';
 import { Options } from '@mikro-orm/core';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
-import { Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession } from './entities';
+import { Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession, PmSchedule } from './entities';
 
 const logger = new Logger('MikroORM');
 const config: Options = {
-  entities: [Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession],
+  entities: [Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession, PmSchedule],
   dbName: 'coog-cloud-agent.db.sqlite',
   type: 'sqlite',
   port: 3307,
