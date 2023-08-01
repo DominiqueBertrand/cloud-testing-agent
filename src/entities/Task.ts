@@ -6,8 +6,9 @@ import { BaseEntity } from './BaseEntity';
 import { TaskStatus, TaskType } from '@src/modules/task/task-status.enum';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import { IsOptional } from 'class-validator';
+import { ITask } from '@src/modules/task/task.type';
 @Entity()
-export class Task extends BaseEntity {
+export class Task extends BaseEntity implements ITask {
   @ManyToOne(() => PmCollection)
   collection?: Ref<PmCollection>;
 
@@ -20,7 +21,7 @@ export class Task extends BaseEntity {
 
   @OneToMany(() => PmSchedule, schedule => schedule.task, { cascade: [Cascade.ALL] })
   @IsOptional()
-  schedule: Collection<PmSchedule> = new Collection<PmSchedule>(this);
+  schedules: Collection<PmSchedule> = new Collection<PmSchedule>(this);
 
   @Property({ nullable: true })
   options?: object;

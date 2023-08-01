@@ -8,6 +8,8 @@ import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
 import { UpdateReportDto } from './dto/update-report';
 import { Cron } from '@nestjs/schedule';
 import { CronJob } from 'cron';
+import { sanitizeTask } from './task.utils';
+import { ITask } from './task.type';
 
 @Injectable()
 export class TaskService {
@@ -76,7 +78,7 @@ export class TaskService {
     return report;
   }
 
-  async create({ collection, environment, type }: Partial<CreateOrUpdateElementDto>): Promise<Task> {
+  async create({ collection, environment, type }: Partial<CreateOrUpdateElementDto>): Promise<ITask> {
     try {
       const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne({ id: collection?.id });
       const pmEnvironment: PmEnvironment | null = await this.pmEnvironmentRepository.findOne({ id: environment?.id });
@@ -93,7 +95,7 @@ export class TaskService {
       pmEnvironment.tasks.add(task);
       await this.em.flush();
 
-      return task;
+      return sanitizeTask(task);
     } catch (error: any) {
       console.error(error);
       console.table(error);
@@ -104,7 +106,7 @@ export class TaskService {
   async update(
     id: string,
     { collection, environment, status, testStatus }: Partial<CreateOrUpdateElementDto>,
-  ): Promise<Task> {
+  ): Promise<ITask> {
     try {
       const task: Task | null = await this.taskRepository.findOne(id);
       if (!task) {
@@ -121,14 +123,14 @@ export class TaskService {
       wrap(task).assign({ collection, environment });
       await this.em.flush();
 
-      return task;
+      return sanitizeTask(task);
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async updateReport(id: string, { status, testStatus, report }: Partial<UpdateReportDto>): Promise<Task> {
+  async updateReport(id: string, { status, testStatus, report }: Partial<UpdateReportDto>): Promise<ITask> {
     try {
       const task: Task | null = await this.taskRepository.findOne(id);
       if (!task) {
@@ -138,7 +140,7 @@ export class TaskService {
       if (report) wrap(task).assign({ reports: { report } });
       await this.em.flush();
 
-      return task;
+      return sanitizeTask(task);
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
@@ -165,7 +167,7 @@ export class TaskService {
     name: 'run task',
     timeZone: 'Europe/Paris',
   })
-  async run(id: string): Promise<Task> {
+  async run(id: string): Promise<ITask> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const task = await this.taskRepository.findOne(id);
@@ -195,14 +197,14 @@ export class TaskService {
         environment: pmEnvironment.environment,
       });
 
-      return task;
+      return sanitizeTask(task);
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);
     }
   }
 
-  async runBatch(tasksIds: Array<string>) {
+  async runBatch(tasksIds: Array<string>): Promise<Array<object>> {
     try {
       const tasksData: Array<object> = [];
       await resolvePromisesSeq(
@@ -238,15 +240,13 @@ export class TaskService {
           }),
         ]);
       })();
-      if (tasksData) return { tasksData };
-      else return [];
-      // else return [];
+      return tasksData;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);
     }
   }
-  async runSchedule(id: string) {
+  async runSchedule(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const scheduleData = await this.pmScheduleRepository.findOne(id);

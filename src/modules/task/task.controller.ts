@@ -20,6 +20,7 @@ import { TaskService } from './task.service';
 import { RunBatch } from './dto/run-batch';
 import { UpdateReportDto } from './dto/update-report';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import { ITask } from './task.type';
 
 @Controller('task')
 @UseGuards(JwtAuthGuard)
@@ -60,7 +61,7 @@ export class TaskController {
     description: 'The task has been successfully created.',
     type: Task,
   })
-  async create(@Body() body: CreateOrUpdateElementDto): Promise<Task> {
+  async create(@Body() body: CreateOrUpdateElementDto): Promise<ITask> {
     if (!body.collection) {
       throw new HttpException('{collection} object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -83,7 +84,7 @@ export class TaskController {
     required: true,
     description: 'The id of the task',
   })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateElementDto): Promise<Task> {
+  async update(@Param() id: string, @Body() body: CreateOrUpdateElementDto): Promise<ITask> {
     if (!body.collection && !body.environment) {
       throw new HttpException('At least {collection} or {environment} should be defined', HttpStatus.BAD_REQUEST);
     }
@@ -104,7 +105,7 @@ export class TaskController {
     required: true,
     description: 'The id of the task',
   })
-  async updateReport(@Param() id: string, @Body() body: UpdateReportDto): Promise<Task> {
+  async updateReport(@Param() id: string, @Body() body: UpdateReportDto): Promise<ITask> {
     if (!body.status && !body.testStatus) {
       throw new HttpException('At least {status} or {testStatus} should be defined', HttpStatus.BAD_REQUEST);
     }
@@ -119,7 +120,7 @@ export class TaskController {
     required: true,
     description: 'The id of the task',
   })
-  async createTest(@Param() id: string) {
+  async createTest(@Param() id: string): Promise<ITask> {
     if (!id) {
       throw new HttpException('A task Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
@@ -128,7 +129,7 @@ export class TaskController {
 
   @Post('actions/run/batch')
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
-  async createTestBatch(@Body() body: RunBatch) {
+  async createTestBatch(@Body() body: RunBatch): Promise<Array<object>> {
     if (!body.tasks) {
       throw new HttpException('A batch of task Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
@@ -137,7 +138,7 @@ export class TaskController {
 
   @Post('actions/run/schedule')
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
-  async createScheduledTask(@Param() id: string) {
+  async createScheduledTask(@Param() id: string): Promise<void> {
     if (!id) {
       throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
     }

@@ -1,9 +1,9 @@
 export interface IPmEnvironment {
   id: string;
   ref?: string;
-  createdAt: Date;
+  createdAt?: Date;
   updatedAt?: Date;
-  environment: IEnvironment;
+  environment?: IEnvironment;
 }
 
 export interface IEnvironment {
