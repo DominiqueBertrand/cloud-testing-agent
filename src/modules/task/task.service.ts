@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, wrap, EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmCollection, PmEnvironment, PmSchedule, Task } from '@src/entities';
-import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
+import { CreateOrUpdateElementDto, FindAllElementsQueryDto, PoolRunWorkerDto } from './dto';
 import Piscina from 'piscina';
 import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
 import { UpdateReportDto } from './dto/update-report';
@@ -180,11 +180,13 @@ export class TaskService {
   async run(id: string): Promise<ITask> {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const task = await this.taskRepository.findOne(id);
+      const task: Task | null = await this.taskRepository.findOne(id, {
+        fields: ['id', 'collection', 'environment'],
+        populate: ['collection', 'environment'],
+      });
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
-      console.log(task.type);
       const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
         { id: task.collection?.id },
         { populate: ['collection'] },
@@ -193,19 +195,13 @@ export class TaskService {
         id: task.environment?.id,
       });
       if (!pmCollection) {
-        throw new HttpException('Collecion not found', HttpStatus.NOT_FOUND);
+        throw new HttpException('Collection not found', HttpStatus.NOT_FOUND);
       }
       if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-      const taskData: Array<object> = [];
 
-      taskData.push({ id: id, collection: pmCollection.collection, environment: pmEnvironment.environment });
-      await TaskService.pool.run({
-        id: id,
-        collection: pmCollection.collection,
-        environment: pmEnvironment.environment,
-      });
+      await TaskService.pool.run(new PoolRunWorkerDto(task.id, pmEnvironment, pmCollection));
 
       return sanitizeTask(task);
     } catch (error: any) {

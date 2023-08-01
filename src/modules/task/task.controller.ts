@@ -99,7 +99,7 @@ export class TaskController {
 
   @HttpCode(HttpStatus.OK)
   @Public()
-  @Put(':id/actions/report')
+  @Post(':id/actions/report')
   @ApiOperation({ summary: 'Update a task report' })
   @ApiParam({
     name: 'id',
