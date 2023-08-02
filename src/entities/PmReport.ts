@@ -12,13 +12,12 @@ export class PmReport extends BaseEntity {
   status?: TestStatus;
 
   @ManyToOne(() => Task)
-  task?: Task;
+  task: Task;
 
-  constructor(report: object, status?: TestStatus, id?: string, task?: Task) {
+  constructor(task: Task, report: object, status?: TestStatus) {
     super();
+    this.task = task;
     this.report = report;
     this.status = status ?? TestStatus.RUNNING;
-    if (id) this.id = id;
-    this.task = task;
   }
 }
