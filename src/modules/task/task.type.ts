@@ -14,7 +14,7 @@ export interface ITask {
   collection?: Ref<PmCollection> | IPmCollection;
   environment?: Ref<PmEnvironment> | IPmEnvironment;
   reports: Collection<PmReport> | IPmReport[];
-  schedules: Collection<PmSchedule> | IPmSchedule[];
+  schedule?: PmSchedule | IPmSchedule;
   options?: object;
   status?: TaskStatus;
   testStatus?: TestStatus;

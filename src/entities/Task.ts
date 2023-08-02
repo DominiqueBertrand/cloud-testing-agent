@@ -1,4 +1,15 @@
-import { Cascade, Collection, Entity, Index, ManyToOne, OneToMany, Property, Ref, wrap } from '@mikro-orm/core';
+import {
+  Cascade,
+  Collection,
+  Entity,
+  Index,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  Property,
+  Ref,
+  wrap,
+} from '@mikro-orm/core';
 // import { ApiProperty } from '@nestjs/swagger';
 
 import { PmCollection, PmEnvironment, PmReport, PmSchedule } from './index';
@@ -19,9 +30,9 @@ export class Task extends BaseEntity implements ITask {
   @IsOptional()
   reports: Collection<PmReport> = new Collection<PmReport>(this);
 
-  @OneToMany(() => PmSchedule, schedule => schedule.task, { cascade: [Cascade.ALL] })
+  @OneToOne(() => PmSchedule, schedule => schedule.task, { nullable: true, cascade: [Cascade.ALL] })
   @IsOptional()
-  schedules: Collection<PmSchedule> = new Collection<PmSchedule>(this);
+  schedule?: PmSchedule;
 
   @Property({ nullable: true })
   options?: object;
