@@ -69,7 +69,7 @@ export class TaskService {
         'environment.id',
         'environment.name',
         'reports.id',
-        'schedules.id',
+        'schedule.id',
       ],
     });
   }
@@ -88,7 +88,7 @@ export class TaskService {
         'environment.id',
         'environment.name',
         'reports.id',
-        'schedules.id',
+        'schedule.id',
       ],
     });
     return report;
