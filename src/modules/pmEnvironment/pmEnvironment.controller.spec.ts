@@ -1,12 +1,40 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PmEnvironmentController } from './pmEnvironment.controller';
 import { PmEnvironmentService } from './pmEnvironment.service';
-import { CreateOrUpdateEnvironmentDto, ElementsQueryDto } from './dto';
+import { CreateOrUpdateEnvironmentDto } from './dto';
 
 describe('PmEnvironmentController', () => {
   let moduleRef: TestingModule;
   let pmEnvironmentController: PmEnvironmentController;
   let envId: string;
+  const mockEnvironment: CreateOrUpdateEnvironmentDto = {
+    environment: {
+      id: '8202f7a9-c7ba-4316-b333-3e015a270e48',
+      name: 'test',
+      values: [
+        {
+          key: 'url',
+          value: 'https://test.com',
+          type: 'default',
+          enabled: true,
+        },
+        {
+          key: 'login',
+          value: 'test@test.fr',
+          type: 'default',
+          enabled: true,
+        },
+        {
+          key: 'password',
+          value: 'password',
+          type: 'default',
+          enabled: true,
+        },
+      ],
+    },
+    ref: '',
+  };
+
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       controllers: [PmEnvironmentController],
@@ -14,9 +42,11 @@ describe('PmEnvironmentController', () => {
         {
           provide: PmEnvironmentService,
           useValue: {
-            create: jest.fn().mockImplementation((query: ElementsQueryDto) => Promise.resolve({ ...query })),
-            findAll: jest.fn().mockResolvedValue([]),
-            findOne: jest.fn().mockResolvedValue(''),
+            create: jest
+              .fn()
+              .mockImplementation((environment: CreateOrUpdateEnvironmentDto) => Promise.resolve({ ...environment })),
+            findAll: jest.fn().mockResolvedValue([mockEnvironment]),
+            findOne: jest.fn().mockResolvedValue(mockEnvironment),
             update: jest.fn().mockResolvedValue(CreateOrUpdateEnvironmentDto),
             delete: jest.fn(),
           },
@@ -38,34 +68,7 @@ describe('PmEnvironmentController', () => {
 
   describe('create', () => {
     it('should return an array"', async () => {
-      const mock: CreateOrUpdateEnvironmentDto = {
-        environment: {
-          id: '8202f7a9-c7ba-4316-b333-3e015a270e48',
-          name: 'test',
-          values: [
-            {
-              key: 'url',
-              value: 'https://test.com',
-              type: 'default',
-              enabled: true,
-            },
-            {
-              key: 'login',
-              value: 'test@test.fr',
-              type: 'default',
-              enabled: true,
-            },
-            {
-              key: 'password',
-              value: 'password',
-              type: 'default',
-              enabled: true,
-            },
-          ],
-        },
-        ref: '',
-      };
-      const test = await pmEnvironmentController.create(mock);
+      const test = await pmEnvironmentController.create(mockEnvironment);
       expect(test).not.toEqual(null);
 
       if (test) {
@@ -81,34 +84,7 @@ describe('PmEnvironmentController', () => {
   });
   describe('update', () => {
     it('should return an environment"', async () => {
-      const mock: CreateOrUpdateEnvironmentDto = {
-        environment: {
-          id: '8f3277a9-c7la-4326-b333-3e015a270e48',
-          name: 'test update',
-          values: [
-            {
-              key: 'url',
-              value: 'https://test.com',
-              type: 'default',
-              enabled: true,
-            },
-            {
-              key: 'login',
-              value: 'test.update@test.fr',
-              type: 'default',
-              enabled: true,
-            },
-            {
-              key: 'password',
-              value: 'password',
-              type: 'default',
-              enabled: true,
-            },
-          ],
-        },
-        ref: '',
-      };
-      const test = await pmEnvironmentController.update(envId, mock);
+      const test = await pmEnvironmentController.update(envId, mockEnvironment);
       expect(test).not.toEqual(null);
     });
   });
