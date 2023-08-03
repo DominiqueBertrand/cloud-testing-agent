@@ -68,7 +68,7 @@ export class PmCollectionController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a collection' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateCollectionDto) {
+  async update(@Param() id: string, @Body() body: CreateOrUpdateCollectionDto): Promise<PmCollection> {
     if (!body.collection) {
       throw new HttpException('"collection" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -83,7 +83,7 @@ export class PmCollectionController {
   @Delete(':id')
   @HttpCode(204)
   @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string): Promise<void> {
     return this.pmCollectionService.delete(id);
   }
 }

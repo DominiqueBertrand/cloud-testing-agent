@@ -3,8 +3,18 @@ export interface IPmSchedule {
   ref?: string;
   createdAt: Date;
   updatedAt?: Date;
-  schedule: ISchedule;
+  schedule: Schedule;
 }
-export interface ISchedule {
+export class Schedule {
   cron: string;
+  name: string;
+
+  constructor(cron: string, name: string) {
+    this.cron = cron;
+    this.name = name;
+  }
 }
+// export interface ISchedule {
+//   cron: string;
+//   name: string;
+// }

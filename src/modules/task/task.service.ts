@@ -153,7 +153,7 @@ export class TaskService {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
       if (status && testStatus) wrap(task).assign({ status: status, testStatus: testStatus });
-      if (report) wrap(task).assign({ reports: { report } });
+      if (report) wrap(task).assign({ reports: report });
       await this.em.flush();
 
       return sanitizeTask(task);
@@ -163,7 +163,7 @@ export class TaskService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const task = await this.taskRepository.findOne(id);
@@ -214,14 +214,11 @@ export class TaskService {
 
   async runBatch(tasksIds: Array<string>): Promise<Array<object>> {
     try {
-      const tasksData: Array<object> = [];
+      const tasksData: Array<PoolRunWorkerDto> = [];
+      const santizedTask: Array<ITask> = [];
       await resolvePromisesSeq(
         tasksIds.map(async taskId => {
-          console.log(taskId);
-          const taskLoaded = await this.taskRepository.findOne(
-            { id: taskId },
-            // { populate: ['collection', 'environment'] },
-          );
+          const taskLoaded = await this.taskRepository.findOne({ id: taskId });
           const pmCollection: PmCollection | null = await this.pmCollectionRepository.findOne(
             { id: taskLoaded?.collection?.id },
             { populate: ['collection'] },
@@ -238,7 +235,8 @@ export class TaskService {
           if (!taskLoaded) {
             throw new HttpException('Task not found : ' + { taskId }, HttpStatus.NOT_FOUND);
           }
-          tasksData.push({ id: taskId, collection: pmCollection.collection, environment: pmEnvironment.environment });
+          tasksData.push(new PoolRunWorkerDto(taskId, pmEnvironment, pmCollection));
+          santizedTask.push(sanitizeTask(taskLoaded));
         }),
       );
       (async () => {
@@ -248,7 +246,7 @@ export class TaskService {
           }),
         ]);
       })();
-      return tasksData;
+      return santizedTask;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);

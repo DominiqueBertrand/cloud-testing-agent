@@ -50,20 +50,20 @@ export class PmReportService {
     return report;
   }
 
-  async create({ report, status }) {
+  async create({ report, status }): Promise<PmReport> {
     try {
       const pmReport: PmReport = new PmReport(report, status, undefined);
       this.em.persist(pmReport);
       await this.em.flush();
 
-      return { pmReport };
+      return pmReport;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async update({ report, status, id }) {
+  async update({ report, status, id }): Promise<PmReport> {
     try {
       const _report: PmReport | null = await this.pmReportRepository.findOne({ id });
       if (!_report) {
@@ -76,14 +76,14 @@ export class PmReportService {
       this.em.persist(pmReport);
       await this.em.flush();
 
-      return { pmReport };
+      return pmReport;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<string> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const report = await this.pmReportRepository.findOne({ id });
@@ -92,6 +92,7 @@ export class PmReportService {
         throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
       } else {
         await this.em.removeAndFlush(report);
+        return 'Report ' + id + ' deleted';
       }
     } catch (error: any) {
       console.table(error);

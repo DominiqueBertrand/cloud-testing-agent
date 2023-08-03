@@ -46,7 +46,7 @@ export class PmReportController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a report by id' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<PmReport | null> {
     return await this.pmReportService.findOne(id);
   }
 
@@ -55,10 +55,10 @@ export class PmReportController {
   @ApiOperation({ summary: 'Create a new report' })
   @ApiCreatedResponse({
     status: 200,
-    description: 'The environment has been successfully created.',
+    description: 'The report has been successfully created.',
     type: PmReport,
   })
-  async create(@Body() body: CreateOrUpdateReportDto) {
+  async create(@Body() body: CreateOrUpdateReportDto): Promise<PmReport> {
     if (!body.report) {
       throw new HttpException('"report" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -69,7 +69,7 @@ export class PmReportController {
   @Public()
   @Patch(':id')
   @ApiOperation({ summary: 'Update an existing report' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateReportDto) {
+  async update(@Param() id: string, @Body() body: CreateOrUpdateReportDto): Promise<PmReport> {
     if (!body.report) {
       throw new HttpException('"report" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -82,7 +82,7 @@ export class PmReportController {
 
   @Delete(':id')
   @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
-  async delete(@Param('id') id: string) {
+  async delete(@Param('id') id: string): Promise<string> {
     return this.pmReportService.delete(id);
   }
 }

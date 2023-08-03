@@ -16,4 +16,10 @@ export class CreateOrUpdateReportDto implements Partial<IPmReport> {
     description: 'Postman report in json format',
   })
   readonly report!: object;
+
+  @ApiProperty({
+    required: true,
+    description: 'Postman report in json format',
+  })
+  readonly task!: object;
 }

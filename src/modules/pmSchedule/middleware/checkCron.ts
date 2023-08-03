@@ -1,8 +1,6 @@
 import { isValidCron } from 'cron-validator';
+import { Schedule } from '../pmSchedule.type';
 
-export function checkCron(schedule) {
-  if (isValidCron(schedule.cron)) {
-    console.log(schedule);
-    return true;
-  } else return 'no';
+export function checkCron(schedule: Schedule): boolean {
+  return isValidCron(schedule.cron);
 }
