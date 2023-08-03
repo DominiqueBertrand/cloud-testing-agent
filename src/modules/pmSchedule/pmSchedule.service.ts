@@ -11,7 +11,6 @@ import { checkCron } from './middleware/checkCron';
 export class PmScheduleService {
   constructor(
     @InjectRepository(PmSchedule) private readonly pmSchedulerepository: EntityRepository<PmSchedule>,
-    // private readonly pmReportRepository: PmReportRepository,
     @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
 
     private readonly em: EntityManager,
@@ -44,41 +43,42 @@ export class PmScheduleService {
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
-      fields: ['id', 'createdAt', 'updatedAt'],
+      fields: ['id', 'schedule', 'createdAt', 'updatedAt'],
     });
   }
 
   async findOne(scheduleId: string): Promise<PmSchedule | null> {
     const schedule: PmSchedule | null = await this.pmSchedulerepository.findOne(
       { id: scheduleId },
-      { populate: ['task'] },
+      { populate: ['task', 'schedule'] },
     );
+    if (!schedule) {
+      throw new HttpException('Id schedule is not valid', HttpStatus.BAD_REQUEST);
+    }
     return schedule;
   }
 
-  async create({ pSchedule, id }) {
+  async create({ pSchedule, id }): Promise<PmSchedule> {
     try {
       const task: Task | null = await this.taskRepository.findOne(id);
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
       const pmSchedule: PmSchedule = new PmSchedule(pSchedule, task);
-      console.log(pmSchedule);
       if (!checkCron(pmSchedule.schedule)) {
         throw new HttpException('Cron is not valid', HttpStatus.BAD_REQUEST);
       }
       this.em.persist(pmSchedule);
       await this.em.flush();
 
-      return { pmSchedule };
+      return pmSchedule;
     } catch (error: any) {
       console.table(error);
-      console.log('error catched');
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async update({ schedule, id }) {
+  async update({ schedule, id }): Promise<PmSchedule> {
     try {
       const _schedule: PmSchedule | null = await this.pmSchedulerepository.findOne({ id });
       if (!_schedule) {
@@ -89,14 +89,14 @@ export class PmScheduleService {
       this.em.persist(pmSchedule);
       await this.em.flush();
 
-      return { pmSchedule };
+      return pmSchedule;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<string> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const schedule = await this.pmSchedulerepository.findOne({ id });
@@ -105,6 +105,7 @@ export class PmScheduleService {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       } else {
         await this.em.removeAndFlush(schedule);
+        return 'Schedule ' + id + ' deleted';
       }
     } catch (error: any) {
       console.table(error);

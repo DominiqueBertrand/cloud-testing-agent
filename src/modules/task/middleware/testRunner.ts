@@ -1,14 +1,19 @@
-import { PmReport } from '@src/entities';
+import { PmCollection, PmEnvironment, PmReport } from '@src/entities';
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import newman, { NewmanRunSummary } from 'newman';
+import { TestReport } from '../dto/test-report';
+import { PoolRunWorkerDto } from '../dto';
 
-async function newmanRunner(collection: object, environment: object): Promise<NewmanRunSummary> {
+async function newmanRunner(_collection, _environment): Promise<NewmanRunSummary> {
   // run and return Promise newman test result
+  const collection = JSON.parse(_collection);
+  const environment = JSON.parse(_environment);
+  console.log(typeof collection, typeof environment);
   return new Promise((resolve, reject) => {
     newman.run(
       {
-        collection,
-        environment,
+        collection: collection,
+        environment: environment,
         reporters: 'cli',
       },
       (err, summary) => {
@@ -16,32 +21,41 @@ async function newmanRunner(collection: object, environment: object): Promise<Ne
           reject(err);
         } else {
           resolve(summary);
-          //put summary of test in static testResult
         }
       },
     );
   });
 }
 
-function testParser(test: newman.NewmanRunSummary): object[] {
-  const report: Array<object> = [];
-  if (test) {
-    report.push({ stats: test.run.stats, failure: test.run, execution: test.run.executions });
-  }
+function testParser(test: newman.NewmanRunSummary): TestReport {
+  const report: TestReport = { stats: test.run.stats, failure: test.run, execution: test.run.executions };
   return report;
 }
 
-export async function TestRunner(collection, environment): Promise<PmReport> {
+function failedTestParser(error: unknown): TestReport {
+  const report: TestReport = { stats: { error } };
+  return report;
+}
+
+// TODO : task to type
+export async function TestRunner(
+  task: PoolRunWorkerDto,
+  collection: PmCollection,
+  environment: PmEnvironment,
+): Promise<PmReport> {
   try {
-    const testResult = await newmanRunner(JSON.parse(collection), JSON.parse(environment));
-    const reportTest: object[] = testParser(testResult);
-    if (testResult.run.stats.assertions.total === 0) {
-      return new PmReport(reportTest, TestStatus.FAILED);
+    if (!collection?.collection || !environment?.environment) {
+      throw Error;
+    }
+    const testResult: newman.NewmanRunSummary = await newmanRunner(collection.collection, environment.environment);
+    const report: TestReport = testParser(testResult);
+    if (testResult.run.executions.length === 0) {
+      return new PmReport(task, report, TestStatus.FAILED);
     } else {
-      return new PmReport(reportTest, TestStatus.SUCCESS);
+      return new PmReport(task, report, TestStatus.SUCCESS);
     }
   } catch (error) {
     console.error(error);
-    return new PmReport([], TestStatus.FAILED);
+    return new PmReport(task, failedTestParser(error), TestStatus.FAILED);
   }
 }

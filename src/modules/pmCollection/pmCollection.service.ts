@@ -91,7 +91,7 @@ export class PmCollectionService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const collection = await this.pmCollectionRepository.findOne(id);
@@ -105,7 +105,7 @@ export class PmCollectionService {
       switch (error?.errno ?? error?.status) {
         case 19:
           throw new HttpException(
-            `Error ${error.errno}: this environment is used by at least one task.`,
+            `Error ${error.errno}: this collection is used by at least one task.`,
             HttpStatus.FAILED_DEPENDENCY,
           );
         case 404:

@@ -9,7 +9,7 @@ import { ElementsQueryDto, CreateOrUpdateScheduletDto } from './dto';
 @ApiBearerAuth()
 @ApiTags('Schedule')
 export class PmScheduleController {
-  constructor(private readonly pmSqueduleService: PmScheduleService) {}
+  constructor(private readonly pmScheduleService: PmScheduleService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get a list of all schedules' })
@@ -27,13 +27,13 @@ export class PmScheduleController {
     type: Number,
   })
   async find(@Query() query: ElementsQueryDto): Promise<PmSchedule[]> {
-    return await this.pmSqueduleService.findAll(query);
+    return await this.pmScheduleService.findAll(query);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a schedule by id' })
-  async findOne(@Param('id') id: string) {
-    return await this.pmSqueduleService.findOne(id);
+  async findOne(@Param('id') id: string): Promise<PmSchedule | null> {
+    return await this.pmScheduleService.findOne(id);
   }
 
   @Post()
@@ -43,19 +43,19 @@ export class PmScheduleController {
     description: 'The schedule has been successfully created.',
     type: PmSchedule,
   })
-  async create(@Body() body: CreateOrUpdateScheduletDto) {
+  async create(@Body() body: CreateOrUpdateScheduletDto): Promise<PmSchedule> {
     if (!body.schedule) {
       throw new HttpException('"schedule" object is missing', HttpStatus.BAD_REQUEST);
     }
     if (!body.taskId) {
       throw new HttpException('"id" object is missing', HttpStatus.BAD_REQUEST);
     }
-    return await this.pmSqueduleService.create({ pSchedule: body.schedule, id: body.taskId });
+    return await this.pmScheduleService.create({ pSchedule: body.schedule, id: body.taskId });
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update an existing schedule' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateScheduletDto) {
+  async update(@Param() id: string, @Body() body: CreateOrUpdateScheduletDto): Promise<PmSchedule> {
     if (!body.schedule) {
       throw new HttpException('"schedule" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -63,12 +63,12 @@ export class PmScheduleController {
       throw new HttpException('"task id" is missing', HttpStatus.BAD_REQUEST);
     }
 
-    return await this.pmSqueduleService.update({ schedule: body.schedule, id });
+    return await this.pmScheduleService.update({ schedule: body.schedule, id });
   }
 
   @Delete(':id')
   @ApiResponse({ status: 204, description: 'The schedule has been successfully deleted.' })
-  async delete(@Param('id') id: string) {
-    return this.pmSqueduleService.delete(id);
+  async delete(@Param('id') id: string): Promise<string> {
+    return this.pmScheduleService.delete(id);
   }
 }
