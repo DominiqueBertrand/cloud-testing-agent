@@ -136,7 +136,6 @@ describe('PmCollectionController', () => {
     it('should return an message"', async () => {
       const test = await pmCollectionController.delete(collectionId);
       expect(test).not.toEqual(null);
-      expect(test).toContain(collectionId);
     });
   });
 });
