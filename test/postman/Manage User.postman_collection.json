@@ -1,0 +1,869 @@
+{
+	"info": {
+		"_postman_id": "7f3977e3-ae9e-44d1-a1a9-739125a14e49",
+		"name": "Manage User",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5685083"
+	},
+	"item": [
+		{
+			"name": "Login as SuperAdmin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const accessToken = jsonData?.accessToken;",
+							"const refreshToken = jsonData?.refreshToken;",
+							"",
+							"pm.collectionVariables.set(\"accessToken\", accessToken);",
+							"pm.collectionVariables.set(\"refreshToken\", refreshToken);",
+							"",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    // Test the root object structure",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.all.keys('user', 'accessToken', 'refreshToken');",
+							"",
+							"    // Test the user object structure",
+							"    pm.expect(responseJSON.user).to.be.an('object').that.has.all.keys('id', 'createdAt', 'updatedAt', 'username', 'roles', 'email', 'sessions');",
+							"    pm.expect(responseJSON.user.roles).to.be.an('array').that.has.lengthOf.at.least(1);",
+							"    pm.expect(responseJSON.user.sessions).to.be.an('array');",
+							"",
+							"    // Test the accessToken and refreshToken",
+							"    pm.expect(responseJSON.accessToken).to.be.a('string');",
+							"    pm.expect(responseJSON.refreshToken).to.be.a('string');",
+							"});",
+							"",
+							"// Test the response schema",
+							"pm.test(\"Response schema is valid\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            user: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: { type: \"string\" },",
+							"                    createdAt: { type: \"string\" },",
+							"                    updatedAt: { type: \"string\" },",
+							"                    username: { type: \"string\" },",
+							"                    roles: {",
+							"                        type: \"array\",",
+							"                        minItems: 1,",
+							"                        items: { type: \"string\" }",
+							"                    },",
+							"                    email: { type: \"string\" },",
+							"                    sessions: { type: \"array\" }",
+							"                },",
+							"                required: [\"id\", \"createdAt\", \"updatedAt\", \"username\", \"roles\"]",
+							"            },",
+							"            accessToken: { type: \"string\" },",
+							"            refreshToken: { type: \"string\" }",
+							"        },",
+							"        required: [\"user\", \"accessToken\", \"refreshToken\"]",
+							"    };",
+							"",
+							"    var response = pm.response.json();",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"superadmin\",\n  \"password\": \"{{superadmin_password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/auth/login",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update email",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"",
+							"const template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable td.value {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb; font-weight: bold}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Field</th>",
+							"        <th>Value</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Id</td>",
+							"        <td class=\"value\">{{response.id}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Username</td>",
+							"        <td class=\"value\">{{response.username}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Roles</td>",
+							"        <td class=\"value\">{{response.roles}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Email</td>",
+							"        <td class=\"value\">{{response.email}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Created At</td>",
+							"        <td class=\"value\">{{response.createdAt}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Updated At</td>",
+							"        <td class=\"value\">{{response.updatedAt}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"pm.visualizer.set(template, {",
+							"    response: pm.response.json()",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"superadmin@coopengo.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/auth/profile/actions/update",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"auth",
+						"profile",
+						"actions",
+						"update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the users list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"const template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>ID</th>",
+							"        <th>Username</th>",
+							"        <th>Roles</th>",
+							"        <th>Email</th>",
+							"    </tr>",
+							"    ",
+							"    {{#each response}}",
+							"        <tr>",
+							"            <td>{{id}}</td>",
+							"            <td>{{username}}</td>",
+							"            <td>{{roles}}</td>",
+							"            <td>{{email}}</td>",
+							"        </tr>",
+							"    {{/each}}",
+							"</table>",
+							"`;",
+							"",
+							"pm.visualizer.set(template, {",
+							"    response: pm.response.json()",
+							"});",
+							"",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var schema = {",
+							"        type: \"array\",",
+							"        items: {",
+							"            type: \"object\",",
+							"            properties: {",
+							"                id: { type: \"string\" },",
+							"                username: { type: \"string\" },",
+							"                roles: { type: \"array\" },",
+							"                email: { type: \"string\" }",
+							"            },",
+							"            required: [\"id\", \"username\", \"roles\"]",
+							"        }",
+							"    };",
+							"",
+							"    pm.expect(tv4.validate(pm.response.json(), schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/user?limit=20&offset=0",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "20"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a random user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Define the JSON schema for the response body",
+							"var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"        id: { type: \"string\" },",
+							"        createdAt: { type: \"string\" },",
+							"        updatedAt: { type: \"string\" },",
+							"        sessions: { type: \"array\" },",
+							"        username: { type: \"string\" },",
+							"        roles: { type: \"array\" },",
+							"        email: { type: \"string\" }",
+							"    },",
+							"    required: [\"id\", \"createdAt\", \"updatedAt\", \"sessions\", \"username\", \"roles\", \"email\"]",
+							"};",
+							"",
+							"// Validate the response body against the JSON schema",
+							"pm.test(\"Response body matches the JSON schema\", function () {",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});",
+							"",
+							"const idOfRandomUser = jsonData?.id;",
+							"pm.collectionVariables.set('user-id', idOfRandomUser);",
+							"",
+							"const template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable td.value {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb; font-weight: bold}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Field</th>",
+							"        <th>Value</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Id</td>",
+							"        <td class=\"value\">{{response.id}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Username</td>",
+							"        <td class=\"value\">{{response.username}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Roles</td>",
+							"        <td class=\"value\">{{response.roles}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Email</td>",
+							"        <td class=\"value\">{{response.email}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Created At</td>",
+							"        <td class=\"value\">{{response.createdAt}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Updated At</td>",
+							"        <td class=\"value\">{{response.updatedAt}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"pm.visualizer.set(template, {",
+							"    response: pm.response.json()",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const generateRandomUsername = () => {",
+							"  const adjectives = ['happy', 'silly', 'awesome', 'funny', 'cool', 'clever', 'daring'];",
+							"  const nouns = ['unicorn', 'panda', 'tiger', 'eagle', 'dolphin', 'dragon', 'jaguar'];",
+							"  const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];",
+							"  const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];",
+							"  const randomNumber = Math.floor(Math.random() * 1000);",
+							"",
+							"  return `test_${randomAdjective}-${randomNoun}-${randomNumber}`;",
+							"}",
+							"",
+							"const randomUsername = generateRandomUsername();",
+							"const emailOfRandomUsername = `${randomUsername}@coopengo.com`;",
+							"const passwordOfRandomUsername = 'changeme';",
+							"",
+							"pm.collectionVariables.set('randomUsername', randomUsername);",
+							"pm.collectionVariables.set('emailOfRandomUsername', emailOfRandomUsername);",
+							"pm.collectionVariables.set('passwordOfRandomUsername', passwordOfRandomUsername);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"username\": \"{{randomUsername}}\",\n        \"password\": \"{{passwordOfRandomUsername}}\",\n        \"email\": \"{{emailOfRandomUsername}}\",\n        \"roles\": [\n            \"USER\",\n            \"ADMIN\"\n        ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/user",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get this user by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response body matches the JSON schema\", function () {",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            createdAt: { type: \"string\" },",
+							"            updatedAt: { type: \"string\" },",
+							"            username: { type: \"string\" },",
+							"            roles: { type: \"array\" },",
+							"            email: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"createdAt\", \"updatedAt\", \"username\", \"roles\", \"email\"]",
+							"    };",
+							"",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});",
+							"",
+							"const template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable td.value {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb; font-weight: bold}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Field</th>",
+							"        <th>Value</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Id</td>",
+							"        <td class=\"value\">{{response.id}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Username</td>",
+							"        <td class=\"value\">{{response.username}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Roles</td>",
+							"        <td class=\"value\">{{response.roles}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Email</td>",
+							"        <td class=\"value\">{{response.email}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Created At</td>",
+							"        <td class=\"value\">{{response.createdAt}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Updated At</td>",
+							"        <td class=\"value\">{{response.updatedAt}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"pm.visualizer.set(template, {",
+							"    response: pm.response.json()",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/user/{{user-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"user",
+						"{{user-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test login with this user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"        user: {",
+							"            type: \"object\",",
+							"            properties: {",
+							"                id: { type: \"string\" },",
+							"                createdAt: { type: \"string\" },",
+							"                updatedAt: { type: \"string\" },",
+							"                username: { type: \"string\" },",
+							"                roles: { type: \"array\" },",
+							"                email: { type: \"string\" },",
+							"                sessions: { type: \"array\" }",
+							"            },",
+							"            required: [\"id\", \"createdAt\", \"updatedAt\", \"username\", \"roles\", \"email\", \"sessions\"]",
+							"        },",
+							"        accessToken: { type: \"string\" },",
+							"        refreshToken: { type: \"string\" }",
+							"    },",
+							"    required: [\"user\", \"accessToken\", \"refreshToken\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches the schema\", function () {",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});",
+							"",
+							"const accessTokenOfRandomUser = jsonData?.accessToken;",
+							"pm.collectionVariables.set('access-token-of-random-user',accessTokenOfRandomUser);",
+							"",
+							"const template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable td.value {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb; font-weight: bold}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Field</th>",
+							"        <th>Value</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>accessToken</td>",
+							"        <td class=\"value\">{{response.accessToken}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>refreshToken</td>",
+							"        <td class=\"value\">{{response.refreshToken}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"pm.visualizer.set(template, {",
+							"    response: pm.response.json()",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"{{randomUsername}}\",\n  \"password\": \"{{passwordOfRandomUsername}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/auth/login",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get profile of this user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Response body matches the JSON schema\", function () {",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            createdAt: { type: \"string\" },",
+							"            updatedAt: { type: \"string\" },",
+							"            username: { type: \"string\" },",
+							"            roles: { type: \"array\" },",
+							"            email: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"createdAt\", \"updatedAt\", \"username\", \"roles\", \"email\"]",
+							"    };",
+							"",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});",
+							"const template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable td.value {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb; font-weight: bold}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Field</th>",
+							"        <th>Value</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Id</td>",
+							"        <td class=\"value\">{{response.id}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Username</td>",
+							"        <td class=\"value\">{{response.username}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Roles</td>",
+							"        <td class=\"value\">{{response.roles}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Email</td>",
+							"        <td class=\"value\">{{response.email}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Created At</td>",
+							"        <td class=\"value\">{{response.createdAt}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>Updated At</td>",
+							"        <td class=\"value\">{{response.updatedAt}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"pm.visualizer.set(template, {",
+							"    response: pm.response.json()",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access-token-of-random-user}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/auth/profile",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"auth",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE this user by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/user/{{user-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"user",
+						"{{user-id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "task-id",
+			"value": ""
+		},
+		{
+			"key": "user-id",
+			"value": ""
+		},
+		{
+			"key": "randomUsername",
+			"value": ""
+		},
+		{
+			"key": "emailOfRandomUsername",
+			"value": ""
+		},
+		{
+			"key": "username",
+			"value": ""
+		},
+		{
+			"key": "passwordOfRandomUsername",
+			"value": ""
+		},
+		{
+			"key": "id-of-random-user",
+			"value": ""
+		},
+		{
+			"key": "access-token-of-random-user",
+			"value": ""
+		}
+	]
+}
