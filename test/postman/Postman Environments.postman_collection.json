@@ -1,0 +1,407 @@
+{
+	"info": {
+		"_postman_id": "bfafefb4-e2d4-40b4-9f3e-784804be0b35",
+		"name": "Postman Environments",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5685083"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const accessToken = jsonData?.accessToken;",
+							"const refreshToken = jsonData?.refreshToken;",
+							"",
+							"pm.collectionVariables.set(\"accessToken\", accessToken);",
+							"pm.collectionVariables.set(\"refreshToken\", refreshToken);",
+							"",
+							"// TESTS",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    // Test the root object structure",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.all.keys('user', 'accessToken', 'refreshToken');",
+							"",
+							"    // Test the user object structure",
+							"    pm.expect(responseJSON.user).to.be.an('object').that.has.all.keys('id', 'createdAt', 'updatedAt', 'username', 'roles', 'email', 'sessions');",
+							"    pm.expect(responseJSON.user.roles).to.be.an('array').that.has.lengthOf.at.least(1);",
+							"    pm.expect(responseJSON.user.sessions).to.be.an('array');",
+							"",
+							"    // Test the accessToken and refreshToken",
+							"    pm.expect(responseJSON.accessToken).to.be.a('string');",
+							"    pm.expect(responseJSON.refreshToken).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response body structure matches the JSON schema\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            user: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: { type: \"string\" },",
+							"                    createdAt: { type: \"string\" },",
+							"                    updatedAt: { type: \"string\" },",
+							"                    username: { type: \"string\" },",
+							"                    roles: {",
+							"                        type: \"array\",",
+							"                        items: { type: \"string\" },",
+							"                        minItems: 1",
+							"                    },",
+							"                    email: { type: \"string\" },",
+							"                    sessions: { type: \"array\" }",
+							"                },",
+							"                required: [\"id\", \"createdAt\", \"updatedAt\", \"username\", \"roles\", \"email\", \"sessions\"]",
+							"            },",
+							"            accessToken: { type: \"string\" },",
+							"            refreshToken: { type: \"string\" }",
+							"        },",
+							"        required: [\"user\", \"accessToken\", \"refreshToken\"]",
+							"    };",
+							"",
+							"    pm.expect(tv4.validate(responseJSON, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"coog\",\n  \"password\": \"{{coog_password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/auth/login",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the environments list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify the presence of 'tasks' array with expected number of elements\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    pm.expect(responseData).to.have.lengthOf(1);",
+							"    pm.expect(responseData[0]).to.have.property('tasks');",
+							"    pm.expect(responseData[0].tasks).to.be.an('array');",
+							"    pm.expect(responseData[0].tasks).to.have.lengthOf(1);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify that the 'options' field is null or an object\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('array');",
+							"    responseData.forEach(function(item) {",
+							"        pm.expect(item.options).to.be.null.or.an('object');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/postman/environment?limit=20",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"postman",
+						"environment"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "20"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a environment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const environmentId = jsonData?.id;",
+							"pm.collectionVariables.set('environment-id', environmentId);",
+							"",
+							"// TESTS",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('id');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('createdAt');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('updatedAt');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('tasks');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('environment');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('ref');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('name');",
+							"",
+							"    var environment = responseJSON.environment;",
+							"    pm.expect(environment).to.be.an('object').that.has.property('id');",
+							"    pm.expect(environment).to.be.an('object').that.has.property('name');",
+							"",
+							"    var values = environment.values;",
+							"    pm.expect(values).to.be.an('array').that.is.not.empty;",
+							"",
+							"    values.forEach(function (value) {",
+							"        pm.expect(value).to.be.an('object').that.has.property('key');",
+							"        pm.expect(value).to.be.an('object').that.has.property('value');",
+							"        pm.expect(value).to.be.an('object').that.has.property('type');",
+							"        pm.expect(value).to.be.an('object').that.has.property('enabled');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": {\n        \"id\": \"8f3277a9-c7ba-4316-b333-3e015a270e48\",\n        \"name\": \"Nortia Recette\",\n        \"values\": [\n            {\n                \"key\": \"root_gateway_url\",\n                \"value\": \"https://nevidis212.recette.coog.io/gateway\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"login\",\n                \"value\": \"service.partenaire@nortia-protect.fr\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"password\",\n                \"value\": \"Coopengo\",\n                \"type\": \"default\",\n                \"enabled\": true\n            }\n        ],\n        \"_postman_variable_scope\": \"environment\",\n        \"_postman_exported_at\": \"2023-06-21T13:19:40.369Z\",\n        \"_postman_exported_using\": \"Postman/10.14.9\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/postman/environment/",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"postman",
+						"environment",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get a environment by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Validate required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.id).to.exist.and.to.be.a('string');",
+							"    pm.expect(responseData.createdAt).to.exist.and.to.be.a('string');",
+							"    pm.expect(responseData.updatedAt).to.exist.and.to.be.a('string');",
+							"    pm.expect(responseData.ref).to.exist.and.to.be.a('string');",
+							"    pm.expect(responseData.name).to.exist.and.to.be.a('string');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify 'tasks' array is present and not empty\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.tasks).to.exist.and.to.be.an('array');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Verify that id is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.id).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});",
+							"",
+							"pm.test(\"Verify that createdAt is a non-empty string\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData.createdAt).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/postman/environment/{{environment-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"postman",
+						"environment",
+						"{{environment-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a environment by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/postman/environment/{{environment-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"postman",
+						"environment",
+						"{{environment-id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "environment-id",
+			"value": "de004466-88b3-4b96-850a-e198950adbfb",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		}
+	]
+}
