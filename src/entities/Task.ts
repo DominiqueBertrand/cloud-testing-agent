@@ -30,7 +30,7 @@ export class Task extends BaseEntity implements ITask {
   @IsOptional()
   reports: Collection<PmReport> = new Collection<PmReport>(this);
 
-  @OneToOne(() => PmSchedule, schedule => schedule.task, { nullable: true, cascade: [Cascade.ALL] })
+  @OneToOne(() => PmSchedule, schedule => schedule.task, { nullable: true, cascade: [Cascade.ALL], owner: true })
   @IsOptional()
   schedule?: PmSchedule;
 
