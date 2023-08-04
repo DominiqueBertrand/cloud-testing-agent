@@ -12,9 +12,9 @@ Coog Cloud Agent is a specialized tool suite for testing and monitoring the enti
 $ yarn install
 ```
 
-Note that if your database has not been initialized yet, especially the 'user' table, you can pre-initialize it by creating a super administrator 'superadmin' and a user 'coog' (with permissions to read, create, delete, and update all objects except 'user').
+Note that if your database has not been initialized yet, especially the 'user' table, you must pre-initialize it by creating a super administrator 'superadmin' and a user 'coog' (with permissions to read, create, delete, and update all objects except 'user').
 
-See section [Seeding](#Seeding) below.
+See section [Seeding](#seeding) below.
 
 ## Running the app
 
