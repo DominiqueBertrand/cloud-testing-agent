@@ -6,7 +6,6 @@ import { CreateOrUpdateCollectionDto } from './dto';
 describe('PmCollectionController', () => {
   let moduleRef: TestingModule;
   let pmCollectionController: PmCollectionController;
-  // let pmCollectionService: PmCollectionService;
   let collectionId: string;
 
   const mockCollection: CreateOrUpdateCollectionDto = {
@@ -74,6 +73,8 @@ describe('PmCollectionController', () => {
       const test = await pmCollectionController.find({ limit: 20, offset: 0, orderBy: 'updatedAt' });
       expect(Array.isArray(test)).toBe(true);
       expect(test).toEqual(expect.objectContaining([mockCollection]));
+      expect(200);
+      // expect(result.statusCode).toEqual(200);
     });
   });
   describe('create', () => {
@@ -81,6 +82,7 @@ describe('PmCollectionController', () => {
       const test = await pmCollectionController.create(mockCollection);
       expect(test).not.toEqual(null);
       expect(test).toEqual(expect.objectContaining(mockCollection));
+      expect(200);
       if (test) {
         collectionId = test.id;
       }
@@ -91,6 +93,7 @@ describe('PmCollectionController', () => {
       const test = await pmCollectionController.findOne(collectionId);
       expect(test).not.toEqual(null);
       expect(test).toEqual(expect.objectContaining(mockCollection));
+      expect(200);
     });
   });
   describe('update', () => {
@@ -98,6 +101,7 @@ describe('PmCollectionController', () => {
       const test = await pmCollectionController.update(collectionId, mockCollection);
       expect(test).not.toEqual(null);
       expect(test).toEqual(expect.objectContaining(mockCollection));
+      expect(200);
     });
   });
 
@@ -105,6 +109,7 @@ describe('PmCollectionController', () => {
     it('should return an empty message"', async () => {
       const test = await pmCollectionController.delete(collectionId);
       expect(test).not.toEqual(null);
+      expect(204);
     });
   });
 });

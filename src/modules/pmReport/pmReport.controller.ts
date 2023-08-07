@@ -82,7 +82,7 @@ export class PmReportController {
 
   @Delete(':id')
   @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
-  async delete(@Param('id') id: string): Promise<string> {
+  async delete(@Param('id') id: string): Promise<void> {
     return this.pmReportService.delete(id);
   }
 }

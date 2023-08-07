@@ -5,16 +5,11 @@ import { TestReport } from '../dto/test-report';
 import { PoolRunWorkerDto } from '../dto';
 import { ICollection } from '@src/modules/pmCollection/pmCollection.type';
 import { IEnvironment } from '@src/modules/pmEnvironment/pmEnvironment.type';
-// import { ICollection } from '@src/modules/pmCollection/pmCollection.type';
-// import { IEnvironment } from '@src/modules/pmEnvironment/pmEnvironment.type';
 
-async function newmanRunner(
-  _collection: string | ICollection,
-  _environment: string | IEnvironment,
-): Promise<NewmanRunSummary> {
+async function newmanRunner(_collection: ICollection, _environment: IEnvironment): Promise<NewmanRunSummary> {
   // run and return Promise newman test result
-  const collection = JSON.parse(_collection.toString());
-  const environment = JSON.parse(_environment.toString());
+  const collection: object = JSON.parse(_collection.toString());
+  const environment: object = JSON.parse(_environment.toString());
 
   return new Promise((resolve, reject) => {
     newman.run(

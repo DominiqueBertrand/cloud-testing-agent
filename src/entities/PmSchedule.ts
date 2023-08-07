@@ -1,19 +1,22 @@
 import { Entity, OneToOne, Property } from '@mikro-orm/core';
 import { BaseEntity } from './BaseEntity';
 import { Task } from './Task';
-import { Schedule } from '@src/modules/pmSchedule/pmSchedule.type';
 
 @Entity()
 export class PmSchedule extends BaseEntity {
   @Property({ nullable: true })
-  schedule: Schedule;
+  cron: string;
+
+  @Property({ nullable: true })
+  name: string;
 
   @OneToOne(() => Task)
   task: Task;
 
-  constructor(schedule: Schedule, task: Task) {
+  constructor(cron: string, name: string, task: Task) {
     super();
-    this.schedule = schedule;
+    this.cron = cron;
+    this.name = name;
     this.task = task;
   }
 }
