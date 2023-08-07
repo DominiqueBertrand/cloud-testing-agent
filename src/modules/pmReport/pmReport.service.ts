@@ -83,7 +83,7 @@ export class PmReportService {
     }
   }
 
-  async delete(id: string): Promise<string> {
+  async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const report = await this.pmReportRepository.findOne({ id });
@@ -92,11 +92,20 @@ export class PmReportService {
         throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
       } else {
         await this.em.removeAndFlush(report);
-        return 'Report ' + id + ' deleted';
       }
     } catch (error: any) {
-      console.table(error);
-      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+      switch (error?.errno ?? error?.status) {
+        case 19:
+          throw new HttpException(
+            `Error ${error.errno}: this collection is used by at least one task.`,
+            HttpStatus.FAILED_DEPENDENCY,
+          );
+        case 404:
+          throw new HttpException(`Error ${error.status}: ${error?.message}`, HttpStatus.NOT_FOUND);
+
+        default:
+          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpException,
@@ -138,12 +139,27 @@ export class TaskController {
     return this.taskService.runBatch(body.tasks);
   }
 
-  @Post('actions/run/schedule')
+  @Post(':id/actions/run/schedule')
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
   async createScheduledTask(@Param() id: string): Promise<void> {
     if (!id) {
       throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
     return this.taskService.runSchedule(id);
+  }
+
+  @Get('actions/run/schedule')
+  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  async getSchedules(): Promise<object[]> {
+    return this.taskService.getSchedules();
+  }
+
+  @Delete(':id/actions/run/schedule')
+  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  async stopScheduleTask(@Param() id: string): Promise<void> {
+    if (!id) {
+      throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
+    }
+    return this.taskService.stopSchedule(id);
   }
 }
