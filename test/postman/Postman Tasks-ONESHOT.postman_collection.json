@@ -1,0 +1,908 @@
+{
+	"info": {
+		"_postman_id": "39639a2c-f009-40b6-97c7-0f1ffae4e928",
+		"name": "Postman Tasks/ONESHOT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26866807",
+		"_collection_link": "https://restless-spaceship-710584.postman.co/workspace/coog-cloud-agent~c81777f4-f090-4047-b543-5cc92d22e9a0/collection/26866807-39639a2c-f009-40b6-97c7-0f1ffae4e928?action=share&creator=26866807&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const accessToken = jsonData?.accessToken;",
+							"const refreshToken = jsonData?.refreshToken;",
+							"",
+							"pm.collectionVariables.set(\"accessToken\", accessToken);",
+							"pm.collectionVariables.set(\"refreshToken\", refreshToken);",
+							"",
+							"// TESTS",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    // Test the root object structure",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.all.keys('user', 'accessToken', 'refreshToken');",
+							"",
+							"    // Test the user object structure",
+							"    pm.expect(responseJSON.user).to.be.an('object').that.has.all.keys('id', 'createdAt', 'updatedAt', 'username', 'roles', 'email', 'sessions');",
+							"    pm.expect(responseJSON.user.roles).to.be.an('array').that.has.lengthOf.at.least(1);",
+							"    pm.expect(responseJSON.user.sessions).to.be.an('array');",
+							"",
+							"    // Test the accessToken and refreshToken",
+							"    pm.expect(responseJSON.accessToken).to.be.a('string');",
+							"    pm.expect(responseJSON.refreshToken).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response body structure matches the JSON schema\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            user: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: { type: \"string\" },",
+							"                    createdAt: { type: \"string\" },",
+							"                    updatedAt: { type: \"string\" },",
+							"                    username: { type: \"string\" },",
+							"                    roles: {",
+							"                        type: \"array\",",
+							"                        items: { type: \"string\" },",
+							"                        minItems: 1",
+							"                    },",
+							"                    email: { type: \"string\" },",
+							"                    sessions: { type: \"array\" }",
+							"                },",
+							"                required: [\"id\", \"createdAt\", \"updatedAt\", \"username\", \"roles\", \"email\", \"sessions\"]",
+							"            },",
+							"            accessToken: { type: \"string\" },",
+							"            refreshToken: { type: \"string\" }",
+							"        },",
+							"        required: [\"user\", \"accessToken\", \"refreshToken\"]",
+							"    };",
+							"",
+							"    pm.expect(tv4.validate(responseJSON, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"username\": \"superadmin\",\n  \"password\": \"{{superAdminPassword}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/auth/login",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a collection",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const environmentId = jsonData?.id;",
+							"pm.collectionVariables.set('collection-id', environmentId);",
+							"",
+							"// TESTS",
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test(\"Response contains id, createdAt, and updatedAt properties\", function () {",
+							"    const responseJSON = pm.response.json();",
+							"    pm.expect(responseJSON).to.have.property('id');",
+							"    pm.expect(responseJSON).to.have.property('createdAt');",
+							"    pm.expect(responseJSON).to.have.property('updatedAt');",
+							"});",
+							"",
+							"pm.test(\"Response contains tasks array\", function () {",
+							"    const responseJSON = pm.response.json();",
+							"    pm.expect(responseJSON).to.have.property('tasks').that.is.an('array');",
+							"});",
+							"",
+							"pm.test(\"Response contains collection object\", function () {",
+							"    const responseJSON = pm.response.json();",
+							"    pm.expect(responseJSON).to.have.property('collection').that.is.an('object');",
+							"});",
+							"",
+							"pm.test(\"Collection object contains info property\", function () {",
+							"    const responseJSON = pm.response.json();",
+							"    pm.expect(responseJSON.collection).to.have.property('info').that.is.an('object');",
+							"});",
+							"",
+							"pm.test(\"Info object contains _postman_id, name, schema, _exporter_id, and _collection_link properties\", function () {",
+							"    const responseJSON = pm.response.json();",
+							"    const infoObject = responseJSON.collection.info;",
+							"    pm.expect(infoObject).to.have.property('_postman_id');",
+							"    pm.expect(infoObject).to.have.property('name');",
+							"    pm.expect(infoObject).to.have.property('schema');",
+							"    pm.expect(infoObject).to.have.property('_exporter_id');",
+							"    pm.expect(infoObject).to.have.property('_collection_link');",
+							"});",
+							"",
+							"pm.test(\"Collection object contains item array\", function () {",
+							"    const responseJSON = pm.response.json();",
+							"    pm.expect(responseJSON.collection).to.have.property('item').that.is.an('array');",
+							"});",
+							"",
+							"pm.test(\"Item array elements contain name, event, request, and response properties\", function () {",
+							"    const responseJSON = pm.response.json();",
+							"    const itemArray = responseJSON.collection.item;",
+							"    itemArray.forEach(function (item) {",
+							"        pm.expect(item).to.have.property('name');",
+							"        pm.expect(item).to.have.property('event').that.is.an('array');",
+							"        pm.expect(item).to.have.property('request').that.is.an('object');",
+							"        pm.expect(item).to.have.property('response').that.is.an('array');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"collection\": {\n\t\"info\": {\n\t\t\"_postman_id\": \"ccabf0c2-e6b0-43ec-9d35-a9a955c803df\",\n\t\t\"name\": \"Simple Testing collection\",\n\t\t\"schema\": \"https://schema.getpostman.com/json/collection/v2.1.0/collection.json\",\n\t\t\"_exporter_id\": \"26866807\",\n\t\t\"_collection_link\": \"https://restless-spaceship-710584.postman.co/workspace/coog-cloud-agent~c81777f4-f090-4047-b543-5cc92d22e9a0/collection/26866807-ccabf0c2-e6b0-43ec-9d35-a9a955c803df?action=share&creator=26866807&source=collection_link\"\n\t},\n\t\"item\": [\n\t\t{\n\t\t\t\"name\": \"New Request\",\n\t\t\t\"request\": {\n\t\t\t\t\"method\": \"GET\",\n\t\t\t\t\"header\": [],\n\t\t\t\t\"url\": {\n\t\t\t\t\t\"raw\": \"{{url}}facts/\",\n\t\t\t\t\t\"host\": [\n\t\t\t\t\t\t\"{{url}}facts\"\n\t\t\t\t\t],\n\t\t\t\t\t\"path\": [\n\t\t\t\t\t\t\"\"\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t},\n\t\t\t\"response\": []\n\t\t}\n\t]\n}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/postman/collection",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"postman",
+						"collection"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a environment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const environmentId = jsonData?.id;",
+							"pm.collectionVariables.set('environment-id', environmentId);",
+							"",
+							"// TESTS",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('id');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('createdAt');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('updatedAt');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('tasks');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('environment');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('ref');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('name');",
+							"",
+							"    var environment = responseJSON.environment;",
+							"    pm.expect(environment).to.be.an('object').that.has.property('id');",
+							"    pm.expect(environment).to.be.an('object').that.has.property('name');",
+							"",
+							"    var values = environment.values;",
+							"    pm.expect(values).to.be.an('array').that.is.not.empty;",
+							"",
+							"    values.forEach(function (value) {",
+							"        pm.expect(value).to.be.an('object').that.has.property('key');",
+							"        pm.expect(value).to.be.an('object').that.has.property('value');",
+							"        pm.expect(value).to.be.an('object').that.has.property('type');",
+							"        pm.expect(value).to.be.an('object').that.has.property('enabled');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": {\n\t\"id\": \"cbfa86c2-377e-4193-b7cc-b3d6631f2d4b\",\n\t\"name\": \"simple env\",\n\t\"values\": [\n\t\t{\n\t\t\t\"key\": \"url\",\n\t\t\t\"value\": \"https://cat-fact.herokuapp.com/\",\n\t\t\t\"type\": \"default\",\n\t\t\t\"enabled\": true\n\t\t}\n\t],\n\t\"_postman_variable_scope\": \"environment\",\n\t\"_postman_exported_at\": \"2023-08-03T13:32:02.305Z\",\n\t\"_postman_exported_using\": \"Postman/10.16.5\"\n}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/postman/environment",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"postman",
+						"environment"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the tasks list",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							"",
+							"pm.test(\"Response body is a valid JSON array\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"    pm.expect(responseJSON).to.be.an('array');",
+							"});",
+							"",
+							"pm.test(\"Each object in the array has the required properties\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"    responseJSON.forEach(function (object) {",
+							"        pm.expect(object).to.have.property('id');",
+							"        pm.expect(object).to.have.property('createdAt');",
+							"        pm.expect(object).to.have.property('updatedAt');",
+							"        pm.expect(object).to.have.property('collection');",
+							"        pm.expect(object.collection).to.have.property('id');",
+							"        pm.expect(object.collection).to.have.property('name');",
+							"        pm.expect(object).to.have.property('environment');",
+							"        pm.expect(object.environment).to.have.property('id');",
+							"        pm.expect(object.environment).to.have.property('name');",
+							"        pm.expect(object).to.have.property('status');",
+							"        pm.expect(object).to.have.property('testStatus');",
+							"        pm.expect(object).to.have.property('type');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/task?limit=20&offset=0",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "20"
+						},
+						{
+							"key": "offset",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const taskId = jsonData?.id;",
+							"",
+							"pm.collectionVariables.set(\"task-id\", taskId);",
+							"",
+							"pm.test(\"Response body has the expected structure\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            createdAt: { type: \"string\" },",
+							"            updatedAt: { type: \"string\" },",
+							"            reports: { type: \"array\" },",
+							"            collection: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: { type: \"string\" },",
+							"                    createdAt: { type: \"string\" },",
+							"                    updatedAt: { type: \"string\" },",
+							"                    collection: { type: \"string\" },",
+							"                    ref: { type: \"string\" },",
+							"                    name: { type: \"string\" }",
+							"                }",
+							"            },",
+							"            environment: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: { type: \"string\" },",
+							"                    createdAt: { type: \"string\" },",
+							"                    updatedAt: { type: \"string\" },",
+							"                    environment: { type: \"string\" },",
+							"                    ref: { type: \"string\" },",
+							"                    name: { type: \"string\" }",
+							"                }",
+							"            },",
+							"            type: { type: \"string\" },",
+							"            status: { type: \"string\" },",
+							"            testStatus: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"createdAt\", \"updatedAt\", \"reports\", \"collection\", \"environment\", \"type\", \"status\", \"testStatus\"]",
+							"    };",
+							"",
+							"    var response = pm.response.json();",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"collection\": {\n        \"id\": \"{{collection-id}}\"\n    },\n    \"environment\": {\n        \"id\": \"{{environment-id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/task",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get created task by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            createdAt: { type: \"string\" },",
+							"            updatedAt: { type: \"string\" },",
+							"            collection: { type: \"object\" },",
+							"            environment: { type: \"object\" },",
+							"            status: { type: \"string\" },",
+							"            testStatus: { type: \"string\" },",
+							"            type: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"createdAt\", \"updatedAt\", \"collection\", \"environment\", \"status\", \"testStatus\", \"type\"]",
+							"    };",
+							"",
+							"    var response = pm.response.json();",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/task/{{task-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task",
+						"{{task-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ACTION: Run the task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body has valid JSON schema\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            collection: { type: \"object\" },",
+							"            environment: { type: \"object\" },",
+							"        },",
+							"        required: [\"id\", \"collection\", \"environment\"]",
+							"    };",
+							"",
+							"    var response = pm.response.json();",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"const jsonData = pm.response.toJSON();",
+							"",
+							"const taskId = jsonData?.id;",
+							"",
+							"pm.collectionVariables.set('taskId', taskId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/task/{{task-id}}/actions/run",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task",
+						"{{task-id}}",
+						"actions",
+						"run"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a second task",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const taskId = jsonData?.id;",
+							"",
+							"pm.collectionVariables.set(\"task-id-2\", taskId);",
+							"",
+							"pm.test(\"Response body has the expected structure\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            createdAt: { type: \"string\" },",
+							"            updatedAt: { type: \"string\" },",
+							"            reports: { type: \"array\" },",
+							"            collection: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: { type: \"string\" },",
+							"                    createdAt: { type: \"string\" },",
+							"                    updatedAt: { type: \"string\" },",
+							"                    collection: { type: \"string\" },",
+							"                    ref: { type: \"string\" },",
+							"                    name: { type: \"string\" }",
+							"                }",
+							"            },",
+							"            environment: {",
+							"                type: \"object\",",
+							"                properties: {",
+							"                    id: { type: \"string\" },",
+							"                    createdAt: { type: \"string\" },",
+							"                    updatedAt: { type: \"string\" },",
+							"                    environment: { type: \"string\" },",
+							"                    ref: { type: \"string\" },",
+							"                    name: { type: \"string\" }",
+							"                }",
+							"            },",
+							"            type: { type: \"string\" },",
+							"            status: { type: \"string\" },",
+							"            testStatus: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"createdAt\", \"updatedAt\", \"reports\", \"collection\", \"environment\", \"type\", \"status\", \"testStatus\"]",
+							"    };",
+							"",
+							"    var response = pm.response.json();",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"collection\": {\n        \"id\": \"{{collection-id}}\"\n    },\n    \"environment\": {\n        \"id\": \"{{environment-id}}\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/task",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ACTION: Run tasks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body has valid JSON schema\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            createdAt: { type: \"string\" },",
+							"            updatedAt: { type: \"string\" },",
+							"            collection: { type: \"string\" },",
+							"            environment: { type: \"string\" },",
+							"            options: { type: \"null\" },",
+							"            status: { type: \"string\" },",
+							"            testStatus: { type: \"string\" },",
+							"            type: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"createdAt\", \"updatedAt\", \"collection\", \"environment\", \"options\", \"status\", \"testStatus\", \"type\"]",
+							"    };",
+							"",
+							"    var response = pm.response.json();",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"const jsonData = pm.response.toJSON();",
+							"",
+							"const taskId = jsonData?.id;",
+							"",
+							"pm.collectionVariables.set('taskId', taskId);",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"tasks\" :[\n    \"{{task-id}}\",\n    \"{{task-id-2}}\"\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/task/actions/run/batch",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task",
+						"actions",
+						"run",
+						"batch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the task by Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response body has valid JSON schema\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            id: { type: \"string\" },",
+							"            createdAt: { type: \"string\" },",
+							"            updatedAt: { type: \"string\" },",
+							"            collection: { type: \"object\" },",
+							"            environment: { type: \"object\" },",
+							"            options: { type: \"null\" },",
+							"            status: { type: \"string\" },",
+							"            testStatus: { type: \"string\" },",
+							"            type: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"createdAt\", \"updatedAt\", \"collection\", \"environment\", \"status\", \"testStatus\", \"type\"]",
+							"    };",
+							"",
+							"    var response = pm.response.json();",
+							"    pm.expect(tv4.validate(response, schema)).to.be.true;",
+							"});",
+							"",
+							"const jsonData = pm.response.toJSON();",
+							"",
+							"const taskId = jsonData?.id;",
+							"",
+							"pm.collectionVariables.set('taskId', taskId);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/task/{{task-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task",
+						"{{task-id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a task by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 204\", function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base-url}}/task/{{task-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"task",
+						"{{task-id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "task-id",
+			"value": ""
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		},
+		{
+			"key": "refreshToken",
+			"value": ""
+		},
+		{
+			"key": "taskId",
+			"value": ""
+		},
+		{
+			"key": "environment-id",
+			"value": ""
+		},
+		{
+			"key": "collection-id",
+			"value": ""
+		},
+		{
+			"key": "task-id-2",
+			"value": ""
+		}
+	]
+}
