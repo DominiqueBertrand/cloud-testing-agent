@@ -22,11 +22,7 @@
     "prepare": "husky install",
     "ci": "yarn install --immutable --immutable-cache --check-cache",
     "orm": "npx mikro-orm",
-    "cz": "cz",
-    "release": "standard-version",
-    "release:minor": "standard-version --release-as minor",
-    "release:patch": "standard-version --release-as patch",
-    "release:major": "standard-version --release-as major"
+    "cz": "cz"
   },
   "dependencies": {
     "@mikro-orm/core": "^5.7.13",
@@ -83,7 +79,6 @@
     "jest-tobetype": "^1.2.3",
     "prettier": "^3.0.0",
     "source-map-support": "^0.5.20",
-    "standard-version": "^9.5.0",
     "supertest": "^6.1.3",
     "ts-jest": "29.1.1",
     "ts-loader": "^9.2.3",
