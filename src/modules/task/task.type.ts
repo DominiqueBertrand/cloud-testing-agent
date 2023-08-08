@@ -20,3 +20,10 @@ export interface ITask {
   testStatus?: TestStatus;
   type?: TaskType;
 }
+
+export interface IRunningSchedule {
+  key: string;
+  cron: string;
+  nextTest?: string;
+  lastTest?: string;
+}

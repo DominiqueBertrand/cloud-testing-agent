@@ -21,7 +21,7 @@ import { TaskService } from './task.service';
 import { RunBatch } from './dto/run-batch';
 import { UpdateReportDto } from './dto/update-report';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
-import { ITask } from './task.type';
+import { IRunningSchedule, ITask } from './task.type';
 import { Public } from '../common/decorators';
 
 @Controller('task')
@@ -150,8 +150,8 @@ export class TaskController {
 
   @Get('actions/run/schedule')
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
-  async getSchedules(): Promise<object[]> {
-    return this.taskService.getSchedules();
+  async getSchedules(): Promise<IRunningSchedule[]> {
+    return this.taskService.getRunningSchedules();
   }
 
   @Delete(':id/actions/run/schedule')
