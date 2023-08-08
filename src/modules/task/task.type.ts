@@ -23,7 +23,7 @@ export interface ITask {
 
 export interface IRunningSchedule {
   key: string;
-  cron: string;
-  nextTest?: string;
-  lastTest?: string;
+  cron: string | undefined;
+  nextTest?: Date;
+  lastTest?: Date;
 }

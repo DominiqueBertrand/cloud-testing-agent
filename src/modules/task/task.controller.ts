@@ -12,7 +12,15 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
@@ -64,6 +72,7 @@ export class TaskController {
     type: Task,
   })
   async create(@Body() body: CreateOrUpdateElementDto): Promise<ITask> {
+    console.log(body);
     if (!body.collection) {
       throw new HttpException('{collection} object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -155,6 +164,8 @@ export class TaskController {
   }
 
   @Delete(':id/actions/run/schedule')
+  @HttpCode(204)
+  @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
   async stopScheduleTask(@Param() id: string): Promise<void> {
     if (!id) {

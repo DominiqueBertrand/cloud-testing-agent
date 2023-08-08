@@ -259,28 +259,28 @@ export class TaskService {
   }
   async runSchedule(id: string): Promise<void> {
     try {
-      const scheduleData: PmSchedule | null = await this.pmScheduleRepository.findOne(id);
-      if (!scheduleData) {
+      const pmSchedule: PmSchedule | null = await this.pmScheduleRepository.findOne(id);
+      if (!pmSchedule) {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       }
-      const task: Task | null = await this.taskRepository.findOne(scheduleData.task.id);
-      const job: CronJob = new CronJob(scheduleData.cron, () => {
+      const task: Task | null = await this.taskRepository.findOne(pmSchedule.task.id);
+      const job: CronJob = new CronJob(pmSchedule.cron, () => {
         try {
-          this.logger.warn(`job ${scheduleData.name} launching`);
-          this.run(scheduleData.task.id);
-          this.logger.warn(`job ${scheduleData.name} executed!`);
+          this.logger.warn(`job ${pmSchedule.name} launching`);
+          this.run(pmSchedule.task.id);
+          this.logger.warn(`job ${pmSchedule.name} done!`);
         } catch {
-          this.logger.warn(`job ${scheduleData.name} failed!`);
+          this.logger.warn(`job ${pmSchedule.name} failed!`);
         }
       });
       job.start();
-      this.schedulerRegistry.addCronJob(scheduleData.id, job);
-      this.logger.warn(`job ${scheduleData.name} has been init`);
-      if (scheduleData) wrap(task).assign({ type: TaskType.SCHEDULED });
+      this.schedulerRegistry.addCronJob(pmSchedule.id, job);
+      this.logger.warn(`job ${pmSchedule.name} has been init`);
+      if (pmSchedule) wrap(task).assign({ type: TaskType.SCHEDULED });
       await this.em.flush();
     } catch (error: any) {
       console.table(error);
-      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+      throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -288,18 +288,12 @@ export class TaskService {
     try {
       const jobs: Map<string, CronJob> = this.schedulerRegistry.getCronJobs();
       const jobsList: IRunningSchedule[] = [];
-      jobs.forEach((value, key) => {
-        let next: string;
-        let last: string;
-        try {
-          last = value.lastDate();
-          next = value.nextDate();
-        } catch (e) {
-          next = 'error: next fire date is in the past!';
-          last = 'error: last fire date is in the future!';
-        }
+      jobs.forEach(async (value, key) => {
+        const next: Date = value.lastDate();
+        const last: Date = value.nextDate();
         this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
-        jobsList.push({ key: key, cron: value.cronTime.source, nextTest: next, lastTest: last });
+        const pmSchedule: PmSchedule | null = await this.pmScheduleRepository.findOne(key);
+        jobsList.push({ key: key, cron: pmSchedule?.cron, nextTest: next, lastTest: last });
       });
       return jobsList;
     } catch (error: any) {
