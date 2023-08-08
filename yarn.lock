@@ -1061,12 +1061,12 @@
     multer "1.4.4-lts.1"
     tslib "2.6.1"
 
-"@nestjs/schedule@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/@nestjs/schedule/-/schedule-3.0.1.tgz"
-  integrity sha512-4CAFu4rE/QPYnz/icRg3GiuLmY1bXopG8bWTJ9d7bXzaHBaPKIjGvZ20wsK8P+MncrVCkmK0iYhQrNj0cwX9+A==
+"@nestjs/schedule@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@nestjs/schedule/-/schedule-3.0.2.tgz#0be6ff93adfedf081b216a2c69a70ea69a6acf78"
+  integrity sha512-INhpzkyquosLbVrXx4v+rfAnomwBTgKQvs7e9BZ2LSZdWQOqCQD2PmvWDiu8c4wdJIH6wcWQh98w5KxIcKuVBA==
   dependencies:
-    cron "2.3.1"
+    cron "2.4.0"
     uuid "9.0.0"
 
 "@nestjs/schematics@^10.0.1":
@@ -2739,10 +2739,10 @@ cron-validator@^1.3.1:
   resolved "https://registry.npmjs.org/cron-validator/-/cron-validator-1.3.1.tgz"
   integrity sha512-C1HsxuPCY/5opR55G5/WNzyEGDWFVG+6GLrA+fW/sCTcP6A6NTjUP2AK7B8n2PyFs90kDG2qzwm8LMheADku6A==
 
-cron@2.3.1:
-  version "2.3.1"
-  resolved "https://registry.npmjs.org/cron/-/cron-2.3.1.tgz"
-  integrity sha512-1eRRlIT0UfIqauwbG9pkg3J6CX9A6My2ytJWqAXoK0T9oJnUZTzGBNPxao0zjodIbPgf8UQWjE62BMb9eVllSQ==
+cron@2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/cron/-/cron-2.4.0.tgz#bdb2fcf896c072ba9dbc2f932ccd6daf3ad243b5"
+  integrity sha512-Cx77ic1TyIAtUggr0oAhtS8MLzPBUqGNIvdDM7jE3oFIxfe8LXWI9q3iQN/H2CebAiMir53LQKWOhEKnzkJTAQ==
   dependencies:
     luxon "^3.2.1"
 
