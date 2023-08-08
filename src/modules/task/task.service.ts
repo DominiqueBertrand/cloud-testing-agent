@@ -8,8 +8,9 @@ import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
 import { UpdateReportDto } from './dto/update-report';
 import { CronJob } from 'cron';
 import { sanitizeTask } from './task.utils';
-import { ITask } from './task.type';
+import { IRunningSchedule, ITask } from './task.type';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { TaskType } from './task-status.enum';
 
 @Injectable()
 export class TaskService {
@@ -262,6 +263,7 @@ export class TaskService {
       if (!scheduleData) {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       }
+      const task: Task | null = await this.taskRepository.findOne(scheduleData.task.id);
       const job: CronJob = new CronJob(scheduleData.cron, () => {
         try {
           this.logger.warn(`job ${scheduleData.name} launching`);
@@ -274,23 +276,24 @@ export class TaskService {
       job.start();
       this.schedulerRegistry.addCronJob(scheduleData.id, job);
       this.logger.warn(`job ${scheduleData.name} has been init`);
+      if (scheduleData) wrap(task).assign({ type: TaskType.SCHEDULED });
+      await this.em.flush();
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);
     }
   }
 
-  async getSchedules(): Promise<object[]> {
+  async getRunningSchedules(): Promise<IRunningSchedule[]> {
     try {
       const jobs: Map<string, CronJob> = this.schedulerRegistry.getCronJobs();
-      const jobsList: object[] = [];
+      const jobsList: IRunningSchedule[] = [];
       jobs.forEach((value, key) => {
         let next: string;
         let last: string;
         try {
           last = value.lastDate();
           next = value.nextDate();
-          console.log(value.cronTime.source);
         } catch (e) {
           next = 'error: next fire date is in the past!';
           last = 'error: last fire date is in the future!';
