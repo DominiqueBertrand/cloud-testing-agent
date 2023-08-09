@@ -11,6 +11,7 @@ import { PmEnvironmentModule } from './modules/pmEnvironment/pmEnvironment.modul
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/users/user.module';
 import { PmScheduleModule } from './modules/pmSchedule/pmSchedule.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PmScheduleModule } from './modules/pmSchedule/pmSchedule.module';
     PmScheduleModule,
     AuthModule,
     UserModule,
+    ScheduleModule.forRoot(),
   ],
 })
 export class AppModule {}

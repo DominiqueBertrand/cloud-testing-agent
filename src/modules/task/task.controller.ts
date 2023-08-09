@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpException,
@@ -11,7 +12,15 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { Task } from '@src/entities';
 import { CreateOrUpdateElementDto, FindAllElementsQueryDto } from './dto';
@@ -20,7 +29,7 @@ import { TaskService } from './task.service';
 import { RunBatch } from './dto/run-batch';
 import { UpdateReportDto } from './dto/update-report';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
-import { ITask } from './task.type';
+import { IRunningSchedule, ITask } from './task.type';
 import { Public } from '../common/decorators';
 
 @Controller('task')
@@ -63,6 +72,7 @@ export class TaskController {
     type: Task,
   })
   async create(@Body() body: CreateOrUpdateElementDto): Promise<ITask> {
+    console.log(body);
     if (!body.collection) {
       throw new HttpException('{collection} object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -138,12 +148,29 @@ export class TaskController {
     return this.taskService.runBatch(body.tasks);
   }
 
-  @Post('actions/run/schedule')
+  @Post(':id/actions/run/schedule')
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
   async createScheduledTask(@Param() id: string): Promise<void> {
     if (!id) {
       throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
     return this.taskService.runSchedule(id);
+  }
+
+  @Get('actions/run/schedule')
+  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  async getSchedules(): Promise<IRunningSchedule[]> {
+    return this.taskService.getRunningSchedules();
+  }
+
+  @Delete(':id/actions/run/schedule')
+  @HttpCode(204)
+  @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
+  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  async stopScheduleTask(@Param() id: string): Promise<void> {
+    if (!id) {
+      throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
+    }
+    return this.taskService.stopSchedule(id);
   }
 }

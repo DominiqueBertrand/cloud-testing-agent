@@ -3,12 +3,14 @@ import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import newman, { NewmanRunSummary } from 'newman';
 import { TestReport } from '../dto/test-report';
 import { PoolRunWorkerDto } from '../dto';
+import { ICollection } from '@src/modules/pmCollection/pmCollection.type';
+import { IEnvironment } from '@src/modules/pmEnvironment/pmEnvironment.type';
 
-async function newmanRunner(_collection, _environment): Promise<NewmanRunSummary> {
+async function newmanRunner(_collection: ICollection, _environment: IEnvironment): Promise<NewmanRunSummary> {
   // run and return Promise newman test result
-  const collection = JSON.parse(_collection);
-  const environment = JSON.parse(_environment);
-  console.log(typeof collection, typeof environment);
+  const collection: object = JSON.parse(_collection.toString());
+  const environment: object = JSON.parse(_environment.toString());
+
   return new Promise((resolve, reject) => {
     newman.run(
       {

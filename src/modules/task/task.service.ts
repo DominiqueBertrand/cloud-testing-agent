@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository, wrap, EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmCollection, PmEnvironment, PmSchedule, Task } from '@src/entities';
@@ -8,17 +8,22 @@ import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
 import { UpdateReportDto } from './dto/update-report';
 import { CronJob } from 'cron';
 import { sanitizeTask } from './task.utils';
-import { ITask } from './task.type';
+import { IRunningSchedule, ITask } from './task.type';
+import { SchedulerRegistry } from '@nestjs/schedule';
+import { TaskType } from './task-status.enum';
 
 @Injectable()
 export class TaskService {
   static pool: Piscina;
+  private readonly logger = new Logger(TaskService.name);
+
   constructor(
     @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
     @InjectRepository(PmCollection) private readonly pmCollectionRepository: EntityRepository<PmCollection>,
     @InjectRepository(PmEnvironment) private readonly pmEnvironmentRepository: EntityRepository<PmEnvironment>,
     @InjectRepository(PmSchedule) private readonly pmScheduleRepository: EntityRepository<PmSchedule>,
     private readonly em: EntityManager,
+    private schedulerRegistry: SchedulerRegistry,
   ) {
     TaskService.pool = TaskService.pool ? TaskService.pool : TaskService.poolInstance();
   }
@@ -254,21 +259,67 @@ export class TaskService {
   }
   async runSchedule(id: string): Promise<void> {
     try {
-      // using reference is enough, no need for a fully initialized entity
-      const scheduleData = await this.pmScheduleRepository.findOne(id);
-
-      if (!scheduleData) {
+      const pmSchedule: PmSchedule | null = await this.pmScheduleRepository.findOne(id);
+      if (!pmSchedule) {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
-      } else {
-        const job = new CronJob(scheduleData.schedule.cron, () => {
-          console.log('job');
-        });
-        console.log(job);
-        // this.schedulerRegistry.addCronJob(schedule.id, job);
       }
+      const task: Task | null = await this.taskRepository.findOne(pmSchedule.task.id);
+      const job: CronJob = new CronJob(pmSchedule.cron, () => {
+        try {
+          this.logger.warn(`job ${pmSchedule.name} launching`);
+          this.run(pmSchedule.task.id);
+          this.logger.warn(`job ${pmSchedule.name} done!`);
+        } catch {
+          this.logger.warn(`job ${pmSchedule.name} failed!`);
+        }
+      });
+      job.start();
+      this.schedulerRegistry.addCronJob(pmSchedule.id, job);
+      this.logger.warn(`job ${pmSchedule.name} has been init`);
+      if (pmSchedule) wrap(task).assign({ type: TaskType.SCHEDULED });
+      await this.em.flush();
+    } catch (error: any) {
+      console.table(error);
+      throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getRunningSchedules(): Promise<IRunningSchedule[]> {
+    try {
+      const jobs: Map<string, CronJob> = this.schedulerRegistry.getCronJobs();
+      const jobsList: IRunningSchedule[] = [];
+      jobs.forEach(async (value, key) => {
+        const next: Date = value.lastDate();
+        const last: Date = value.nextDate();
+        this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
+        const pmSchedule: PmSchedule | null = await this.pmScheduleRepository.findOne(key);
+        jobsList.push({ key: key, cron: pmSchedule?.cron, nextTest: next, lastTest: last });
+      });
+      return jobsList;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async stopSchedule(id: string): Promise<void> {
+    try {
+      const scheduleData: PmSchedule | null = await this.pmScheduleRepository.findOne(id);
+
+      if (!scheduleData) {
+        throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
+      }
+
+      this.schedulerRegistry.deleteCronJob(scheduleData.id);
+      this.logger.warn(`job '${scheduleData.name}' deleted!`);
+    } catch (error: any) {
+      switch (error?.errno ?? error?.status) {
+        case 404:
+          throw new HttpException(`Error ${error.status}: ${error?.message}`, HttpStatus.NOT_FOUND);
+
+        default:
+          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      }
     }
   }
 }
