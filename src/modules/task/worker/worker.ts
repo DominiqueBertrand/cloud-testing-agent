@@ -42,6 +42,8 @@ export async function taskWorker(task: PoolRunWorkerDto): Promise<PoolRunWorkerD
     return task;
   }
 }
+
+//TODO : change method
 module.exports = async (workerData: PoolRunWorkerDto): Promise<PoolRunWorkerDto> => {
   return await taskWorker(workerData);
 };

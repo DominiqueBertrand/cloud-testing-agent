@@ -43,14 +43,14 @@ export class PmScheduleService {
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
-      fields: ['id', 'schedule', 'createdAt', 'updatedAt'],
+      fields: ['id', 'cron', 'name', 'createdAt', 'updatedAt'],
     });
   }
 
   async findOne(scheduleId: string): Promise<PmSchedule | null> {
     const schedule: PmSchedule | null = await this.pmSchedulerepository.findOne(
       { id: scheduleId },
-      { populate: ['task', 'schedule'] },
+      { populate: ['task', 'cron', 'name'] },
     );
     if (!schedule) {
       throw new HttpException('Id schedule is not valid', HttpStatus.BAD_REQUEST);
@@ -64,8 +64,8 @@ export class PmScheduleService {
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
-      const pmSchedule: PmSchedule = new PmSchedule(pSchedule, task);
-      if (!checkCron(pmSchedule.schedule)) {
+      const pmSchedule: PmSchedule = new PmSchedule(pSchedule.cron, pSchedule.name, task);
+      if (!checkCron(pmSchedule.cron)) {
         throw new HttpException('Cron is not valid', HttpStatus.BAD_REQUEST);
       }
       this.em.persist(pmSchedule);
@@ -85,7 +85,7 @@ export class PmScheduleService {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       }
 
-      const pmSchedule: PmSchedule = new PmSchedule(schedule, id);
+      const pmSchedule: PmSchedule = new PmSchedule(schedule.cron, schedule.name, id);
       this.em.persist(pmSchedule);
       await this.em.flush();
 
@@ -96,7 +96,7 @@ export class PmScheduleService {
     }
   }
 
-  async delete(id: string): Promise<string> {
+  async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
       const schedule = await this.pmSchedulerepository.findOne({ id });
@@ -105,11 +105,20 @@ export class PmScheduleService {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       } else {
         await this.em.removeAndFlush(schedule);
-        return 'Schedule ' + id + ' deleted';
       }
     } catch (error: any) {
-      console.table(error);
-      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+      switch (error?.errno ?? error?.status) {
+        case 19:
+          throw new HttpException(
+            `Error ${error.errno}: this collection is used by at least one task.`,
+            HttpStatus.FAILED_DEPENDENCY,
+          );
+        case 404:
+          throw new HttpException(`Error ${error.status}: ${error?.message}`, HttpStatus.NOT_FOUND);
+
+        default:
+          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      }
     }
   }
 }

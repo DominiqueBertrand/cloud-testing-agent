@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "1f401af5-fb4e-45e8-a5c0-9575f0e9dac6",
+		"_postman_id": "14af84e1-4c48-4403-8517-4697492e597c",
 		"name": "Postman Collections",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "5685083"
+		"_exporter_id": "26866807",
+		"_collection_link": "https://restless-spaceship-710584.postman.co/workspace/coog-cloud-agent~c81777f4-f090-4047-b543-5cc92d22e9a0/collection/26866807-14af84e1-4c48-4403-8517-4697492e597c?action=share&creator=26866807&source=collection_link"
 	},
 	"item": [
 		{
@@ -440,7 +441,7 @@
 	"variable": [
 		{
 			"key": "collection-id",
-			"value": "bf3b0d8f-21b7-4fbe-a580-b688df6c03da"
+			"value": "f919340f-4770-4afd-b2e2-d291b47527b5"
 		},
 		{
 			"key": "accessToken",
