@@ -62,6 +62,25 @@ Seeding is used to insert data into the database. The seeding files are stored i
 ```sh
     npx cross-env NODE_ENV=dev yarn orm seeder:run   # seeds data
 ```
+
+## Releases
+
+When a commit to the main branch has Release-As: x.x.x (case insensitive) in the commit body, [Release Please](https://github.com/googleapis/release-please) will open a new pull request for the specified version.
+
+Empty commit example:
+
+```sh
+git commit --allow-empty -m "chore: release 0.2.0" -m "Release-As: 0.2.0"
+```
+
+results in the following commit message:
+
+```sh
+chore: release 2.0.0
+
+Release-As: 2.0.0
+```
+
 ## License
 
 Nest is [MIT licensed](LICENSE).
