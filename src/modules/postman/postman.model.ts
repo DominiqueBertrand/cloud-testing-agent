@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class tests {
+export class Tests {
   constructor(
     public id_collection: string,
     public title: string,
@@ -59,7 +59,7 @@ export class PostmanModel implements IPostmanModel {
   }
 }
 
-export class collectionsList {
+export class CollectionsList {
   constructor(
     public Id: string,
     public name: string,

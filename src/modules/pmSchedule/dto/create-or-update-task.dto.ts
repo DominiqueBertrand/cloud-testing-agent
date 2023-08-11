@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-// import { Task } from '@src/entities';
 import { IPmSchedule, Schedule } from '@src/modules/pmSchedule/pmSchedule.type';
 
 export class CreateOrUpdateScheduletDto implements Partial<IPmSchedule> {

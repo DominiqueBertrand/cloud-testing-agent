@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { iUser } from '@src/modules/users/user.type';
+import { IUser } from '@src/modules/users/user.type';
 import { IsString } from 'class-validator';
 
-export class UpdateProfileDto implements Partial<iUser> {
+export class UpdateProfileDto implements Partial<IUser> {
   @IsString()
   @ApiProperty({
     required: false,
