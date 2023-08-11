@@ -62,7 +62,6 @@ describe('PmCollectionController', () => {
       ],
     }).compile();
     pmCollectionController = moduleRef.get<PmCollectionController>(PmCollectionController);
-    // pmCollectionService = moduleRef.get<PmCollectionService>(PmCollectionService);
   });
 
   it('should be defined', () => {
@@ -74,7 +73,6 @@ describe('PmCollectionController', () => {
       expect(Array.isArray(test)).toBe(true);
       expect(test).toEqual(expect.objectContaining([mockCollection]));
       expect(200);
-      // expect(result.statusCode).toEqual(200);
     });
   });
   describe('create', () => {

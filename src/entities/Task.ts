@@ -10,7 +10,6 @@ import {
   Ref,
   wrap,
 } from '@mikro-orm/core';
-// import { ApiProperty } from '@nestjs/swagger';
 
 import { PmCollection, PmEnvironment, PmReport, PmSchedule } from './index';
 import { BaseEntity } from './BaseEntity';
@@ -26,7 +25,7 @@ export class Task extends BaseEntity implements ITask {
   @ManyToOne(() => PmEnvironment)
   environment?: Ref<PmEnvironment>;
 
-  @OneToMany(() => PmReport, report => report.task, { cascade: [Cascade.ALL] })
+  @OneToMany(() => PmReport, report => report.task, { cascade: [Cascade.ALL], orphanRemoval: true })
   @IsOptional()
   reports: Collection<PmReport> = new Collection<PmReport>(this);
 

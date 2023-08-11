@@ -107,9 +107,16 @@ export class TaskController {
     });
   }
 
-  @HttpCode(HttpStatus.OK)
+  @Delete(':id')
+  @HttpCode(204)
+  @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
+  async delete(@Param('id') id: string): Promise<void> {
+    return this.taskService.delete(id);
+  }
+
   @Public()
   @Post(':id/actions/report')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a task report' })
   @ApiParam({
     name: 'id',

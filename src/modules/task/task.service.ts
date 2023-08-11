@@ -133,8 +133,8 @@ export class TaskService {
       if (!task) {
         throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
       }
-      const pmCollection = this.pmCollectionRepository.findOne({ id: collection?.id });
-      const pmEnvironment = this.pmEnvironmentRepository.findOne({ id: environment?.id });
+      const pmCollection = await this.pmCollectionRepository.findOne({ id: collection?.id });
+      const pmEnvironment = await this.pmEnvironmentRepository.findOne({ id: environment?.id });
       if (!pmCollection && !pmEnvironment) {
         throw new HttpException('Collecion or Environment not found', HttpStatus.NOT_FOUND);
       }
@@ -171,7 +171,9 @@ export class TaskService {
   async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const task = await this.taskRepository.findOne(id);
+      const task = await this.taskRepository.findOne(id, {
+        populate: ['reports', 'schedule'],
+      });
 
       if (!task) {
         throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
@@ -238,7 +240,7 @@ export class TaskService {
             throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
           }
           if (!taskLoaded) {
-            throw new HttpException('Task not found : ' + { taskId }, HttpStatus.NOT_FOUND);
+            throw new HttpException(`Task not found : ${taskId}`, HttpStatus.NOT_FOUND);
           }
           tasksData.push(new PoolRunWorkerDto(taskId, pmEnvironment, pmCollection));
           santizedTask.push(sanitizeTask(taskLoaded));
@@ -284,21 +286,35 @@ export class TaskService {
     }
   }
 
+  private async fetchSchedule(value: CronJob, key: string): Promise<IRunningSchedule> {
+    try {
+      const next: Date = value.lastDate();
+      const last: Date = value.nextDate();
+      // debug: logging
+      this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
+
+      const pmSchedule: PmSchedule | null = await this.pmScheduleRepository.findOne(key);
+      const job: IRunningSchedule = { key: key, cron: pmSchedule?.cron, nextTest: next, lastTest: last };
+      return job;
+    } catch (error: any) {
+      this.logger.error(error);
+      throw new HttpException(error?.name, HttpStatus.NOT_FOUND);
+    }
+  }
+
   async getRunningSchedules(): Promise<IRunningSchedule[]> {
     try {
       const jobs: Map<string, CronJob> = this.schedulerRegistry.getCronJobs();
       const jobsList: IRunningSchedule[] = [];
-      jobs.forEach(async (value, key) => {
-        const next: Date = value.lastDate();
-        const last: Date = value.nextDate();
-        this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
-        const pmSchedule: PmSchedule | null = await this.pmScheduleRepository.findOne(key);
-        jobsList.push({ key: key, cron: pmSchedule?.cron, nextTest: next, lastTest: last });
-      });
+      const jobKeys: IterableIterator<string> = jobs.keys();
+      for (const jobKey in jobKeys) {
+        const job: IRunningSchedule = await this.fetchSchedule(jobs[jobKey], jobKey);
+        jobsList.push(job);
+      }
       return jobsList;
     } catch (error: any) {
-      console.table(error);
-      throw new HttpException(error.name, HttpStatus.NOT_FOUND);
+      this.logger.error(error);
+      throw new HttpException(error?.name, HttpStatus.NOT_FOUND);
     }
   }
 
@@ -313,12 +329,10 @@ export class TaskService {
       this.schedulerRegistry.deleteCronJob(scheduleData.id);
       this.logger.warn(`job '${scheduleData.name}' deleted!`);
     } catch (error: any) {
-      switch (error?.errno ?? error?.status) {
-        case 404:
-          throw new HttpException(`Error ${error.status}: ${error?.message}`, HttpStatus.NOT_FOUND);
-
-        default:
-          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      if ((error?.errno ?? error?.status) === 404) {
+        throw new HttpException(`Error ${error.status}: ${error?.message}`, HttpStatus.NOT_FOUND);
+      } else {
+        throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
       }
     }
   }
