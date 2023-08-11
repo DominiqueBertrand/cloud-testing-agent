@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v0.2.0...v1.0.0) (2023-08-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* **global:** cf README.md
+
+### Miscellaneous Chores
+
+* **global:** experimentation with the use of SonarQube ([9ace6c9](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/9ace6c99734e4b8a1afc6ee894f313dbbd857777))
+
 ## 0.2.0 (2023-08-09)
 
 
