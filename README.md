@@ -81,6 +81,31 @@ chore: release 2.0.0
 Release-As: 2.0.0
 ```
 
+## SonarQube
+
+### Execute the Scanner
+
+Running a SonarQube analysis is straighforward. You just need to execute the following commands in your project's folder.
+```sh
+sonar-scanner \
+  -Dsonar.projectKey=coog-cloud-agent \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://localhost:9000/ \
+  -Dsonar.token=**sqp_f08c685c3cada8eb076aba6905973ff4a1f3aceb**
+```
+
+or thanks to the following docker command :
+
+```sh
+docker run \
+    --rm \
+    -e SONAR_HOST_URL="$(SONARQUBE_URL)" \
+    -e SONAR_SCANNER_OPTS="-Dsonar.projectKey=$(SONARQUBE_PROJECT_KEY)" \
+    -e SONAR_TOKEN="$(SONARQUBE_TOKEN)" \
+    -v "$(SONARQUBE_REPO):/usr/src" \
+    sonarsource/sonar-scanner-cli
+```
+
 ## License
 
 Nest is [MIT licensed](LICENSE).
