@@ -4,10 +4,10 @@ import { Entity, Property, Index, Unique, OneToMany, Cascade, Collection } from 
 import { RefreshSession } from './RefreshSession';
 import { BaseEntity } from './BaseEntity';
 import { UserRole } from '@src/modules/users/user.enum';
-import { iUser } from '@src/modules/users/user.type';
+import { IUser } from '@src/modules/users/user.type';
 
 @Entity()
-export class User extends BaseEntity implements iUser {
+export class User extends BaseEntity implements IUser {
   @Property({ nullable: false })
   @Index()
   @Unique()
@@ -27,7 +27,7 @@ export class User extends BaseEntity implements iUser {
 
   @Property({ nullable: true })
   @IsEmail()
-  email?: string | undefined;
+  email?: string;
 
   constructor(username: string, password: string, roles?: UserRole[], email?: string) {
     super();

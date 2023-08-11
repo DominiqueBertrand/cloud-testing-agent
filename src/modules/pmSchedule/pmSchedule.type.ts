@@ -14,7 +14,3 @@ export class Schedule {
     this.name = name;
   }
 }
-// export interface ISchedule {
-//   cron: string;
-//   name: string;
-// }

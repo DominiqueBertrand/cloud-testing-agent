@@ -115,14 +115,13 @@ export class UserService {
 
       await this.em.removeAndFlush(user);
     } catch (error: any) {
-      switch (error?.errno ?? error?.status) {
-        case 19:
-          throw new HttpException(
-            `Error ${error.errno}: this environment is used by at least one task.`,
-            HttpStatus.FAILED_DEPENDENCY,
-          );
-        default:
-          throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
+      if ((error?.errno ?? error?.status) === 404) {
+        throw new HttpException(
+          `Error ${error.errno}: this environment is used by at least one task.`,
+          HttpStatus.FAILED_DEPENDENCY,
+        );
+      } else {
+        throw new HttpException(JSON.stringify(error), HttpStatus.BAD_REQUEST);
       }
     }
   }

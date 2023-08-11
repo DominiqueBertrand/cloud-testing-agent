@@ -107,7 +107,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageReporters": ["lcov", "json", "html"]
   },
   "mikro-orm": {
     "useTsNode": true,

@@ -5,12 +5,12 @@ import { IEnvironment, IPmEnvironment } from '@src/modules/pmEnvironment/pmEnvir
 import { TestStatus } from '@src/modules/pmReport/pmReport-status.enum';
 import { TaskStatus, TaskType } from '../task-status.enum';
 
-interface iCollection extends Partial<IPmCollection> {
+interface IDtoCollection extends Partial<IPmCollection> {
   id: string;
   environment?: IEnvironment;
 }
 
-interface iEnvironment extends Partial<IPmEnvironment> {
+interface IDtoEnvironment extends Partial<IPmEnvironment> {
   id: string;
 }
 
@@ -26,13 +26,13 @@ export class CreateOrUpdateElementDto {
     required: true,
     description: 'Postman collection in json format',
   })
-  readonly collection!: iCollection;
+  readonly collection!: IDtoCollection;
 
   @ApiProperty({
     required: true,
     description: 'Postman environment in json format',
   })
-  readonly environment!: iEnvironment;
+  readonly environment!: IDtoEnvironment;
 
   @ApiProperty({
     required: false,

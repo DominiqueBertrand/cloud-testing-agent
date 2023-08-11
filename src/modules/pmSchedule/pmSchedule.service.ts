@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, EntityManager, QueryOrder } from '@mikro-orm/core';
 
-import { EntityManager, QueryOrder } from '@mikro-orm/core';
 import { PmSchedule, Task } from '@src/entities';
 import { ElementsQueryDto } from './dto';
 import { checkCron } from './middleware/checkCron';

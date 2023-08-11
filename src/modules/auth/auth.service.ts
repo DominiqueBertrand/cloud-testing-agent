@@ -27,7 +27,7 @@ export class AuthService {
   async validateUser(username: string, pass: string): Promise<any> {
     const user: User = await this.userService.getUserByUsername(username);
 
-    if (user && user.password) {
+    if (user?.password) {
       const isValid = await bcrypt.compare(pass, user.password);
       if (isValid) {
         const dynamicKey = 'password';
@@ -162,7 +162,7 @@ export class AuthService {
     const email: string | undefined = updateProfileDto?.email;
     const password: string | undefined = updateProfileDto?.password;
 
-    if (email && user.email !== email) {
+    if (user?.email !== email) {
       user.email = email;
       this.em.persist(user);
       await this.em.flush();
