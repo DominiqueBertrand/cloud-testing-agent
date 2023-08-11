@@ -1,6 +1,6 @@
 {
   "name": "coog-cloud-agent",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "private": true,
@@ -109,7 +109,11 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "collectCoverage": true,
-    "coverageReporters": ["lcov", "json", "html"]
+    "coverageReporters": [
+      "lcov",
+      "json",
+      "html"
+    ]
   },
   "mikro-orm": {
     "useTsNode": true,
