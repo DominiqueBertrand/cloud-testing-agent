@@ -8,8 +8,8 @@ import { IEnvironment } from '@src/modules/pmEnvironment/pmEnvironment.type';
 
 async function newmanRunner(collection: ICollection, environment: IEnvironment): Promise<NewmanRunSummary> {
   // run and return Promise newman test result
-  const _collection: object = JSON.parse(collection.toString());
-  const _environment: object = JSON.parse(environment.toString());
+  const _collection: object = JSON.parse(JSON.stringify(collection));
+  const _environment: object = JSON.parse(JSON.stringify(environment));
 
   return new Promise((resolve, reject) => {
     newman.run(

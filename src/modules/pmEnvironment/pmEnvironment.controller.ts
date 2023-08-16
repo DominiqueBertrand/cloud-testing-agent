@@ -68,16 +68,15 @@ export class PmEnvironmentController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a environment' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateEnvironmentDto): Promise<PmEnvironment> {
+  async update(@Param('id') id: string, @Body() body: CreateOrUpdateEnvironmentDto): Promise<PmEnvironment> {
     if (!body.environment) {
       throw new HttpException('"environment" object is missing', HttpStatus.BAD_REQUEST);
     }
     if (!body.environment?.id || !body.environment?.name) {
       throw new HttpException('"environment" object is in wrong format', HttpStatus.BAD_REQUEST);
     }
-    const ref = body.ref;
 
-    return await this.pmEnvironmentService.update({ environment: body.environment, ref, id });
+    return await this.pmEnvironmentService.update({ environment: body.environment, id });
   }
 
   @Delete(':id')

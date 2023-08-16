@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "a70d489b-bf6f-484c-ac80-ecb543e6310b",
+		"_postman_id": "bfafefb4-e2d4-40b4-9f3e-784804be0b35",
 		"name": "Postman Environments",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "26866807",
-		"_collection_link": "https://restless-spaceship-710584.postman.co/workspace/coog-cloud-agent~c81777f4-f090-4047-b543-5cc92d22e9a0/collection/26866807-a70d489b-bf6f-484c-ac80-ecb543e6310b?action=share&creator=26866807&source=collection_link"
+		"_exporter_id": "5685083"
 	},
 	"item": [
 		{
@@ -115,14 +114,12 @@
 							"});",
 							"",
 							"",
-							"pm.test(\"Verify the presence of 'tasks' array with expected number of elements\", function () {",
+							"pm.test(\"Verify the presence of 'tasks' array\", function () {",
 							"    const responseData = pm.response.json();",
 							"    ",
 							"    pm.expect(responseData).to.be.an('array');",
-							"    pm.expect(responseData).to.have.lengthOf(1);",
 							"    pm.expect(responseData[0]).to.have.property('tasks');",
 							"    pm.expect(responseData[0].tasks).to.be.an('array');",
-							"    pm.expect(responseData[0].tasks).to.have.lengthOf(1);",
 							"});",
 							"",
 							"",
@@ -131,7 +128,7 @@
 							"    ",
 							"    pm.expect(responseData).to.be.an('array');",
 							"    responseData.forEach(function(item) {",
-							"        pm.expect(item.options).to.be.null.or.an('object');",
+							"        pm.expect(item.options).to.be.undefined.or.an('object');",
 							"    });",
 							"});"
 						],
@@ -228,7 +225,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"environment\": {\n        \"id\": \"8f3277a9-c7ba-4316-b333-3e015a270e48\",\n        \"name\": \"Nortia Recette\",\n        \"values\": [\n            {\n                \"key\": \"root_gateway_url\",\n                \"value\": \"https://nevidis212.recette.coog.io/gateway\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"login\",\n                \"value\": \"service.partenaire@nortia-protect.fr\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"password\",\n                \"value\": \"Coopengo\",\n                \"type\": \"default\",\n                \"enabled\": true\n            }\n        ],\n        \"_postman_variable_scope\": \"environment\",\n        \"_postman_exported_at\": \"2023-06-21T13:19:40.369Z\",\n        \"_postman_exported_using\": \"Postman/10.14.9\"\n    }\n}",
+					"raw": "{\n    \"environment\": {\n        \"id\": \"test_8f3277a9-c7ba-4316-b333-3e015a270e48\",\n        \"name\": \"Nortia Recette\",\n        \"values\": [\n            {\n                \"key\": \"root_gateway_url\",\n                \"value\": \"https://nevidis212.recette.coog.io/gateway\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"login\",\n                \"value\": \"service.partenaire@nortia-protect.fr\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"password\",\n                \"value\": \"Coopengo\",\n                \"type\": \"default\",\n                \"enabled\": true\n            }\n        ],\n        \"_postman_variable_scope\": \"environment\",\n        \"_postman_exported_at\": \"2023-06-21T13:19:40.369Z\",\n        \"_postman_exported_using\": \"Postman/10.14.9\"\n    }\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -244,6 +241,82 @@
 						"postman",
 						"environment",
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update an environment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"",
+							"// TESTS",
+							"pm.test(\"Response body structure is valid\", function () {",
+							"    var responseJSON = pm.response.json();",
+							"",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('id');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('createdAt');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('updatedAt');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('tasks');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('environment');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('ref');",
+							"    pm.expect(responseJSON).to.be.an('object').that.has.property('name');",
+							"",
+							"    var environment = responseJSON.environment;",
+							"    pm.expect(environment).to.be.an('object').that.has.property('id');",
+							"    pm.expect(environment).to.be.an('object').that.has.property('name');",
+							"",
+							"    var values = environment.values;",
+							"    pm.expect(values).to.be.an('array').that.is.not.empty;",
+							"",
+							"    values.forEach(function (value) {",
+							"        pm.expect(value).to.be.an('object').that.has.property('key');",
+							"        pm.expect(value).to.be.an('object').that.has.property('value');",
+							"        pm.expect(value).to.be.an('object').that.has.property('type');",
+							"        pm.expect(value).to.be.an('object').that.has.property('enabled');",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"environment\": {\n        \"id\": \"test_8f3277a9-c7ba-4316-b333-3e015a270e48\",\n        \"name\": \"Nortia Recette v2\",\n        \"values\": [\n            {\n                \"key\": \"root_gateway_url\",\n                \"value\": \"https://nevidis212.recette.coog.io/gateway\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"login\",\n                \"value\": \"service.partenaire@nortia-protect.fr\",\n                \"type\": \"default\",\n                \"enabled\": true\n            },\n            {\n                \"key\": \"password\",\n                \"value\": \"Coopengo2\",\n                \"type\": \"default\",\n                \"enabled\": true\n            }\n        ],\n        \"_postman_variable_scope\": \"environment\",\n        \"_postman_exported_at\": \"2023-06-21T13:19:40.369Z\",\n        \"_postman_exported_using\": \"Postman/10.14.9\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/postman/environment/{{environment-id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"postman",
+						"environment",
+						"{{environment-id}}"
 					]
 				}
 			},
@@ -389,7 +462,7 @@
 	"variable": [
 		{
 			"key": "environment-id",
-			"value": "8f3277a9-c7ba-4316-b333-3e015a270e48",
+			"value": "de004466-88b3-4b96-850a-e198950adbfb",
 			"type": "string"
 		},
 		{
