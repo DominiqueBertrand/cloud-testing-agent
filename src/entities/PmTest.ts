@@ -1,5 +1,4 @@
 import { Entity, Index, OneToOne, Property } from '@mikro-orm/core';
-// import { ApiProperty } from '@nestjs/swagger';
 
 import { PmReport } from './index';
 import { BaseEntity } from './BaseEntity';
