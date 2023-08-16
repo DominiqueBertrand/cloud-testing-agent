@@ -69,18 +69,24 @@ export class PmEnvironmentService {
     }
   }
 
-  async update({ environment, ref, id }) {
+  async update({ environment, id }) {
     try {
-      const _environment: PmEnvironment | null = await this.em.findOne(PmEnvironment, { ref: id });
-      if (!_environment) {
+      const pmEnvironment: PmEnvironment | null = await this.em.findOneOrFail(
+        PmEnvironment,
+        { id },
+        { populate: true },
+      );
+      if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-      if (!environment?.id !== id) {
+      if (!environment?.id === id) {
         throw new HttpException('Environment id mistmatch', HttpStatus.NOT_FOUND);
       }
-      const name = environment?.name;
-      const pmEnvironment: PmEnvironment = new PmEnvironment(environment, id, ref, name);
-      this.em.persist(pmEnvironment);
+      this.em.assign(
+        pmEnvironment,
+        { environment: JSON.stringify(environment), name: environment.name },
+        { mergeObjects: true, convertCustomTypes: true },
+      );
       await this.em.flush();
 
       return pmEnvironment;
@@ -93,7 +99,7 @@ export class PmEnvironmentService {
   async delete(id: string) {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const environment = await this.em.find(PmEnvironment, { ref: id });
+      const environment = await this.em.findOne(PmEnvironment, { id });
 
       if (!environment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
