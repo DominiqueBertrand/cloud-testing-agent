@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.1](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v1.0.0...v1.0.1) (2023-08-16)
+
+
+### Bug Fixes
+
+* add TNR / Postman ([b9bc9c1](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/b9bc9c105635cbad98083e1d50e8301c2cb1f5a3))
+* delete Collection update controller, controller test, service ([3e2e4c5](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/3e2e4c5be197b7efb351538facfbb74540e3e08b))
+* **pmenvironment:** fix failures fo update service of moule pmEnvironment ([c686df5](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/c686df5f499a1c546d25b6fc129cdd4604a6f3c5))
+
 ## [1.0.0](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v0.2.0...v1.0.0) (2023-08-11)
 
 
