@@ -44,9 +44,18 @@ describe('PmEnvironmentService', () => {
 
   describe('find', () => {
     it('should return an array"', async () => {
-      const test = await pmCollectionService.findAll({ limit: 20, offset: 0, orderBy: 'updatedAt' });
+      const test: PmCollection[] = await pmCollectionService.findAll({
+        limit: 20,
+        offset: 0,
+        orderBy: 'updatedAt',
+      });
       expect(test).not.toEqual(null);
-      console.log(test);
+      expect(200);
+    });
+  });
+  describe('create', () => {
+    it('should return a collection"', async () => {
+      expect(test).not.toEqual(null);
       expect(200);
     });
   });
