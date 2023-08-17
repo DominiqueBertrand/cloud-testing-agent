@@ -9,3 +9,10 @@ export JSON_PARSER_LIMIT=20mb # default to 20mb
 export JWT_SECRET=secret
 export JWT_ACCESS_EXPIRESIN=15m
 export JWT_REFRESH_EXPIRESIN=1h
+
+# SONARQUBE
+export SONARQUBE_URL=http://localhost:9000
+export SONARQUBE_PROJECT_KEY=coog-cloud-agent
+export SONARQUBE_TOKEN=sqp_f08c685c3cada8eb076aba6905973ff4a1f3aceb
+SONARQUBE_REPO="$(pwd)"
+export SONARQUBE_REPO
