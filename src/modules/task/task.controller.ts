@@ -48,7 +48,7 @@ export class TaskController {
     required: false,
     type: Number,
   })
-  async find(@Query() query: FindAllElementsQueryDto) {
+  async find(@Query() query: FindAllElementsQueryDto): Promise<Task[]> {
     return await this.taskService.findAll(query);
   }
 
@@ -72,7 +72,6 @@ export class TaskController {
     type: Task,
   })
   async create(@Body() body: CreateOrUpdateElementDto): Promise<ITask> {
-    console.log(body);
     if (!body.collection) {
       throw new HttpException('{collection} object is missing', HttpStatus.BAD_REQUEST);
     }
