@@ -20,6 +20,9 @@ package-lock.json
 # Tests
 /coverage
 /.nyc_output
+.scannerwork
+.scannerwork/*
+dependency-check-report.*
 
 # IDEs and editors
 /.idea
