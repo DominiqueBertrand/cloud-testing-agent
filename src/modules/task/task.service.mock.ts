@@ -45,10 +45,17 @@ export const mock = {
 };
 
 export const mockTaskService = {
+  //   findAll: jest.fn().mockImplementation(queryFindAll => {
+  //     if (queryFindAll === queryFindAll) {
+  //       promises.resolve('');
+  //     } else {
+  //       promises.resolve('bad query request');
+  //     }
+  //   }),
   findAll: jest.fn().mockResolvedValueOnce([]),
   create: jest.fn(),
   findOne: jest.fn().mockResolvedValueOnce(mockTask),
-  update: jest.fn().mockResolvedValueOnce([]),
+  update: jest.fn(),
   delete: jest.fn(),
   run: jest.fn().mockResolvedValueOnce(mockTask),
   runBatch: jest.fn().mockResolvedValueOnce([mockTask, mockTask]),
