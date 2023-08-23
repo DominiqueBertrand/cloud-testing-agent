@@ -286,31 +286,16 @@ export class TaskService {
     }
   }
 
-  private async fetchSchedule(value: CronJob, key: string): Promise<IRunningSchedule> {
-    try {
-      const next: Date = value.lastDate();
-      const last: Date = value.nextDate();
-      // debug: logging
-      this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
-
-      const pmSchedule: PmSchedule | null = await this.pmScheduleRepository.findOne(key);
-      const job: IRunningSchedule = { key: key, cron: pmSchedule?.cron, nextTest: next, lastTest: last };
-      return job;
-    } catch (error: any) {
-      this.logger.error(error);
-      throw new HttpException(error?.name, HttpStatus.NOT_FOUND);
-    }
-  }
-
   async getRunningSchedules(): Promise<IRunningSchedule[]> {
     try {
       const jobs: Map<string, CronJob> = this.schedulerRegistry.getCronJobs();
       const jobsList: IRunningSchedule[] = [];
-      const jobKeys: IterableIterator<string> = jobs.keys();
-      for (const jobKey in jobKeys) {
-        const job: IRunningSchedule = await this.fetchSchedule(jobs[jobKey], jobKey);
-        jobsList.push(job);
-      }
+      jobs.forEach((value, key) => {
+        const next: Date = value.lastDate();
+        const last: Date = value.nextDate();
+        this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
+        jobsList.push({ key: key, nextTest: next, lastTest: last });
+      });
       return jobsList;
     } catch (error: any) {
       this.logger.error(error);

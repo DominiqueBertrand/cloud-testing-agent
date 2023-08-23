@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PmScheduleService } from './pmSchedule.service';
@@ -51,19 +51,6 @@ export class PmScheduleController {
       throw new HttpException('"id" object is missing', HttpStatus.BAD_REQUEST);
     }
     return await this.pmScheduleService.create({ pSchedule: body.schedule, id: body.taskId });
-  }
-
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update an existing schedule' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateScheduletDto): Promise<PmSchedule> {
-    if (!body.schedule) {
-      throw new HttpException('"schedule" object is missing', HttpStatus.BAD_REQUEST);
-    }
-    if (id) {
-      throw new HttpException('"task id" is missing', HttpStatus.BAD_REQUEST);
-    }
-
-    return await this.pmScheduleService.update({ schedule: body.schedule, id });
   }
 
   @Delete(':id')

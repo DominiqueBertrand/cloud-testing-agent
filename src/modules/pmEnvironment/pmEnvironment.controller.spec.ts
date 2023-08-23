@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PmEnvironmentController } from './pmEnvironment.controller';
 import { PmEnvironmentService } from './pmEnvironment.service';
 import { CreateOrUpdateEnvironmentDto } from './dto';
+import { PmEnvironment } from '@src/entities';
 
 describe('PmEnvironmentController', () => {
   let moduleRef: TestingModule;
@@ -47,7 +48,7 @@ describe('PmEnvironmentController', () => {
               .mockImplementation((environment: CreateOrUpdateEnvironmentDto) => Promise.resolve({ ...environment })),
             findAll: jest.fn().mockResolvedValue([mockEnvironment]),
             findOne: jest.fn().mockResolvedValue(mockEnvironment),
-            update: jest.fn().mockResolvedValue(CreateOrUpdateEnvironmentDto),
+            update: jest.fn().mockResolvedValue(mockEnvironment),
             delete: jest.fn(),
           },
         },
@@ -61,14 +62,20 @@ describe('PmEnvironmentController', () => {
   });
   describe('findAll', () => {
     it('should return an array"', async () => {
-      const test = await pmEnvironmentController.find({ limit: 20, offset: 0, orderBy: 'updatedAt' });
+      const test: PmEnvironment[] = await pmEnvironmentController.find({
+        limit: 20,
+        offset: 0,
+        orderBy: 'updatedAt',
+      });
+      expect(test).toEqual(expect.objectContaining([mockEnvironment]));
       expect(Array.isArray(test)).toBe(true);
     });
   });
 
   describe('create', () => {
     it('should return an array"', async () => {
-      const test = await pmEnvironmentController.create(mockEnvironment);
+      const test: PmEnvironment = await pmEnvironmentController.create(mockEnvironment);
+      expect(test).toEqual(expect.objectContaining(mockEnvironment));
       expect(test).not.toEqual(null);
 
       if (test) {
@@ -78,21 +85,24 @@ describe('PmEnvironmentController', () => {
   });
   describe('findOne', () => {
     it('should return an environment"', async () => {
-      const test = await pmEnvironmentController.findOne(envId);
+      const test: PmEnvironment = await pmEnvironmentController.findOne(envId);
+      expect(test).toEqual(expect.objectContaining(mockEnvironment));
       expect(test).not.toEqual(null);
     });
   });
   describe('update', () => {
     it('should return an environment"', async () => {
-      const test = await pmEnvironmentController.update(envId, mockEnvironment);
+      const test: PmEnvironment = await pmEnvironmentController.update(envId, mockEnvironment);
+      expect(test).toEqual(expect.objectContaining(mockEnvironment));
       expect(test).not.toEqual(null);
     });
   });
 
   describe('delete', () => {
     it('should return an message"', async () => {
-      const test = await pmEnvironmentController.delete(envId);
+      const test: void = await pmEnvironmentController.delete(envId);
       expect(test).not.toEqual(null);
+      expect(204);
     });
   });
 });

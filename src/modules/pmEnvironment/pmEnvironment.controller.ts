@@ -60,8 +60,8 @@ export class PmEnvironmentController {
       throw new HttpException('"environment" object is in wrong format', HttpStatus.BAD_REQUEST);
     }
 
-    const id = body.environment?.id;
-    const ref = body.ref ?? id;
+    const id: string = body.environment?.id;
+    const ref: string = body.ref ?? id;
 
     return await this.pmEnvironmentService.create({ environment: body.environment, ref, id });
   }

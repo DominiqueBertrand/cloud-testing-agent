@@ -57,7 +57,7 @@ export class PmCollectionService {
 
   async create({ collection, ref, id }): Promise<PmCollection> {
     try {
-      const name = collection?.info?.name;
+      const name: string = collection?.info?.name;
       const pmCollection: PmCollection = new PmCollection(collection, id, ref, name);
       this.em.persist(pmCollection);
       await this.em.flush();
@@ -72,7 +72,7 @@ export class PmCollectionService {
   async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const collection = await this.pmCollectionRepository.findOne(id);
+      const collection: PmCollection | null = await this.pmCollectionRepository.findOne(id);
 
       if (!collection) {
         throw new HttpException('Collection not found', HttpStatus.NOT_FOUND);
