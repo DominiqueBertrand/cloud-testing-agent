@@ -55,9 +55,9 @@ export class PmEnvironmentService {
     return environment;
   }
 
-  async create({ environment, ref, id }) {
+  async create({ environment, ref, id }): Promise<PmEnvironment> {
     try {
-      const name = environment?.name;
+      const name: string = environment?.name;
       const pmEnvironment: PmEnvironment = new PmEnvironment(environment, id, ref, name);
       this.em.persist(pmEnvironment);
       await this.em.flush();
@@ -69,7 +69,7 @@ export class PmEnvironmentService {
     }
   }
 
-  async update({ environment, id }) {
+  async update({ environment, id }): Promise<PmEnvironment> {
     try {
       const pmEnvironment: PmEnvironment | null = await this.em.findOneOrFail(
         PmEnvironment,
@@ -96,10 +96,10 @@ export class PmEnvironmentService {
     }
   }
 
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
-      const environment = await this.em.findOne(PmEnvironment, { id });
+      const environment: PmEnvironment | null = await this.em.findOne(PmEnvironment, { id });
 
       if (!environment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
