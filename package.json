@@ -89,6 +89,9 @@
     "tsconfig-paths": "4.2.0",
     "typescript": "^5.0.0"
   },
+  "resolutions": {
+    "newman/**/tough-cookie": "4.1.3"
+  },
   "jest": {
     "moduleFileExtensions": [
       "js",
