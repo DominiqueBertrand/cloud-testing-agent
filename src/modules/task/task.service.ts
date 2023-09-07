@@ -290,6 +290,7 @@ export class TaskService {
     try {
       const jobs: Map<string, CronJob> = this.schedulerRegistry.getCronJobs();
       const jobsList: IRunningSchedule[] = [];
+
       jobs.forEach((value, key) => {
         const next: Date = value.lastDate();
         const last: Date = value.nextDate();
