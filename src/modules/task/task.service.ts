@@ -288,8 +288,8 @@ export class TaskService {
 
   private async fetchSchedule(value: CronJob, key: string): Promise<IRunningSchedule> {
     try {
-      const next: Date = value.lastDate();
-      const last: Date = value.nextDate();
+      const next: Date = value?.lastDate();
+      const last: Date = value?.nextDate();
       // debug: logging
       this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
 
@@ -306,9 +306,8 @@ export class TaskService {
     try {
       const jobs: Map<string, CronJob> = this.schedulerRegistry.getCronJobs();
       const jobsList: IRunningSchedule[] = [];
-      const jobKeys: IterableIterator<string> = jobs.keys();
-      for (const jobKey in jobKeys) {
-        const job: IRunningSchedule = await this.fetchSchedule(jobs[jobKey], jobKey);
+      for (const [key, value] of jobs) {
+        const job: IRunningSchedule = await this.fetchSchedule(value, key);
         jobsList.push(job);
       }
       return jobsList;
