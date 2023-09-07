@@ -7,7 +7,6 @@ import {
   HttpException,
   HttpStatus,
   Param,
-  Patch,
   Post,
   Query,
   UseGuards,
@@ -62,20 +61,6 @@ export class PmCollectionController {
 
     const id = body.collection?.info?._postman_id;
     const ref = body.ref ?? id;
-
-    return this.pmCollectionService.create({ collection: body.collection, ref, id });
-  }
-
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update a collection' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateCollectionDto): Promise<PmCollection> {
-    if (!body.collection) {
-      throw new HttpException('"collection" object is missing', HttpStatus.BAD_REQUEST);
-    }
-    if (!body.collection?.info?._postman_id || !body.collection?.info?.name) {
-      throw new HttpException('"collection" object is in wrong format', HttpStatus.BAD_REQUEST);
-    }
-    const ref = body.ref;
 
     return this.pmCollectionService.create({ collection: body.collection, ref, id });
   }
