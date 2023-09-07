@@ -16,6 +16,19 @@ Note that if your database has not been initialized yet, especially the 'user' t
 
 See section [Seeding](#seeding) below.
 
+## Configuration
+
+Install and follow direnv instructions.
+
+```bash
+$ cp .envrc.example .envrc
+$ direnv allow
+```
+The file .envrc is your centralized configuration for your librairies, applications and services.
+
+
+
+
 ## Running the app
 
 ```bash
