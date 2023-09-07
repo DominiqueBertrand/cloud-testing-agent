@@ -94,14 +94,6 @@ describe('PmCollectionController', () => {
       expect(200);
     });
   });
-  describe('update', () => {
-    it('should return an environment"', async () => {
-      const test = await pmCollectionController.update(collectionId, mockCollection);
-      expect(test).not.toEqual(null);
-      expect(test).toEqual(expect.objectContaining(mockCollection));
-      expect(200);
-    });
-  });
 
   describe('delete', () => {
     it('should return an empty message"', async () => {

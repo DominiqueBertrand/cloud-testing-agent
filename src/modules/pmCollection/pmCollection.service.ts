@@ -69,27 +69,6 @@ export class PmCollectionService {
     }
   }
 
-  async update({ collection, ref, id }): Promise<PmCollection> {
-    try {
-      const _collection: PmCollection | null = await this.pmCollectionRepository.findOne({ ref: id });
-      if (!_collection) {
-        throw new HttpException('Collection not found', HttpStatus.NOT_FOUND);
-      }
-      if (!collection?.id !== id) {
-        throw new HttpException('Collection id mistmatch', HttpStatus.NOT_FOUND);
-      }
-      const name = collection?.name;
-      const pmCollection: PmCollection = new PmCollection(collection, id, ref, name);
-      this.em.persist(pmCollection);
-      await this.em.flush();
-
-      return pmCollection;
-    } catch (error: any) {
-      console.table(error);
-      throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
-    }
-  }
-
   async delete(id: string): Promise<void> {
     try {
       // using reference is enough, no need for a fully initialized entity
