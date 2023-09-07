@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.2](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v1.0.1...v1.0.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* add test schedule and Report controllers + delete update schedule ([b06ea3d](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/b06ea3d79953d2ba625e5d7abbaca845c80a4608))
+* fix schedule task get and test all task controllers ([c8688a1](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/c8688a10e77030290a47e2e85a699efb601b234c))
+
+## [1.0.2](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v1.0.1...v1.0.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* add test schedule and Report controllers + delete update schedule ([b06ea3d](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/b06ea3d79953d2ba625e5d7abbaca845c80a4608))
+* fix schedule task get and test all task controllers ([c8688a1](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/c8688a10e77030290a47e2e85a699efb601b234c))
+
 ## [1.0.1](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v1.0.0...v1.0.1) (2023-08-16)
 
 
