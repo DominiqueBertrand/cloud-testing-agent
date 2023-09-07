@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PmCollectionController } from './pmCollection.controller';
 import { PmCollectionService } from './pmCollection.service';
 import { CreateOrUpdateCollectionDto } from './dto';
+import { PmCollection } from '@src/entities';
 
 describe('PmCollectionController', () => {
   let moduleRef: TestingModule;
@@ -55,7 +56,6 @@ describe('PmCollectionController', () => {
               .mockImplementation((collection: CreateOrUpdateCollectionDto) => Promise.resolve({ ...collection })),
             findAll: jest.fn().mockResolvedValue([mockCollection]),
             findOne: jest.fn().mockResolvedValue(mockCollection),
-            update: jest.fn().mockResolvedValue(CreateOrUpdateCollectionDto),
             delete: jest.fn(),
           },
         },
@@ -68,16 +68,16 @@ describe('PmCollectionController', () => {
     expect(pmCollectionController).toBeDefined();
   });
   describe('find', () => {
-    it('should return an array"', async () => {
-      const test = await pmCollectionController.find({ limit: 20, offset: 0, orderBy: 'updatedAt' });
+    it('should return an array of collections"', async () => {
+      const test: PmCollection[] = await pmCollectionController.find({ limit: 20, offset: 0, orderBy: 'updatedAt' });
       expect(Array.isArray(test)).toBe(true);
       expect(test).toEqual(expect.objectContaining([mockCollection]));
       expect(200);
     });
   });
   describe('create', () => {
-    it('should return an array"', async () => {
-      const test = await pmCollectionController.create(mockCollection);
+    it('should return a collection"', async () => {
+      const test: PmCollection = await pmCollectionController.create(mockCollection);
       expect(test).not.toEqual(null);
       expect(test).toEqual(expect.objectContaining(mockCollection));
       expect(200);
@@ -87,8 +87,8 @@ describe('PmCollectionController', () => {
     });
   });
   describe('findOne', () => {
-    it('should return an environment"', async () => {
-      const test = await pmCollectionController.findOne(collectionId);
+    it('should return a collection"', async () => {
+      const test: PmCollection | null = await pmCollectionController.findOne(collectionId);
       expect(test).not.toEqual(null);
       expect(test).toEqual(expect.objectContaining(mockCollection));
       expect(200);
@@ -97,7 +97,7 @@ describe('PmCollectionController', () => {
 
   describe('delete', () => {
     it('should return an empty message"', async () => {
-      const test = await pmCollectionController.delete(collectionId);
+      const test: void = await pmCollectionController.delete(collectionId);
       expect(test).not.toEqual(null);
       expect(204);
     });
