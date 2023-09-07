@@ -1091,12 +1091,12 @@
     path-to-regexp "3.2.0"
     swagger-ui-dist "5.3.1"
 
-"@nestjs/testing@^10.2.0":
-  version "10.2.0"
-  resolved "https://registry.yarnpkg.com/@nestjs/testing/-/testing-10.2.0.tgz#34a9830d0f77e373aa58b9ccf2c0b161293019c6"
-  integrity sha512-jJjk76maTh2rFq7DR0E3KagI6dt9RIiym+ifjsswZml3lALoHSRAyQFhXdx1biLs0GhGTk+mw75intmsG50rjQ==
+"@nestjs/testing@^10.2.4":
+  version "10.2.4"
+  resolved "https://registry.yarnpkg.com/@nestjs/testing/-/testing-10.2.4.tgz#df28cb0d2d262c1764104b0ccf3d8b7c21587b04"
+  integrity sha512-2qqymiuPbC41yCXXhtt4cL8AOcVNu13gBCT13A8roUUdcs4lmtg+H3oXKF/Gc/vlLv2RkSTNO+JuzxP1hydLPg==
   dependencies:
-    tslib "2.6.1"
+    tslib "2.6.2"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
