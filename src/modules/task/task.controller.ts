@@ -79,11 +79,7 @@ export class TaskController {
       throw new HttpException('{environmemt} object is missing', HttpStatus.BAD_REQUEST);
     }
 
-    return this.taskService.create({
-      collection: body.collection,
-      environment: body.environment,
-      ref: body.ref,
-    });
+    return this.taskService.create(body);
   }
 
   @Put(':id')
