@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PmReportController } from './pmReport.controller';
 import { PmReportService } from './pmReport.service';
 import { mockReport, mockReportService, newReport } from './report.service.mock';
-// import { IPmReport } from './pmReport.type';
 import { PmReport } from '@src/entities';
 import { CreateOrUpdateReportDto } from './dto';
 import { TestStatus } from './pmReport-status.enum';
