@@ -13,6 +13,6 @@ export JWT_REFRESH_EXPIRESIN=1h
 # SONARQUBE
 export SONARQUBE_URL=http://localhost:9000
 export SONARQUBE_PROJECT_KEY=coog-cloud-agent
-export SONARQUBE_TOKEN=sqp_f08c685c3cada8eb076aba6905973ff4a1f3aceb
+export SONARQUBE_TOKEN=xxx
 SONARQUBE_REPO="$(pwd)"
 export SONARQUBE_REPO

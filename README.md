@@ -85,13 +85,29 @@ Release-As: 2.0.0
 
 ### Execute the Scanner
 
-Running a SonarQube analysis is straighforward. You just need to execute the following commands in your project's folder.
+Running a SonarQube analysis is straighforward. Locally, you just need to execute the following commands in your project's folder.
+
+### Generate pre-scan reports
+
+Generate unit test coverage report
+
 ```sh
-sonar-scanner \
-  -Dsonar.projectKey=coog-cloud-agent \
-  -Dsonar.sources=. \
-  -Dsonar.host.url=http://localhost:9000/ \
-  -Dsonar.token=**sqp_f08c685c3cada8eb076aba6905973ff4a1f3aceb**
+yarn test:cov
+```
+
+Generate security vulnaribility report
+
+```sh
+./scripts/dependency-check.sh -f ALL -s . --out reports/dependency-check --project "coog-cloud-agent"
+```
+
+## Run the scan
+```sh
+sonar-scanner \ 
+  -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY \
+  -Dsonar.sources=$SONARQUBE_REPO \
+  -Dsonar.host.url=$SONARQUBE_URL \
+  -Dsonar.token=$SONARQUBE_TOKEN
 ```
 
 or thanks to the following docker command :
