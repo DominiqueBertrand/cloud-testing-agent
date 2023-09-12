@@ -960,18 +960,27 @@
     knex "2.5.1"
     sqlstring "2.3.3"
 
+"@mikro-orm/knex@~5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/knex/-/knex-5.8.0.tgz#fc1651810ee7c47242524fc471c9b12f6b84d657"
+  integrity sha512-hglyqCpVmlb6yhTAJ329pc7hZ4bZMui9cBJ8/FaEXIdkNa4SNqZ71CrQ8NM3PxA479W6EuMMOL+6yTFFR6dAkw==
+  dependencies:
+    fs-extra "11.1.1"
+    knex "2.5.1"
+    sqlstring "2.3.3"
+
 "@mikro-orm/nestjs@^5.2.1":
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/@mikro-orm/nestjs/-/nestjs-5.2.1.tgz#65c170aa8eb3c7e75787b3f6ef25137be4d39294"
   integrity sha512-TrCdPsM7DApxrK3avBbijT6/6Er4TZhtiQ+qlMqtqva13vMCG4HiF2vIWGrKJbFukkLRuhOfZlES+KZ9Y1Lx2A==
 
-"@mikro-orm/postgresql@^5.7.13":
-  version "5.7.14"
-  resolved "https://registry.npmjs.org/@mikro-orm/postgresql/-/postgresql-5.7.14.tgz"
-  integrity sha512-3nF/UtUZ9a8jj0bD7ONeLRLg5MIHNKJngl7yR3c8sRz9yTAX6bT0lttbCxCeL4Q6/5XdcDtjgAQMUrYx1QVPhQ==
+"@mikro-orm/postgresql@^5.8.0":
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/postgresql/-/postgresql-5.8.0.tgz#7f374b57029c4a6a091b89c69261c9f15c421217"
+  integrity sha512-U25QztCOJMZrug7ILPzakgUEipURJFK1t8dm+xZFtT4jTpqJ83ZEyVMf5wbYQwEomQTuKrt3ka99bjJGcSNrag==
   dependencies:
-    "@mikro-orm/knex" "~5.7.14"
-    pg "8.11.1"
+    "@mikro-orm/knex" "~5.8.0"
+    pg "8.11.3"
 
 "@mikro-orm/seeder@^5.7.14":
   version "5.7.14"
@@ -6014,9 +6023,9 @@ pg-connection-string@2.6.1:
   resolved "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.6.1.tgz"
   integrity sha512-w6ZzNu6oMmIzEAYVw+RLK0+nqHPt8K3ZnknKi+g48Ak2pr3dtljJW3o+D/n2zzCG07Zoe9VOX3aiKpj+BN0pjg==
 
-pg-connection-string@^2.6.1:
+pg-connection-string@^2.6.2:
   version "2.6.2"
-  resolved "https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.6.2.tgz"
+  resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-2.6.2.tgz#713d82053de4e2bd166fab70cd4f26ad36aab475"
   integrity sha512-ch6OwaeaPYcova4kKZ15sbJ2hKb/VP48ZD2gE7i1J+L4MspCtBMAx8nMgz7bksc7IojCIIWuEhHibSMFH8m8oA==
 
 pg-int8@1.0.1:
@@ -6045,14 +6054,14 @@ pg-types@^2.1.0:
     postgres-date "~1.0.4"
     postgres-interval "^1.1.0"
 
-pg@8.11.1:
-  version "8.11.1"
-  resolved "https://registry.npmjs.org/pg/-/pg-8.11.1.tgz"
-  integrity sha512-utdq2obft07MxaDg0zBJI+l/M3mBRfIpEN3iSemsz0G5F2/VXx+XzqF4oxrbIZXQxt2AZzIUzyVg/YM6xOP/WQ==
+pg@8.11.3:
+  version "8.11.3"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-8.11.3.tgz#d7db6e3fe268fcedd65b8e4599cda0b8b4bf76cb"
+  integrity sha512-+9iuvG8QfaaUrrph+kpF24cXkH1YOOUeArRNYIxq1viYHZagBxrTno7cecY1Fa44tJeZvaoG+Djpkc3JwehN5g==
   dependencies:
     buffer-writer "2.0.0"
     packet-reader "1.0.0"
-    pg-connection-string "^2.6.1"
+    pg-connection-string "^2.6.2"
     pg-pool "^3.6.1"
     pg-protocol "^1.6.0"
     pg-types "^2.1.0"
