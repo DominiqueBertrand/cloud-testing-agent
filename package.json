@@ -3,7 +3,7 @@
   "version": "1.0.2",
   "description": "",
   "author": "",
-  "private": true,
+  "private": false,
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -130,5 +130,8 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  }
+  },
+  "files":  [
+    "dist"
+  ]
 }

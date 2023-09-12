@@ -127,7 +127,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const user: User = await this.userService.getUserById(decodeToken.userId);
+    const user: User = await this.userService.getUserById(decodeToken.sub);
 
     const session: RefreshSession | null = await this.sessionRepository.findOne({ refreshToken: token });
     if (!session) throw new UnauthorizedException();
