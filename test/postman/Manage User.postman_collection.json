@@ -597,6 +597,8 @@
 							"",
 							"const accessTokenOfRandomUser = jsonData?.accessToken;",
 							"pm.collectionVariables.set('access-token-of-random-user',accessTokenOfRandomUser);",
+							"const refreshTokenOfRandomUser = jsonData?.refreshToken;",
+							"pm.collectionVariables.set('refresh-token-of-random-user',refreshTokenOfRandomUser);",
 							"",
 							"const template = `",
 							"<style type=\"text/css\">",
@@ -652,6 +654,111 @@
 					"path": [
 						"auth",
 						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Test refresh token with this user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"        user: {",
+							"            type: \"object\",",
+							"            properties: {",
+							"                id: { type: \"string\" },",
+							"                createdAt: { type: \"string\" },",
+							"                updatedAt: { type: \"string\" },",
+							"                username: { type: \"string\" },",
+							"                roles: { type: \"array\" },",
+							"                email: { type: \"string\" },",
+							"                sessions: { type: \"array\" }",
+							"            },",
+							"            required: [\"id\", \"createdAt\", \"updatedAt\", \"username\", \"roles\", \"email\", \"sessions\"]",
+							"        },",
+							"        accessToken: { type: \"string\" },",
+							"        refreshToken: { type: \"string\" }",
+							"    },",
+							"    required: [\"user\", \"accessToken\", \"refreshToken\"]",
+							"};",
+							"",
+							"pm.test(\"Response body matches the schema\", function () {",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});",
+							"",
+							"const accessTokenOfRandomUser = jsonData?.accessToken;",
+							"if (accessTokenOfRandomUser) {",
+							"    pm.collectionVariables.set('access-token-of-random-user',accessTokenOfRandomUser);",
+							"const refreshTokenOfRandomUser = jsonData?.refreshToken;",
+							"pm.collectionVariables.set('refresh-token-of-random-user',refreshTokenOfRandomUser);",
+							"}",
+							"",
+							"const template = `",
+							"<style type=\"text/css\">",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+							"    .tftable tr {background-color:#ffffff;}",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+							"    .tftable td.value {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb; font-weight: bold}",
+							"    .tftable tr:hover {background-color:#e0ffff;}",
+							"</style>",
+							"",
+							"<table class=\"tftable\" border=\"1\">",
+							"    <tr>",
+							"        <th>Field</th>",
+							"        <th>Value</th>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>accessToken</td>",
+							"        <td class=\"value\">{{response.accessToken}}</td>",
+							"    </tr>",
+							"    <tr>",
+							"        <td>refreshToken</td>",
+							"        <td class=\"value\">{{response.refreshToken}}</td>",
+							"    </tr>",
+							"</table>",
+							"`;",
+							"",
+							"pm.visualizer.set(template, {",
+							"    response: pm.response.json()",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"refreshToken\": \"{{refresh-token-of-random-user}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/auth/refresh",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"auth",
+						"refresh"
 					]
 				}
 			},
@@ -863,6 +970,10 @@
 		},
 		{
 			"key": "access-token-of-random-user",
+			"value": ""
+		},
+		{
+			"key": "refresh-token-of-random-user",
 			"value": ""
 		}
 	]
