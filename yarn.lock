@@ -983,9 +983,9 @@
     pg "8.11.3"
 
 "@mikro-orm/seeder@^5.7.14":
-  version "5.7.14"
-  resolved "https://registry.npmjs.org/@mikro-orm/seeder/-/seeder-5.7.14.tgz"
-  integrity sha512-X4QCpvHCSU7+WdJpHgAzyWw+aGhd5mqvTI3UtJbuq/bxXKKDMX5pY96TPYr4QhoDm3/l2tDeF7hX/V6E3UwA0g==
+  version "5.8.1"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/seeder/-/seeder-5.8.1.tgz#4e88c947576c4d2a215e05508f5f0374f297f56c"
+  integrity sha512-u9J/qJYB+HYkTsjhAAFbnDiNbFGZDKQv0NTOHc+VJvw0I0bJ41DlKEuyccVsG4MFClGxl7JMu4ELZg3gQV1yfQ==
   dependencies:
     "@faker-js/faker" "7.6.0"
     fs-extra "11.1.1"
