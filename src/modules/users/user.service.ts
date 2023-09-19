@@ -50,7 +50,7 @@ export class UserService {
 
   async getUserById(id: string): Promise<User> {
     const user: User | null = await this.userRepository.findOne(id, {
-      fields: ['id', 'username', 'roles', 'email', 'createdAt', 'updatedAt'],
+      fields: ['id', 'username', 'roles', 'email', 'createdAt', 'updatedAt', 'sessions'],
     });
 
     if (!user) throw new NotFoundException('User is not found');
