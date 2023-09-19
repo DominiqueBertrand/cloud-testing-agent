@@ -20,10 +20,10 @@ import { ITask } from '@src/modules/task/task.type';
 @Entity()
 export class Task extends BaseEntity implements ITask {
   @ManyToOne(() => PmCollection)
-  collection?: Ref<PmCollection>;
+  collection: Ref<PmCollection>;
 
   @ManyToOne(() => PmEnvironment)
-  environment?: Ref<PmEnvironment>;
+  environment: Ref<PmEnvironment>;
 
   @OneToMany(() => PmReport, report => report.task, { cascade: [Cascade.ALL], orphanRemoval: true })
   @IsOptional()
@@ -36,15 +36,15 @@ export class Task extends BaseEntity implements ITask {
   @Property({ nullable: true })
   options?: object;
 
-  @Property({ nullable: true })
+  @Property()
   @Index()
-  status?: TaskStatus;
+  status: TaskStatus;
 
-  @Property({ nullable: true })
-  testStatus?: TestStatus;
+  @Property()
+  testStatus: TestStatus;
 
-  @Property({ nullable: true })
-  type?: TaskType;
+  @Property()
+  type: TaskType;
 
   constructor(
     collection: PmCollection,

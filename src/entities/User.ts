@@ -18,6 +18,7 @@ export class User extends BaseEntity implements IUser {
 
   @OneToMany(() => RefreshSession, refreshSession => refreshSession.user, {
     cascade: [Cascade.ALL],
+    orphanRemoval: true,
   })
   @IsOptional()
   sessions?: Collection<RefreshSession> = new Collection<RefreshSession>(this);
