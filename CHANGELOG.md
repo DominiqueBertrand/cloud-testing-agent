@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.4](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v1.0.3...v1.0.4) (2023-10-03)
+
+
+### Bug Fixes
+
+* **auth:** fix logout issue ([8623e5d](https://github.com/DominiqueBertrand/coog-cloud-agent/commit/8623e5ddc2d7be37b96fb9a3735017ef794f11b7))
+
 ## [1.0.3](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v1.0.2...v1.0.3) (2023-09-12)
 
 
