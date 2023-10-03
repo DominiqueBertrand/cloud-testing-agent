@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, EntityManager, QueryOrder } from '@mikro-orm/core';
+import { EntityRepository, EntityManager, QueryOrder, wrap } from '@mikro-orm/core';
 
 import { PmSchedule, Task } from '@src/entities';
 import { ElementsQueryDto } from './dto';
@@ -67,7 +67,9 @@ export class PmScheduleService {
       if (!checkCron(pmSchedule.cron)) {
         throw new HttpException('Cron is not valid', HttpStatus.BAD_REQUEST);
       }
+      if (pmSchedule) wrap(task).assign({ schedule: pmSchedule });
       this.em.persist(pmSchedule);
+
       await this.em.flush();
 
       return pmSchedule;

@@ -74,7 +74,10 @@ export class TaskService {
         'environment.id',
         'environment.name',
         'reports.id',
+        'reports.status',
+        'reports.createdAt',
         'schedule.id',
+        'schedule.cron',
       ],
     });
   }
@@ -93,7 +96,9 @@ export class TaskService {
         'environment.id',
         'environment.name',
         'reports.id',
+        'reports.status',
         'schedule.id',
+        'schedule.cron',
       ],
     });
     return report;
@@ -209,7 +214,7 @@ export class TaskService {
       if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-
+      console.log('collection :', pmCollection, pmEnvironment);
       await TaskService.pool.run(new PoolRunWorkerDto(task.id, pmEnvironment, pmCollection));
 
       return sanitizeTask(task);

@@ -82,7 +82,7 @@ export class TaskController {
     return this.taskService.create({
       collection: body.collection,
       environment: body.environment,
-      ref: body.ref,
+      type: body.type,
     });
   }
 
