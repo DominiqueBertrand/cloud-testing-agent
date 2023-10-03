@@ -214,7 +214,6 @@ export class TaskService {
       if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-      console.log('collection :', pmCollection, pmEnvironment);
       await TaskService.pool.run(new PoolRunWorkerDto(task.id, pmEnvironment, pmCollection));
 
       return sanitizeTask(task);

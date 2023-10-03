@@ -66,11 +66,9 @@ export class AuthService {
         return false;
       }
       user?.sessions?.removeAll();
-
       this.em.flush();
       return true;
-    } catch (err) {
-      console.error(err);
+    } catch {
       return false;
     }
   }

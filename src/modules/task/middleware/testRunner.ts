@@ -39,7 +39,6 @@ function failedTestParser(error: unknown): TestReport {
   return report;
 }
 
-// TODO : task to type
 export async function TestRunner(
   task: PoolRunWorkerDto,
   collection: PmCollection,
@@ -57,7 +56,6 @@ export async function TestRunner(
       return new PmReport(task, report, TestStatus.SUCCESS);
     }
   } catch (error) {
-    console.error(error);
     return new PmReport(task, failedTestParser(error), TestStatus.FAILED);
   }
 }
