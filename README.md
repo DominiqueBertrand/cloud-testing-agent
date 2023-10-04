@@ -26,9 +26,6 @@ $ direnv allow
 ```
 The file .envrc is your centralized configuration for your librairies, applications and services.
 
-
-
-
 ## Running the app
 
 ```bash

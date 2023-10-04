@@ -58,7 +58,6 @@ export class TaskService {
       }
     }
     return this.taskRepository.findAll({
-      //   populate: ['report', 'report'],
       orderBy,
       limit: limit ?? 20,
       offset: offset ?? 0,
@@ -97,6 +96,7 @@ export class TaskService {
         'environment.name',
         'reports.id',
         'reports.status',
+        'reports.createdAt',
         'schedule.id',
         'schedule.cron',
       ],
