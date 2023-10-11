@@ -4,7 +4,7 @@
 
 ## Description
 
-Coog Cloud Agent is a specialized tool suite for testing and monitoring the entire application-delivery chain within the Coopengo Cloud Application Platform.
+The Cloud Testing Agent is a purpose-built tool crafted for the testing of Coog cloud application services. Its design enables seamless integration with the entire application delivery pipeline within the Coopengo cloud application platform.
 
 ## Installation
 
