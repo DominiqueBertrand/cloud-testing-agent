@@ -12,7 +12,7 @@ The Cloud Testing Agent is a purpose-built tool crafted for the testing of Coog 
 $ yarn install
 ```
 
-Note that if your database has not been initialized yet, especially the 'user' table, you must pre-initialize it by creating a super administrator 'superadmin' and a user 'coog' (with permissions to read, create, delete, and update all objects except 'user').
+Please be aware that if your database hasn't undergone the initialization process, specifically with regards to the 'user' table, it's essential to perform a pre-initialization step. This entails the creation of two user accounts: one as a super administrator named 'superadmin,' and the other as a user named 'coog.' Ensure that 'coog' is granted permissions to read, create, delete, and update all database objects except for the 'user' table.
 
 See section [Seeding](#seeding) below.
 
