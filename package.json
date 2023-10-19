@@ -1,10 +1,15 @@
 {
-  "name": "coog-cloud-agent",
+  "name": "cloud-testing-agent",
   "version": "1.0.4",
   "description": "",
   "author": "",
   "private": false,
   "license": "MIT",
+  "homepage": "https://github.com/DominiqueBertrand/cloud-testing-agent",
+    "bugs": {
+    "url": "https://github.com/DominiqueBertrand/cloud-testing-agent/issues",
+    "email": "dominique.bertrand@gmail.com"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
