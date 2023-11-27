@@ -1023,9 +1023,9 @@
     sqlstring "2.3.3"
 
 "@mikro-orm/nestjs@^5.2.1":
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/@mikro-orm/nestjs/-/nestjs-5.2.1.tgz#65c170aa8eb3c7e75787b3f6ef25137be4d39294"
-  integrity sha512-TrCdPsM7DApxrK3avBbijT6/6Er4TZhtiQ+qlMqtqva13vMCG4HiF2vIWGrKJbFukkLRuhOfZlES+KZ9Y1Lx2A==
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/nestjs/-/nestjs-5.2.2.tgz#29311eb64b93269800ff70c75ca0b84c90fab097"
+  integrity sha512-NwPTmpmwf4/aX7FjKk/CTncYS7Mbr4fMvSOfbo9rOElySjpniTnk2cCGABgj2kaX9NSFHzWCUy5tAMIkoedd4A==
 
 "@mikro-orm/postgresql@^5.8.1":
   version "5.8.5"
