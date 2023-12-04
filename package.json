@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
-    "@commitlint/config-conventional": "^17.7.0",
+    "@commitlint/config-conventional": "^18.4.3",
     "@mikro-orm/cli": "^5.8.1",
     "@mikro-orm/seeder": "^5.8.1",
     "@nestjs/cli": "^10.1.17",
