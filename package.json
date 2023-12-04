@@ -41,7 +41,7 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/passport": "^10.0.1",
     "@nestjs/platform-express": "^10.2.5",
-    "@nestjs/schedule": "^3.0.2",
+    "@nestjs/schedule": "^4.0.0",
     "@nestjs/swagger": "^7.1.8",
     "axios": "^1.4.0",
     "bcrypt": "^5.1.1",
