@@ -7,6 +7,7 @@ import Piscina from 'piscina';
 import { resolvePromisesSeq } from './middleware/resolvePromiseSeq';
 import { UpdateReportDto } from './dto/update-report';
 import { CronJob } from 'cron';
+import { DateTime } from 'luxon'; // used by CronJob
 import { sanitizeTask } from './task.utils';
 import { IRunningSchedule, ITask } from './task.type';
 import { SchedulerRegistry } from '@nestjs/schedule';
@@ -292,10 +293,10 @@ export class TaskService {
       const jobsList: IRunningSchedule[] = [];
 
       jobs.forEach((value, key) => {
-        const next: Date = value.lastDate();
-        const last: Date = value.nextDate();
-        this.logger.log(`job: ${key} -> next: ${next} -> next: ${last}`);
-        jobsList.push({ key: key, nextTest: next, lastTest: last });
+        const nextTest: Date | undefined = value.lastDate() ?? undefined;
+        const lastTest: DateTime<boolean> | undefined = value.nextDate() ?? undefined;
+        this.logger.log(`job: ${key} -> next: ${nextTest} -> next: ${lastTest}`);
+        jobsList.push({ key: key, nextTest, lastTest });
       });
       return jobsList;
     } catch (error: any) {
