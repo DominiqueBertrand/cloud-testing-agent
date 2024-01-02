@@ -7,6 +7,8 @@ import { IPmEnvironment } from '../pmEnvironment/pmEnvironment.type';
 import { IPmSchedule } from '../pmSchedule/pmSchedule.type';
 import { IPmReport } from '../pmReport/pmReport.type';
 
+import { DateTime } from 'luxon';
+
 export interface ITask {
   id?: string;
   createdAt?: Date;
@@ -24,5 +26,5 @@ export interface ITask {
 export interface IRunningSchedule {
   key: string;
   nextTest?: Date;
-  lastTest?: Date;
+  lastTest?: DateTime;
 }
