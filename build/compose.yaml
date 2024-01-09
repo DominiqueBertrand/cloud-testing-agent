@@ -7,14 +7,34 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+version: '3.8'
+
 services:
-  server:
-    build:
-      context: .
+  api:
+    image: cloud-testing-agent:latest
+    container_name: cloud-testing-agent
+    hostname: cloud-testing-agent
+    restart: always
     environment:
-      NODE_ENV: production
+      - NODE_ENV=production
+      - SERVER_PORT=3000
+      - JSON_PARSER_LIMIT=secret
+      - JWT_SECRET=5432
+      - JWT_ACCESS_EXPIRESIN=15m
+      - JWT_REFRESH_EXPIRESIN=1h     
+    volumes:
+      - cta_data:/var/lib/data  
     ports:
       - 3000:3000
+    networks:
+      - cloud-coopengo  
+# NETWORKS      
+networks:
+  cloud-coopengo:
+    external: true   
+# VOLUMES       
+volumes:
+  cta_data:       
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
