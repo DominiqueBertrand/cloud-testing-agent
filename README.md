@@ -144,7 +144,7 @@ docker build --file ./build/Dockerfile --no-cache --progress=plain -t cloud-test
 Before starting the service, we will create a network for our container, so you can more easily choose which one to use and when.
 
 ```console
-docker network create global-default
+docker network create cloud-coopengo
 ```
 
 To run:
