@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.5](https://github.com/DominiqueBertrand/cloud-testing-agent/compare/v1.0.4...v1.0.5) (2024-01-09)
+
+
+### Miscellaneous Chores
+
+* release 1.0.5 ([9d35942](https://github.com/DominiqueBertrand/cloud-testing-agent/commit/9d35942b3c66b9b1c695b17eb759217c1a9ba9a6))
+
 ## [1.0.4](https://github.com/DominiqueBertrand/coog-cloud-agent/compare/v1.0.3...v1.0.4) (2023-10-03)
 
 
