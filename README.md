@@ -13,7 +13,7 @@ Install dependencies
 $ yarn install
 ```
 
-Enable environment variables using the shell extension [https://direnv.net/](direnv):
+Enable environment variables using the shell extension [direnv](https://direnv.net/):
 ```bash
 $ cp .envrc.example .envrc
 $ direnv allow
