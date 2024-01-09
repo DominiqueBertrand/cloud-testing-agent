@@ -8,8 +8,15 @@ The Cloud Testing Agent is a purpose-built tool crafted for the testing of Coog 
 
 ## Installation
 
+Install dependencies
 ```bash
 $ yarn install
+```
+
+Enable environment variables using the shell extension [https://direnv.net/](direnv):
+```bash
+$ cp .envrc.example .envrc
+$ direnv allow
 ```
 
 Please be aware that if your database hasn't undergone the initialization process, specifically with regards to the 'user' table, it's essential to perform a pre-initialization step. This entails the creation of two user accounts: one as a super administrator named 'superadmin,' and the other as a user named 'coog.' Ensure that 'coog' is granted permissions to read, create, delete, and update all database objects except for the 'user' table.
