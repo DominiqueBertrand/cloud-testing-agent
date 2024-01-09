@@ -122,6 +122,33 @@ docker run \
     sonarsource/sonar-scanner-cli
 ```
 
+## Docker
+
+## How to generate docker image thanks to the following command
+
+To build:
+
+```console
+docker build --file ./build/Dockerfile --no-cache --progress=plain -t cloud-testing-agent:latest -t cloud-testing-agent:{{VERSION}} . |& tee build_output.txt
+```
+
+### How to run mongodb and mongo express with docker
+
+Before starting the service, we will create a network for our container, so you can more easily choose which one to use and when.
+
+```console
+docker network create global-default
+```
+
+To run:
+
+```console
+docker compose -f "./build/compose.yaml" -p "cloud-testing" up --force-recreate -d 
+```
+
+The service will be available at http://0.0.0.0:3000/ .
+
+
 ## License
 
 Nest is [MIT licensed](LICENSE).
