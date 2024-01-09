@@ -139,7 +139,7 @@ To build:
 docker build --file ./build/Dockerfile --no-cache --progress=plain -t cloud-testing-agent:latest -t cloud-testing-agent:{{VERSION}} . |& tee build_output.txt
 ```
 
-### How to run mongodb and mongo express with docker
+### How to run cloud-testing-agent docker image
 
 Before starting the service, we will create a network for our container, so you can more easily choose which one to use and when.
 
