@@ -3,12 +3,14 @@ import { Options } from '@mikro-orm/core';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 import { Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession, PmSchedule } from './entities';
 
+import { dbPath, dbPort } from '@src/config/service.config';
+
 const logger = new Logger('MikroORM');
 const config: Options = {
   entities: [Task, PmReport, PmCollection, PmEnvironment, User, RefreshSession, PmSchedule],
-  dbName: 'coog-cloud-agent.db.sqlite',
+  dbName: dbPath,
   type: 'sqlite',
-  port: 3307,
+  port: dbPort,
   debug: true,
   logger: logger.log.bind(logger),
   // for highlighting the SQL queries

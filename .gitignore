@@ -49,3 +49,4 @@ report-task.txt
 
 # database
 *.db.sqlite
+build_output.txt
