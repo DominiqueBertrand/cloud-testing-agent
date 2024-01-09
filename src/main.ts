@@ -20,9 +20,9 @@ async function bootstrap() {
   app.use(json({ limit: jsonLimit }));
   // <-- SWAGGER
   const config = new DocumentBuilder()
-    .setTitle('Coog Cloud Agent')
+    .setTitle('Cloud Testing Agent')
     .setDescription(
-      'Coog Cloud Agent is a specialized tool suite for testing and monitoring the entire application-delivery chain within the Coopengo Cloud Application Platform.',
+      'Cloud Testing Agent is a specialized tool suite for testing and monitoring the entire application-delivery chain within the Coopengo Cloud Application Platform.',
     )
     .setVersion('1.0')
     .addBearerAuth()
