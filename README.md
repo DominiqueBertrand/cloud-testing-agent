@@ -4,7 +4,28 @@
 
 ## Description
 
-The Cloud Testing Agent is a purpose-built tool crafted for the testing of Coog cloud application services. Its design enables seamless integration with the entire application delivery pipeline within the Coopengo cloud application platform.
+The **Cloud Testing Agent** is a purpose-built tool crafted for the **testing** of **Coog cloud application services**. Its design enables seamless integration with the entire application delivery pipeline within the Coopengo cloud application platform.
+
+## Table of Contents
+- [Description](#description)
+- [Table of Contents](#table-of-contents)
+- [Installation](#installation)
+- [Running the app](#running-the-app)
+- [Test](#test)
+- [Swagger Documentation](#swagger-documentation)
+- [Custom variables](#custom-variables)
+- [Seeding](#seeding)
+- [Releases](#releases)
+- [SonarQube](#sonarqube)
+  - [Execute the Scanner](#execute-the-scanner)
+  - [Generate pre-scan reports](#generate-pre-scan-reports)
+- [Run the scan](#run-the-scan)
+- [Docker](#docker)
+- [How to generate docker image thanks to the following command](#how-to-generate-docker-image-thanks-to-the-following-command)
+  - [How to run cloud-testing-agent docker image](#how-to-run-cloud-testing-agent-docker-image)
+- [License](#license)
+
+
 
 ## Installation
 
@@ -53,7 +74,8 @@ $ yarn test:cov
 
 ## Swagger Documentation
 
-By default, while the application is running, open your browser and navigate to http://localhost:3000/api to see the Swagger UI.
+By default, while the application is running, open your browser and navigate to http://localhost:3000/api to see the Swagger UI: 
+[![Swagger UI](2024-02-06-11-48-51.png)](screencapture-127-0-0-1-7000-api-2024-02-06-11_27_38.png)
 
 ## Custom variables
 
