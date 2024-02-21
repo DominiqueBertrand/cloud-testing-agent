@@ -1026,17 +1026,26 @@
     knex "2.5.1"
     sqlstring "2.3.3"
 
+"@mikro-orm/knex@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/knex/-/knex-6.0.0.tgz#30c492b8c197e6a9582f380bada9b7c57bd9568b"
+  integrity sha512-J5vaywPzfsMtiUnDAS/yQ7q4KRgqiyveE73xVkGyC5pZLPTf/4TeDozxxm0fGECBv+CiOhJ5UYTN98jeX1KPiQ==
+  dependencies:
+    fs-extra "11.2.0"
+    knex "3.1.0"
+    sqlstring "2.3.3"
+
 "@mikro-orm/nestjs@^5.2.3":
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/@mikro-orm/nestjs/-/nestjs-5.2.3.tgz#204ef21781fce6b6e2423019bad515186228064d"
   integrity sha512-JMxaXrNXlo6j59D3LWMC1tEC1a5JanCtqdfv91JUH0sfVZh97SsjQ9K794BY3JWIUKSFyQwpnLxYZ0Ash/BlPA==
 
-"@mikro-orm/postgresql@^5.9.7":
-  version "5.9.8"
-  resolved "https://registry.yarnpkg.com/@mikro-orm/postgresql/-/postgresql-5.9.8.tgz#a8defac2f82725d94156ca7480a1ffa1a92ea370"
-  integrity sha512-ALXHS9fb3B93RozuF8n3+gYZz/I+d8Swo/5hmcMbaQN4Zs8hhHOhmjfwIj83IWb1QBPYcBeIc2M8TCmhxXX//g==
+"@mikro-orm/postgresql@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/postgresql/-/postgresql-6.0.0.tgz#9307079ef9213116507f1454489bb0b3c5232f80"
+  integrity sha512-VvsawzucPpiiJrztux4ceK/DH0B731kqEqfdA2WThoEQRFMPSHa86P2b0/qEuFa4JXh2MWTVZfbrtVpj6GYoCQ==
   dependencies:
-    "@mikro-orm/knex" "5.9.8"
+    "@mikro-orm/knex" "6.0.0"
     pg "8.11.3"
     postgres-date "2.1.0"
 
@@ -4018,6 +4027,15 @@ fs-extra@11.1.1:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
+fs-extra@11.2.0:
+  version "11.2.0"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.2.0.tgz#e70e17dfad64232287d01929399e0ea7c86b0e5b"
+  integrity sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
 fs-extra@9.1.0:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-9.1.0.tgz#5954460c764a8da2094ba3554bf839e6b9a7c86d"
@@ -5473,6 +5491,26 @@ knex@2.5.1:
     tarn "^3.0.2"
     tildify "2.0.0"
 
+knex@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/knex/-/knex-3.1.0.tgz#b6ddd5b5ad26a6315234a5b09ec38dc4a370bd8c"
+  integrity sha512-GLoII6hR0c4ti243gMs5/1Rb3B+AjwMOfjYm97pu0FOQa7JH56hgBxYf5WK2525ceSbBY1cjeZ9yk99GPMB6Kw==
+  dependencies:
+    colorette "2.0.19"
+    commander "^10.0.0"
+    debug "4.3.4"
+    escalade "^3.1.1"
+    esm "^3.2.25"
+    get-package-type "^0.1.0"
+    getopts "2.3.0"
+    interpret "^2.2.0"
+    lodash "^4.17.21"
+    pg-connection-string "2.6.2"
+    rechoir "^0.8.0"
+    resolve-from "^5.0.0"
+    tarn "^3.0.2"
+    tildify "2.0.0"
+
 lazy@~1.0.11:
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/lazy/-/lazy-1.0.11.tgz#daa068206282542c088288e975c297c1ae77b690"
@@ -6530,7 +6568,7 @@ pg-connection-string@2.6.1:
   resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-2.6.1.tgz#78c23c21a35dd116f48e12e23c0965e8d9e2cbfb"
   integrity sha512-w6ZzNu6oMmIzEAYVw+RLK0+nqHPt8K3ZnknKi+g48Ak2pr3dtljJW3o+D/n2zzCG07Zoe9VOX3aiKpj+BN0pjg==
 
-pg-connection-string@^2.6.2:
+pg-connection-string@2.6.2, pg-connection-string@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/pg-connection-string/-/pg-connection-string-2.6.2.tgz#713d82053de4e2bd166fab70cd4f26ad36aab475"
   integrity sha512-ch6OwaeaPYcova4kKZ15sbJ2hKb/VP48ZD2gE7i1J+L4MspCtBMAx8nMgz7bksc7IojCIIWuEhHibSMFH8m8oA==
