@@ -2,6 +2,8 @@
   <a href="https://coopengo.com" target="blank"><img src="https://coopengo.com/wp-content/uploads/2020/09/Coopengo_Logo_RVB.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
+[<img src="https://raw.githubusercontent.com/npm/logos/master/npm%20logo/npm-logo-red.svg" height=18 align=right>](https://www.npmjs.com/package/cloud-testing-agent)
+
 ## Description
 
 The **Cloud Testing Agent** is a purpose-built tool crafted for the **testing** of **Coog cloud application services**. Its design enables seamless integration with the entire application delivery pipeline within the Coopengo cloud application platform.
