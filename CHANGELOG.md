@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.6](https://github.com/DominiqueBertrand/cloud-testing-agent/compare/v1.0.5...v1.0.6) (2024-02-06)
+
+
+### Miscellaneous Chores
+
+* release 1.06 ([6e7b3e7](https://github.com/DominiqueBertrand/cloud-testing-agent/commit/6e7b3e79b17ce4ba5590bc9c0a78d1d611e49214))
+
 ## [1.0.5](https://github.com/DominiqueBertrand/cloud-testing-agent/compare/v1.0.4...v1.0.5) (2024-01-09)
 
 
