@@ -123,7 +123,7 @@ export class AuthService {
     let decodeToken: any;
     try {
       decodeToken = this.jwtService.verify(token);
-    } catch (err) {
+    } catch {
       throw new UnauthorizedException();
     }
 

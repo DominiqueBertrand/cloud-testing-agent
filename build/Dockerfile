@@ -12,19 +12,27 @@
 # https://www.bretfisher.com/node-docker-good-defaults/
 # http://goldbergyoni.com/checklist-best-practice-of-node-js-in-production/
 
-FROM node:lts-alpine AS builder
+ARG DHI_NODE_DEV_IMAGE=dhi.io/node:24-debian12-dev
+ARG DHI_NODE_IMAGE=dhi.io/node:24-debian12
+
+FROM ${DHI_NODE_DEV_IMAGE} AS builder
 
 # Use build node environment by default.
-ENV NODE_ENV build
+ENV NODE_ENV=build
 
 WORKDIR /home/node
 
-COPY package*.json ./
-COPY build/ecosystem.config.js ./
+RUN corepack enable
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 make g++ pkg-config libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY package.json yarn.lock .yarnrc.yml ./
 # Show current folder structure in logs
 RUN ls -al -R    
 
-RUN yarn ci
+RUN yarn install --immutable
 
 COPY --chown=node:node . .
 
@@ -32,22 +40,17 @@ COPY --chown=node:node . .
 # Leverage a cache mount to /root/.yarn to speed up subsequent builds.
 # Leverage a bind mounts to package.json and yarn.lock to avoid having to copy them into
 # into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=yarn.lock,target=yarn.lock \
-    --mount=type=cache,target=/root/.yarn \
+RUN --mount=type=cache,target=/root/.yarn \
     yarn build \
-    && yarn install --production --frozen-lockfile --ignore-scripts --prefer-offline
+    && yarn workspaces focus --production
 
 # -- production (production-stage)
 # --------------------------------
 
-FROM node:lts-alpine AS production
+FROM ${DHI_NODE_IMAGE} AS production
 
 # Use production node environment by default.
-ENV NODE_ENV production
-
-# Install pm2 globally
-RUN yarn global add pm2
+ENV NODE_ENV=production
 
 WORKDIR /home/node
 
@@ -58,10 +61,9 @@ USER node
 COPY --from=builder --chown=node:node /home/node/package*.json ./
 COPY --from=builder --chown=node:node /home/node/node_modules/ ./node_modules/
 COPY --from=builder --chown=node:node /home/node/dist/ ./dist/
-COPY --from=builder --chown=node:node /home/node/ecosystem.config.js ./
 
 # Show current folder structure in logs
 RUN ls -al -R
 
 # Run the application.
-ENTRYPOINT [ "pm2-runtime", "start", "ecosystem.config.js", "--env", "production"]
+CMD [ "node", "dist/main" ]
