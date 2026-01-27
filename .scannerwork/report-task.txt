@@ -1,6 +1,6 @@
-projectKey=coog-cloud-agent
+projectKey=Cloud-Testing-Agent
 serverUrl=http://localhost:9000
-serverVersion=10.1.0.73491
-dashboardUrl=http://localhost:9000/dashboard?id=coog-cloud-agent
-ceTaskId=AYqJ8NHGvHVPmlKVKMuC
-ceTaskUrl=http://localhost:9000/api/ce/task?id=AYqJ8NHGvHVPmlKVKMuC
+serverVersion=10.3.0.82913
+dashboardUrl=http://localhost:9000/dashboard?id=Cloud-Testing-Agent
+ceTaskId=AY3L8VyntOAllR3cDfCx
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AY3L8VyntOAllR3cDfCx

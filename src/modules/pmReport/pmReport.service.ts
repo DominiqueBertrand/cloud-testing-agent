@@ -1,14 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, EntityManager, QueryOrder } from '@mikro-orm/core';
+import { EntityRepository, EntityManager, QueryOrder, wrap } from '@mikro-orm/core';
 
-import { PmReport } from '@src/entities';
+import { PmReport, Task } from '@src/entities';
+import { TestReport } from '@src/modules/task/dto/test-report';
 import { ElementsQueryDto } from './dto';
 
 @Injectable()
 export class PmReportService {
   constructor(
     @InjectRepository(PmReport) private readonly pmReportRepository: EntityRepository<PmReport>,
+    @InjectRepository(Task) private readonly taskRepository: EntityRepository<Task>,
     // private readonly pmReportRepository: PmReportRepository,
     private readonly em: EntityManager,
   ) {}
@@ -49,9 +51,17 @@ export class PmReportService {
     return report;
   }
 
-  async create({ report, status }): Promise<PmReport> {
+  async create({ report, status, task }): Promise<PmReport> {
     try {
-      const pmReport: PmReport = new PmReport(report, status, undefined);
+      const taskId = typeof task === 'string' ? task : task?.id;
+      if (!taskId) {
+        throw new HttpException('Task is missing', HttpStatus.BAD_REQUEST);
+      }
+      const reportTask: Task | null = await this.taskRepository.findOne({ id: taskId });
+      if (!reportTask) {
+        throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+      }
+      const pmReport: PmReport = new PmReport(reportTask, report as TestReport, status);
       this.em.persist(pmReport);
       await this.em.flush();
 
@@ -62,20 +72,36 @@ export class PmReportService {
     }
   }
 
-  async update({ report, status, id }): Promise<PmReport> {
+  async update({ report, status, id, task }): Promise<PmReport> {
     try {
       const _report: PmReport | null = await this.pmReportRepository.findOne({ id });
       if (!_report) {
         throw new HttpException('Report not found', HttpStatus.NOT_FOUND);
       }
-      if (!report?.id !== id) {
+      if (report?.id && report.id !== id) {
         throw new HttpException('Report id mistmatch', HttpStatus.NOT_FOUND);
       }
-      const pmReport: PmReport = new PmReport(report, status, id);
-      this.em.persist(pmReport);
+      let reportTask = _report.task;
+      if (task) {
+        const taskId = typeof task === 'string' ? task : task?.id;
+        if (!taskId) {
+          throw new HttpException('Task is missing', HttpStatus.BAD_REQUEST);
+        }
+        const updatedTask: Task | null = await this.taskRepository.findOne({ id: taskId });
+        if (!updatedTask) {
+          throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
+        }
+        reportTask = updatedTask;
+      }
+
+      wrap(_report).assign({
+        task: reportTask,
+        report: (report ?? _report.report) as TestReport,
+        status: status ?? _report.status,
+      });
       await this.em.flush();
 
-      return pmReport;
+      return _report;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);

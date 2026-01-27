@@ -132,7 +132,10 @@ export class UserService {
       if (!user) {
         throw new HttpException('Error: User not found', HttpStatus.NOT_FOUND);
       }
-      user.password = updateUserDto.password;
+      if (!updateUserDto?.password) {
+        throw new HttpException('Password is required', HttpStatus.NOT_ACCEPTABLE);
+      }
+      user.password = await hashPassword(updateUserDto.password);
       this.em.persist(user);
 
       await this.em.flush();

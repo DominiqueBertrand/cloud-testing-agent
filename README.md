@@ -87,6 +87,19 @@ By default, th application running to the port 3000, but you can customize this 
 export SERVER_PORT=7000
 ```
 
+Other useful variables:
+
+```bash
+# Enable automatic schema update on startup (default: false)
+export DB_AUTO_SCHEMA=true
+
+# Shared token used by internal workers to update task reports
+export INTERNAL_TOKEN=change-me
+
+# Base URL used by workers to call back into the API
+export SERVICE_BASE_URL=http://127.0.0.1:7000
+```
+
 ## Seeding
 Seeding is used to insert data into the database. The seeding files are stored in `modules/orm/seeders` directory.
 

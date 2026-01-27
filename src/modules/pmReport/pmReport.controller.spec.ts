@@ -40,6 +40,10 @@ describe('PmReportController', () => {
       const result: PmReport = await pmReportController.create(newReport);
       expect(result).toEqual(mockReport);
     });
+    it('should throw when task is missing', async () => {
+      const reportWithoutTask = { ...newReport, task: undefined } as unknown as CreateOrUpdateReportDto;
+      await expect(pmReportController.create(reportWithoutTask)).rejects.toThrow();
+    });
   });
   describe('findOne', () => {
     it('should return a report by id', async () => {

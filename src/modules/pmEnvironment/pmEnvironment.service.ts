@@ -79,12 +79,12 @@ export class PmEnvironmentService {
       if (!pmEnvironment) {
         throw new HttpException('Environment not found', HttpStatus.NOT_FOUND);
       }
-      if (!environment?.id === id) {
+      if (environment?.id && environment.id !== id) {
         throw new HttpException('Environment id mistmatch', HttpStatus.NOT_FOUND);
       }
       this.em.assign(
         pmEnvironment,
-        { environment: JSON.stringify(environment), name: environment.name },
+        { environment, name: environment?.name },
         { mergeObjects: true, convertCustomTypes: true },
       );
       await this.em.flush();

@@ -247,13 +247,12 @@ export class TaskService {
           santizedTask.push(sanitizeTask(taskLoaded));
         }),
       );
-      (async () => {
-        await Promise.all([
-          tasksData.map(async task => {
-            await TaskService.pool.run(task);
-          }),
-        ]);
-      })();
+      void Promise.allSettled(tasksData.map(task => TaskService.pool.run(task))).then(results => {
+        const rejected = results.filter(result => result.status === 'rejected');
+        if (rejected.length > 0) {
+          this.logger.error(`Batch run had ${rejected.length} failed task(s).`);
+        }
+      });
       return santizedTask;
     } catch (error: any) {
       console.table(error);
@@ -293,9 +292,10 @@ export class TaskService {
       const jobsList: IRunningSchedule[] = [];
 
       jobs.forEach((value, key) => {
-        const nextTest: Date | undefined = value.lastDate() ?? undefined;
-        const lastTest: DateTime<boolean> | undefined = value.nextDate() ?? undefined;
-        this.logger.log(`job: ${key} -> next: ${nextTest} -> next: ${lastTest}`);
+        const lastTest: Date | undefined = value.lastDate() ?? undefined;
+        const nextTestDateTime: DateTime<boolean> | undefined = value.nextDate() ?? undefined;
+        const nextTest = nextTestDateTime ? nextTestDateTime.toJSDate() : undefined;
+        this.logger.log(`job: ${key} -> last: ${lastTest} -> next: ${nextTest}`);
         jobsList.push({ key: key, nextTest, lastTest });
       });
       return jobsList;

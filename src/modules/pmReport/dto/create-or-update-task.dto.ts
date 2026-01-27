@@ -19,7 +19,7 @@ export class CreateOrUpdateReportDto implements Partial<IPmReport> {
 
   @ApiProperty({
     required: true,
-    description: 'Postman report in json format',
+    description: 'Task reference (id or object containing id)',
   })
   readonly task!: object;
 }

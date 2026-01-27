@@ -17,6 +17,7 @@ async function bootstrap() {
   const port = configService.get('service.port');
   // Set limit value for jsonParser
   const jsonLimit = configService.get('service.jsonParserLimit');
+  const dbAutoSchema = configService.get<boolean>('service.dbAutoSchema');
   app.use(json({ limit: jsonLimit }));
   // <-- SWAGGER
   const config = new DocumentBuilder()
@@ -38,8 +39,10 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   // SWAGER -->
   // <-- MickroORM
-  await app.get(MikroORM).getSchemaGenerator().ensureDatabase();
-  await app.get(MikroORM).getSchemaGenerator().updateSchema();
+  if (dbAutoSchema) {
+    await app.get(MikroORM).getSchemaGenerator().ensureDatabase();
+    await app.get(MikroORM).getSchemaGenerator().updateSchema();
+  }
   // MickroORM -->
 
   await app.listen(port, '0.0.0.0');

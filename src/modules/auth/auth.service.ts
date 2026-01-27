@@ -62,7 +62,7 @@ export class AuthService {
   async logout(userId: string): Promise<boolean> {
     const user: User = await this.userService.getUserById(userId);
     user?.sessions?.removeAll();
-    this.em.flush();
+    await this.em.flush();
 
     return true;
   }

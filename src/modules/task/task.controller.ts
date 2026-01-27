@@ -31,6 +31,7 @@ import { UpdateReportDto } from './dto/update-report';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { IRunningSchedule, ITask } from './task.type';
 import { Public } from '../common/decorators';
+import { InternalOrJwtAuthGuard } from '../common/guards';
 
 @Controller('task')
 @UseGuards(JwtAuthGuard)
@@ -60,7 +61,7 @@ export class TaskController {
     required: true,
     description: 'The id of the task',
   })
-  async findOne(@Param() id: string) {
+  async findOne(@Param('id') id: string) {
     return await this.taskService.findOne(id);
   }
 
@@ -90,7 +91,7 @@ export class TaskController {
     required: true,
     description: 'The id of the task',
   })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateElementDto): Promise<ITask> {
+  async update(@Param('id') id: string, @Body() body: CreateOrUpdateElementDto): Promise<ITask> {
     if (!body.collection && !body.environment) {
       throw new HttpException('At least {collection} or {environment} should be defined', HttpStatus.BAD_REQUEST);
     }
@@ -110,6 +111,7 @@ export class TaskController {
   }
 
   @Public()
+  @UseGuards(InternalOrJwtAuthGuard)
   @Post(':id/actions/report')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a task report' })
@@ -119,7 +121,7 @@ export class TaskController {
     required: true,
     description: 'The id of the task',
   })
-  async updateReport(@Param() id: string, @Body() body: UpdateReportDto): Promise<ITask> {
+  async updateReport(@Param('id') id: string, @Body() body: UpdateReportDto): Promise<ITask> {
     if (!body.status && !body.testStatus) {
       throw new HttpException('At least {status} or {testStatus} should be defined', HttpStatus.BAD_REQUEST);
     }
@@ -134,7 +136,7 @@ export class TaskController {
     required: true,
     description: 'The id of the task',
   })
-  async createTest(@Param() id: string): Promise<ITask> {
+  async createTest(@Param('id') id: string): Promise<ITask> {
     if (!id) {
       throw new HttpException('A task Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
@@ -152,7 +154,7 @@ export class TaskController {
 
   @Post(':id/actions/run/schedule')
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
-  async createScheduledTask(@Param() id: string): Promise<void> {
+  async createScheduledTask(@Param('id') id: string): Promise<void> {
     if (!id) {
       throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
     }
@@ -169,7 +171,7 @@ export class TaskController {
   @HttpCode(204)
   @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
   @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
-  async stopScheduleTask(@Param() id: string): Promise<void> {
+  async stopScheduleTask(@Param('id') id: string): Promise<void> {
     if (!id) {
       throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
     }

@@ -8,6 +8,8 @@ export const jwtRefreshExpiresIn: string = process.env.JWT_REFRESH_EXPIRESIN ? p
 export const dbName: string = process.env.DB_NAME ? process.env.DB_NAME : 'coog-cloud-agent.db.sqlite';
 export const dbPath: string = process.env.DB_PATH ? process.env.DB_PATH : dbName;
 export const dbPort: number = process.env.DB_PORT ? parseInt(process.env.DB_PORT, 10) : 3307;
+export const dbAutoSchema: boolean = process.env.DB_AUTO_SCHEMA === 'true';
+export const internalToken: string | undefined = process.env.INTERNAL_TOKEN;
 
 export default registerAs('service', () => ({
   port,
@@ -20,4 +22,6 @@ export default registerAs('service', () => ({
   dbName,
   dbPath,
   dbPort,
+  dbAutoSchema,
+  internalToken,
 }));

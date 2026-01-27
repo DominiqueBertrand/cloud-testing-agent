@@ -17,7 +17,6 @@ import { PmReportService } from './pmReport.service';
 import { PmReport } from '@src/entities';
 import { ElementsQueryDto, CreateOrUpdateReportDto } from './dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
-import { Public } from '../common/decorators';
 @UseGuards(JwtAuthGuard)
 @Controller('report')
 @ApiBearerAuth()
@@ -50,7 +49,6 @@ export class PmReportController {
     return await this.pmReportService.findOne(id);
   }
 
-  @Public()
   @Post()
   @ApiOperation({ summary: 'Create a new report' })
   @ApiCreatedResponse({
@@ -62,14 +60,16 @@ export class PmReportController {
     if (!body.report) {
       throw new HttpException('"report" object is missing', HttpStatus.BAD_REQUEST);
     }
+    if (!body.task) {
+      throw new HttpException('"task" object is missing', HttpStatus.BAD_REQUEST);
+    }
 
-    return await this.pmReportService.create({ report: body.report, status: body?.status });
+    return await this.pmReportService.create({ report: body.report, status: body?.status, task: body.task });
   }
 
-  @Public()
   @Patch(':id')
   @ApiOperation({ summary: 'Update an existing report' })
-  async update(@Param() id: string, @Body() body: CreateOrUpdateReportDto): Promise<PmReport> {
+  async update(@Param('id') id: string, @Body() body: CreateOrUpdateReportDto): Promise<PmReport> {
     if (!body.report) {
       throw new HttpException('"report" object is missing', HttpStatus.BAD_REQUEST);
     }
@@ -77,7 +77,7 @@ export class PmReportController {
       throw new HttpException('"status" is missing', HttpStatus.BAD_REQUEST);
     }
 
-    return await this.pmReportService.update({ report: body.report, status: body.status, id });
+    return await this.pmReportService.update({ report: body.report, status: body.status, id, task: body.task });
   }
 
   @Delete(':id')

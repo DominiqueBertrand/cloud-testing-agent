@@ -13,9 +13,15 @@ async function updateTask(
   testStatus?: TestStatus,
   report?: PmReport,
 ): Promise<void> {
+  const internalToken = process.env.INTERNAL_TOKEN;
+  const headers: Record<string, string> = {};
+  if (internalToken) {
+    headers['x-internal-token'] = internalToken;
+  }
   const options = {
     url: `${url}/task/${id}/actions/report`,
     method: 'POST',
+    headers,
     data: {
       status: taskSatus,
       testStatus: testStatus,
@@ -35,9 +41,10 @@ export async function taskWorker(task: PoolRunWorkerDto): Promise<PoolRunWorkerD
   if (!task) {
     throw new HttpException('Task not found', HttpStatus.NOT_FOUND);
   } else {
-    await updateTask('http://127.0.0.1:7000', task.id, TaskStatus.IN_PROGRESS, TestStatus.RUNNING);
+    const baseUrl = process.env.SERVICE_BASE_URL ?? 'http://127.0.0.1:7000';
+    await updateTask(baseUrl, task.id, TaskStatus.IN_PROGRESS, TestStatus.RUNNING);
     const report: PmReport = await TestRunner(task, task?.collection, task?.environment);
-    await updateTask('http://127.0.0.1:7000', task.id, TaskStatus.DONE, report.status, report);
+    await updateTask(baseUrl, task.id, TaskStatus.DONE, report.status, report);
 
     return task;
   }

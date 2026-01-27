@@ -83,12 +83,16 @@ export class PmScheduleService {
       if (!_schedule) {
         throw new HttpException('Schedule not found', HttpStatus.NOT_FOUND);
       }
+      if (!checkCron(schedule.cron)) {
+        throw new HttpException('Cron is not valid', HttpStatus.BAD_REQUEST);
+      }
 
-      const pmSchedule: PmSchedule = new PmSchedule(schedule.cron, schedule.name, id);
-      this.em.persist(pmSchedule);
+      _schedule.cron = schedule.cron;
+      _schedule.name = schedule.name;
+      this.em.persist(_schedule);
       await this.em.flush();
 
-      return pmSchedule;
+      return _schedule;
     } catch (error: any) {
       console.table(error);
       throw new HttpException(error.name, HttpStatus.BAD_REQUEST);
