@@ -16,12 +16,3 @@ export SONARQUBE_PROJECT_KEY=coog-cloud-agent
 export SONARQUBE_TOKEN=xxx
 SONARQUBE_REPO="$(pwd)"
 export SONARQUBE_REPO
-# sonar-scanner \
-#   -Dsonar.projectKey=$SONARQUBE_PROJECT_KEY \
-#   -Dsonar.sources=$SONARQUBE_REPO \
-#   -Dsonar.host.url=$SONARQUBE_URL \
-#   -Dsonar.token=$SONARQUBE_TOKEN \
-#   -Dsonar.projectVersion=1.0 \
-#   -Dsonar.pullrequest.key="key"\
-#   -Dsonar.pullrequest.branch="source_branch_name" \
-#   -Dsonar.pullrequest.base="main"
