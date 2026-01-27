@@ -25,7 +25,7 @@ jobs:
         run: |
           corepack enable
           corepack prepare yarn@4.9.4 --activate
-      - run: yarn ci
+      - run: yarn install --immutable
       - run: yarn lint
       - run: yarn build
       - run: yarn test
