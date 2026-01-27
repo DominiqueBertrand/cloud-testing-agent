@@ -11,6 +11,7 @@ The **Cloud Testing Agent** is a purpose-built tool crafted for the **testing** 
 ## Table of Contents
 - [Description](#description)
 - [Table of Contents](#table-of-contents)
+- [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Running the app](#running-the-app)
 - [Test](#test)
@@ -28,6 +29,18 @@ The **Cloud Testing Agent** is a purpose-built tool crafted for the **testing** 
 - [License](#license)
 
 
+
+## Prerequisites
+
+- Node.js 24.x (Active LTS)
+- Yarn 4 (via Corepack)
+- Docker (optional, for container builds/runs)
+- Access to Docker Official DHI registry (`dhi.io`) if building the hardened image
+
+Enable Corepack (one-time):
+```bash
+corepack enable
+```
 
 ## Installation
 
@@ -59,7 +72,7 @@ $ yarn start:dev
 $ yarn start:prod
 ```
 
-By default, the application is running to http://localhost:3000
+By default, the application is running at http://localhost:3000
 
 ## Test
 
@@ -81,7 +94,7 @@ By default, while the application is running, open your browser and navigate to 
 
 ## Custom variables
 
-By default, th application running to the port 3000, but you can customize this value thanks to the variable `SERVER_PORT`
+By default, the application runs on port 3000, but you can customize this value using `SERVER_PORT`:
 
 ```bash
 export SERVER_PORT=7000
@@ -175,6 +188,10 @@ To build:
 ```console
 docker build --file ./build/Dockerfile --no-cache --progress=plain -t cloud-testing-agent:latest -t cloud-testing-agent:{{VERSION}} . |& tee build_output.txt
 ```
+
+Notes:
+- The Dockerfile uses Docker Official DHI images by default. Make sure you're authenticated to `dhi.io`.
+- Default DHI tags in `build/Dockerfile` target Debian 12 + Node 24.
 
 ### How to run cloud-testing-agent docker image
 

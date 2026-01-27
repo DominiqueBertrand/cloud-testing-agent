@@ -30,13 +30,7 @@ describe('AuthService', () => {
   };
 
   const buildService = () =>
-    new AuthService(
-      sessionRepository as any,
-      userService as any,
-      jwtService as any,
-      configService as any,
-      em as any,
-    );
+    new AuthService(sessionRepository as any, userService as any, jwtService as any, configService as any, em as any);
 
   beforeEach(() => {
     jest.clearAllMocks();
