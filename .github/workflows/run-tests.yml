@@ -25,6 +25,11 @@ jobs:
         run: |
           corepack enable
           corepack prepare yarn@4.9.4 --activate
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3 make g++ libsqlite3-dev
+          sudo rm -rf /var/lib/apt/lists/*
       - run: yarn install --immutable
       - run: yarn lint
       - run: yarn build
