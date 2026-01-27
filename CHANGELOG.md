@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.7](https://github.com/DominiqueBertrand/cloud-testing-agent/compare/v1.0.6...v1.0.7) (2026-01-27)
+
+
+### Bug Fixes
+
+* feat: enhance configuration and validation for task management and reporting ([d7f3601](https://github.com/DominiqueBertrand/cloud-testing-agent/commit/d7f3601bf1235cc09f2a03e37ce730a0fb1edbf8))
+* refactor code structure for improved readability and maintainability ([4fab8ac](https://github.com/DominiqueBertrand/cloud-testing-agent/commit/4fab8acf202f7f924126d16968f5f53dce08424e))
+
 ## [1.0.6](https://github.com/DominiqueBertrand/cloud-testing-agent/compare/v1.0.5...v1.0.6) (2024-02-06)
 
 
