@@ -53,8 +53,7 @@ export class PmCollectionController {
   @Post()
   @ApiOperation({
     summary: 'Create a new collection',
-    description:
-      'Upload a Postman collection JSON (export). The collection info._postman_id is used as the stored id.',
+    description: 'Upload a Postman collection JSON (export). The collection info._postman_id is used as the stored id.',
   })
   @ApiCreatedResponse({
     status: 200,
