@@ -1,0 +1,23 @@
+digraph db_model {
+  graph [rankdir=LR, fontsize=10, labelloc="t", label="Cloud Testing Agent DB Model"];
+  node [shape=record, fontsize=9, fontname="Helvetica"];
+  edge [fontsize=9, fontname="Helvetica"];
+
+  user [label="{User|id PK\lusername UNIQUE\lpassword\lemail\lroles\lcreatedAt\lupdatedAt\l}"];
+  refresh_session [label="{RefreshSession|id PK\luser_id FK\lrefreshToken UNIQUE\lexpiresIn\lcreatedAt\lupdatedAt\l}"];
+
+  pm_collection [label="{PmCollection|id PK\lref UNIQUE\lname\lcollection JSON\lcreatedAt\lupdatedAt\l}"];
+  pm_environment [label="{PmEnvironment|id PK\lref UNIQUE\lname\lenvironment JSON\lcreatedAt\lupdatedAt\l}"];
+
+  task [label="{Task|id PK\lcollection_id FK\lenvironment_id FK\lschedule_id FK?\lstatus\ltestStatus\ltype\loptions JSON\lcreatedAt\lupdatedAt\l}"];
+  pm_report [label="{PmReport|id PK\ltask_id FK\lreport JSON\lstatus\lcreatedAt\lupdatedAt\l}"];
+  pm_schedule [label="{PmSchedule|id PK\lcron\lname\lcreatedAt\lupdatedAt\l}"];
+  pm_test [label="{PmTest|id PK\lreport_id FK?\ltaskId (string)\loptions JSON\lstatus\ltestStatus\lcreatedAt\lupdatedAt\l}"];
+
+  user -> refresh_session [label="1 to many", arrowhead="crow", arrowtail="none", dir=forward];
+  pm_collection -> task [label="1 to many", arrowhead="crow", dir=forward];
+  pm_environment -> task [label="1 to many", arrowhead="crow", dir=forward];
+  task -> pm_report [label="1 to many", arrowhead="crow", dir=forward];
+  task -> pm_schedule [label="0..1 to 1", arrowhead="normal", dir=forward];
+  pm_report -> pm_test [label="0..1 to 1", arrowhead="normal", dir=forward];
+}
