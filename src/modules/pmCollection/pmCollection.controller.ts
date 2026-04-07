@@ -26,7 +26,10 @@ export class PmCollectionController {
   constructor(private readonly pmCollectionService: PmCollectionService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get a list of all collections' })
+  @ApiOperation({
+    summary: 'List collections',
+    description: 'Use to list stored Postman collections. Useful to pick a collection id when creating tasks.',
+  })
   @ApiQuery({
     description:
       'By default, the number of results is limited to 20, so set this value if you want to change this limit',
@@ -39,13 +42,19 @@ export class PmCollectionController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a collection by the id' })
+  @ApiOperation({
+    summary: 'Get a collection by id',
+    description: 'Fetch a single collection metadata (id, name, ref).',
+  })
   async findOne(@Param('id') id: string): Promise<PmCollection | null> {
     return this.pmCollectionService.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new collection' })
+  @ApiOperation({
+    summary: 'Create a new collection',
+    description: 'Upload a Postman collection JSON (export). The collection info._postman_id is used as the stored id.',
+  })
   @ApiCreatedResponse({
     status: 200,
     description: 'The collection has been successfully created.',

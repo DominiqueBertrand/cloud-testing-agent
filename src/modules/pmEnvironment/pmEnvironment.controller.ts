@@ -27,7 +27,10 @@ export class PmEnvironmentController {
   constructor(private readonly pmEnvironmentService: PmEnvironmentService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get a list of all environments' })
+  @ApiOperation({
+    summary: 'List environments',
+    description: 'Use to list stored Postman environments. Useful to pick an environment id when creating tasks.',
+  })
   @ApiQuery({
     description:
       'By default, the number of results is limited to 20, so set this value if you want to change this limit',
@@ -40,13 +43,20 @@ export class PmEnvironmentController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a environment by the id' })
+  @ApiOperation({
+    summary: 'Get an environment by id',
+    description: 'Fetch a single environment metadata (id, name, ref).',
+  })
   async findOne(@Param('id') id: string): Promise<PmEnvironment> {
     return await this.pmEnvironmentService.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new environment' })
+  @ApiOperation({
+    summary: 'Create a new environment',
+    description:
+      'Upload a Postman environment JSON (export). This environment can then be referenced by tasks via its id.',
+  })
   @ApiCreatedResponse({
     status: 200,
     description: 'The environment has been successfully created.',
@@ -67,7 +77,11 @@ export class PmEnvironmentController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a environment' })
+  @ApiOperation({
+    summary: 'Update an environment',
+    description:
+      'Replace the stored environment JSON for a given id. The environment.id in the payload must match the path id.',
+  })
   async update(@Param('id') id: string, @Body() body: CreateOrUpdateEnvironmentDto): Promise<PmEnvironment> {
     if (!body.environment) {
       throw new HttpException('"environment" object is missing', HttpStatus.BAD_REQUEST);
