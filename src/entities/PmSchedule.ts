@@ -10,7 +10,7 @@ export class PmSchedule extends BaseEntity {
   @Property({ nullable: true })
   name: string;
 
-  @OneToOne(() => Task)
+  @OneToOne(() => Task, { onDelete: 'cascade' })
   task: Task;
 
   constructor(cron: string, name: string, task: Task) {
