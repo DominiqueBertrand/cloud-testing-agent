@@ -16,7 +16,11 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiOperation({ summary: 'Sign in' })
+  @ApiOperation({
+    summary: 'Sign in',
+    description:
+      'Authenticate with username/password to receive an access token and a refresh token. Use the access token in the Authorization header as Bearer to call protected endpoints.',
+  })
   @ApiCreatedResponse({
     status: 200,
     description: 'Get JWT Token to login.',
@@ -27,7 +31,11 @@ export class AuthController {
   }
 
   @Post('refresh')
-  @ApiOperation({ summary: 'Refresh JWT Token' })
+  @ApiOperation({
+    summary: 'Refresh JWT Token',
+    description:
+      'Exchange a valid refresh token for a new access token and refresh token pair. Use when access token is expired.',
+  })
   @ApiCreatedResponse({
     status: 200,
     description: 'Returns a JWT Token and a Refresh Token',
@@ -40,6 +48,10 @@ export class AuthController {
   @Get('logout')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Logout',
+    description: 'Invalidate refresh sessions for the current user.',
+  })
   logout(@GetCurrentUserId() userId: string): Promise<boolean> {
     return this.authService.logout(userId);
   }
@@ -47,6 +59,10 @@ export class AuthController {
   @Get('profile')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Get current profile',
+    description: 'Retrieve the current authenticated user profile.',
+  })
   async profile(@GetCurrentUserId() userId: string): Promise<User> {
     return await this.authService.profile(userId);
   }
@@ -54,6 +70,10 @@ export class AuthController {
   @Post('profile/actions/update')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Update current profile',
+    description: 'Update email and/or password for the current user.',
+  })
   async updateProfile(@GetCurrentUserId() userId: string, @Body() updateProfileDto: UpdateProfileDto): Promise<User> {
     return await this.authService.updateProfile(userId, updateProfileDto);
   }
