@@ -25,7 +25,10 @@ export class PmReportController {
   constructor(private readonly pmReportService: PmReportService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get a list of all reports' })
+  @ApiOperation({
+    summary: 'List reports',
+    description: 'List execution reports. Useful for monitoring results of task runs.',
+  })
   @ApiQuery({
     description:
       'By default, the number of results is limited to 20, so set this value if you want to change this limit',
@@ -44,13 +47,19 @@ export class PmReportController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a report by id' })
+  @ApiOperation({
+    summary: 'Get a report by id',
+    description: 'Fetch a single report payload and metadata.',
+  })
   async findOne(@Param('id') id: string): Promise<PmReport | null> {
     return await this.pmReportService.findOne(id);
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new report' })
+  @ApiOperation({
+    summary: 'Create a new report',
+    description: 'Create a report entry for a task execution. Typically used by internal workers.',
+  })
   @ApiCreatedResponse({
     status: 200,
     description: 'The report has been successfully created.',
@@ -68,7 +77,10 @@ export class PmReportController {
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update an existing report' })
+  @ApiOperation({
+    summary: 'Update an existing report',
+    description: 'Update report status and payload after execution.',
+  })
   async update(@Param('id') id: string, @Body() body: CreateOrUpdateReportDto): Promise<PmReport> {
     if (!body.report) {
       throw new HttpException('"report" object is missing', HttpStatus.BAD_REQUEST);

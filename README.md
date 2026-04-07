@@ -92,6 +92,60 @@ $ yarn test:cov
 By default, while the application is running, open your browser and navigate to http://localhost:3000/api to see the Swagger UI: 
 [![Swagger UI](2024-02-06-11-48-51.png)](screencapture-127-0-0-1-7000-api-2024-02-06-11_27_38.png)
 
+## Database Model
+
+![Database Model](docs/db-model.svg)
+
+## Authentication (JWT)
+
+The API uses JWT Bearer tokens. Most endpoints are protected and require an access token in the `Authorization` header:
+
+```
+Authorization: Bearer <accessToken>
+```
+
+### Login
+
+Request an access token and refresh token:
+
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"coog","password":"<password>"}'
+```
+
+Response (example):
+```json
+{
+  "user": { "id": "...", "username": "coog", "roles": ["..."] },
+  "accessToken": "<jwt-access-token>",
+  "refreshToken": "<jwt-refresh-token>"
+}
+```
+
+### Use the access token
+
+```bash
+curl -X GET http://localhost:3000/task \
+  -H "Authorization: Bearer <accessToken>"
+```
+
+### Refresh token
+
+```bash
+curl -X POST http://localhost:3000/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{"refreshToken":"<jwt-refresh-token>"}'
+```
+
+### Internal worker callback
+
+The endpoint `POST /task/:id/actions/report` accepts either a valid JWT or the internal token header:
+
+```
+x-internal-token: <INTERNAL_TOKEN>
+```
+
 ## Custom variables
 
 By default, the application runs on port 3000, but you can customize this value using `SERVER_PORT`:
@@ -105,6 +159,11 @@ Other useful variables:
 ```bash
 # Enable automatic schema update on startup (default: false)
 export DB_AUTO_SCHEMA=true
+
+# JWT configuration
+export JWT_SECRET=change-me
+export JWT_ACCESS_EXPIRESIN=15m
+export JWT_REFRESH_EXPIRESIN=1h
 
 # Shared token used by internal workers to update task reports
 export INTERNAL_TOKEN=change-me
