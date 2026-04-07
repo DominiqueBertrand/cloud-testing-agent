@@ -1,0 +1,86 @@
+rDiagram
+  USER ||--o{ REFRESH_SESSION : has
+  PM_COLLECTION ||--o{ TASK : collection
+  PM_ENVIRONMENT ||--o{ TASK : environment
+  TASK ||--o{ PM_REPORT : reports
+  TASK ||--o| PM_SCHEDULE : schedule
+  PM_REPORT ||--o| PM_TEST : report
+
+  USER {
+    uuid id PK
+    string username
+    string password
+    string email
+    string[] roles
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  REFRESH_SESSION {
+    uuid id PK
+    uuid user_id FK
+    string refreshToken
+    int expiresIn
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  PM_COLLECTION {
+    uuid id PK
+    string ref
+    string name
+    json collection
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  PM_ENVIRONMENT {
+    uuid id PK
+    string ref
+    string name
+    json environment
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  TASK {
+    uuid id PK
+    uuid collection_id FK
+    uuid environment_id FK
+    uuid schedule_id FK
+    enum status
+    enum testStatus
+    enum type
+    json options
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  PM_REPORT {
+    uuid id PK
+    uuid task_id FK
+    json report
+    enum status
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  PM_SCHEDULE {
+    uuid id PK
+    uuid task_id FK
+    string cron
+    string name
+    datetime createdAt
+    datetime updatedAt
+  }
+
+  PM_TEST {
+    uuid id PK
+    uuid report_id FK
+    string taskId
+    json options
+    enum status
+    enum testStatus
+    datetime createdAt
+    datetime updatedAt
+  }
