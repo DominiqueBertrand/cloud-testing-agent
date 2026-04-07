@@ -62,7 +62,7 @@
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
     "@mikro-orm/cli": "^5.9.8",
-    "@mikro-orm/seeder": "^5.9.8",
+    "@mikro-orm/seeder": "^6.6.6",
     "@nestjs/cli": "^10.4.0",
     "@nestjs/schematics": "^10.2.3",
     "@nestjs/testing": "^10.4.22",
