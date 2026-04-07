@@ -41,7 +41,10 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get a list of all tasks' })
+  @ApiOperation({
+    summary: 'List tasks',
+    description: 'List existing tasks with their linked collection/environment and statuses.',
+  })
   @ApiQuery({
     description:
       'By default, the number of results is limited to 20, so set this value if you want to change this limit',
@@ -54,7 +57,10 @@ export class TaskController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a task by id' })
+  @ApiOperation({
+    summary: 'Get a task by id',
+    description: 'Fetch a single task with collection and environment references.',
+  })
   @ApiParam({
     name: 'id',
     type: String,
@@ -66,7 +72,11 @@ export class TaskController {
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a task' })
+  @ApiOperation({
+    summary: 'Create a task',
+    description:
+      'Create a task that binds a Postman collection to an environment. Use the returned task id to run tests.',
+  })
   @ApiCreatedResponse({
     status: 200,
     description: 'The task has been successfully created.',
@@ -84,7 +94,10 @@ export class TaskController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'Update a task' })
+  @ApiOperation({
+    summary: 'Update a task',
+    description: 'Update collection/environment references or task status.',
+  })
   @ApiParam({
     name: 'id',
     type: String,
@@ -129,7 +142,10 @@ export class TaskController {
   }
 
   @Post(':id/actions/run')
-  @ApiOperation({ summary: 'Create a test for the task' })
+  @ApiOperation({
+    summary: 'Run a task once',
+    description: 'Trigger a one-shot execution of the task. Returns the task metadata immediately.',
+  })
   @ApiParam({
     name: 'id',
     type: String,
@@ -144,7 +160,10 @@ export class TaskController {
   }
 
   @Post('actions/run/batch')
-  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  @ApiOperation({
+    summary: 'Run a batch of tasks',
+    description: 'Trigger execution for multiple task ids. Useful for bulk re-runs.',
+  })
   async createTestBatch(@Body() body: RunBatch): Promise<Array<object>> {
     if (!body.tasks) {
       throw new HttpException('A batch of task Id should be put as argument', HttpStatus.BAD_REQUEST);
@@ -153,7 +172,11 @@ export class TaskController {
   }
 
   @Post(':id/actions/run/schedule')
-  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  @ApiOperation({
+    summary: 'Start a schedule',
+    description:
+      'Start a cron schedule by schedule id (not task id). The job runs in memory and is listed in GET /task/actions/run/schedule.',
+  })
   async createScheduledTask(@Param('id') id: string): Promise<void> {
     if (!id) {
       throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);
@@ -162,7 +185,10 @@ export class TaskController {
   }
 
   @Get('actions/run/schedule')
-  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  @ApiOperation({
+    summary: 'List running schedules',
+    description: 'List schedules currently running in memory (not persisted after restart).',
+  })
   async getSchedules(): Promise<IRunningSchedule[]> {
     return this.taskService.getRunningSchedules();
   }
@@ -170,7 +196,10 @@ export class TaskController {
   @Delete(':id/actions/run/schedule')
   @HttpCode(204)
   @ApiResponse({ status: 204, description: 'The record has been successfully deleted.' })
-  @ApiOperation({ summary: 'Create a batch of tests for the tasks' })
+  @ApiOperation({
+    summary: 'Stop a running schedule',
+    description: 'Stop a running cron job by schedule id.',
+  })
   async stopScheduleTask(@Param('id') id: string): Promise<void> {
     if (!id) {
       throw new HttpException('A schedule Id should be put as argument', HttpStatus.BAD_REQUEST);

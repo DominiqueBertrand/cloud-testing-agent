@@ -8,24 +8,31 @@ export class UpdateReportDto {
   @IsString()
   @ApiProperty({
     required: false,
-    description: 'By default, this value is equal to the id, so set this value to change the default value',
+    description: 'Optional reference label for the report update.',
+    example: 'run-2026-01-28T12:21:18Z',
   })
   readonly ref!: string;
 
   @ApiProperty({
     required: true,
-    description: 'Postman environment in json format',
+    description: 'Task status to set after execution.',
+    example: 'DONE',
   })
   readonly status!: TaskStatus;
 
   @ApiProperty({
     required: true,
-    description: 'Postman environment in json format',
+    description: 'Test status to set after execution.',
+    example: 'SUCCESS',
   })
   readonly testStatus!: TestStatus;
   @ApiProperty({
     required: true,
-    description: 'Postman environment in json format',
+    description: 'Report payload produced by the runner.',
+    example: {
+      stats: { assertions: { total: 12, failed: 0 }, requests: { total: 3, failed: 0 } },
+      execution: [],
+    },
   })
   readonly report?: PmReport;
 }
