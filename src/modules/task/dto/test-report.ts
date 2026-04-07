@@ -6,18 +6,21 @@ export class TestReport {
   @IsString()
   @ApiProperty({
     required: false,
-    description: 'By default, this value is equal to the id, so set this value to change the default value',
+    description: 'Aggregated Newman stats (assertions, requests, etc.).',
+    example: { assertions: { total: 12, failed: 0 }, requests: { total: 3, failed: 0 } },
   })
   readonly stats!: object;
   @ApiProperty({
     required: true,
-    description: 'Postman environment in json format',
+    description: 'Full Newman run object in case of failure.',
+    example: {},
   })
   readonly failure?: newman.NewmanRun;
 
   @ApiProperty({
     required: true,
-    description: 'Postman environment in json format',
+    description: 'Per-request execution details.',
+    example: [],
   })
   readonly execution?: newman.NewmanRunExecution[];
 }
