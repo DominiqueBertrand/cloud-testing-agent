@@ -1428,7 +1428,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mapbox/node-pre-gyp@npm:^1.0.0, @mapbox/node-pre-gyp@npm:^1.0.11":
+"@mapbox/node-pre-gyp@npm:^1.0.11":
   version: 1.0.11
   resolution: "@mapbox/node-pre-gyp@npm:1.0.11"
   dependencies:
@@ -1643,27 +1643,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mikro-orm/sqlite@npm:^5.9.8":
-  version: 5.9.8
-  resolution: "@mikro-orm/sqlite@npm:5.9.8"
+"@mikro-orm/sql@npm:7.0.10":
+  version: 7.0.10
+  resolution: "@mikro-orm/sql@npm:7.0.10"
   dependencies:
-    "@mikro-orm/knex": "npm:5.9.8"
-    fs-extra: "npm:11.1.1"
-    sqlite3: "npm:5.1.6"
-    sqlstring-sqlite: "npm:0.1.1"
+    kysely: "npm:0.28.15"
   peerDependencies:
-    "@mikro-orm/core": ^5.0.0
-    "@mikro-orm/entity-generator": ^5.0.0
-    "@mikro-orm/migrations": ^5.0.0
-    "@mikro-orm/seeder": ^5.0.0
-  peerDependenciesMeta:
-    "@mikro-orm/entity-generator":
-      optional: true
-    "@mikro-orm/migrations":
-      optional: true
-    "@mikro-orm/seeder":
-      optional: true
-  checksum: 10c0/86435fdccfee8bb413b2393fdd32fe62c537894467eeb367ad2a20fa19a57a3215e578c08edaf8138b24af7a860dbbf7df64ad8210a4828e5df1336e85d05584
+    "@mikro-orm/core": 7.0.10
+  checksum: 10c0/c48fcd7eb0e7a8a84df2cee2d486f6a9aa147528fcb8085d0383ad8071d7f03d569d1d9638861d45e650346324f014a96af5bf433a4eb0e054ade77376c815a3
+  languageName: node
+  linkType: hard
+
+"@mikro-orm/sqlite@npm:^7.0.10":
+  version: 7.0.10
+  resolution: "@mikro-orm/sqlite@npm:7.0.10"
+  dependencies:
+    "@mikro-orm/sql": "npm:7.0.10"
+    better-sqlite3: "npm:12.8.0"
+    kysely: "npm:0.28.15"
+  peerDependencies:
+    "@mikro-orm/core": 7.0.10
+  checksum: 10c0/54af83df78e16ad7406dee17fb7b4d3ce8be39140ac97c42786d0843b41868e30731a1c6f7317ce3228d46f23367814d6176e1f87f0437a48c1cd41f0564f121
   languageName: node
   linkType: hard
 
@@ -3392,6 +3392,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"better-sqlite3@npm:12.8.0":
+  version: 12.8.0
+  resolution: "better-sqlite3@npm:12.8.0"
+  dependencies:
+    bindings: "npm:^1.5.0"
+    node-gyp: "npm:latest"
+    prebuild-install: "npm:^7.1.1"
+  checksum: 10c0/b31da8a8a9bd0dd77d44c11fbfc72141a18b7267aed1ee5bedd481397415ace18eb54140706f82aca8149e4102fb2a543f833761e80f9668470ed53d03958515
+  languageName: node
+  linkType: hard
+
 "binary-extensions@npm:^2.0.0":
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
@@ -3931,7 +3942,7 @@ __metadata:
     "@mikro-orm/postgresql": "npm:^5.9.8"
     "@mikro-orm/seeder": "npm:^6.6.6"
     "@mikro-orm/sql-highlighter": "npm:^1.0.1"
-    "@mikro-orm/sqlite": "npm:^5.9.8"
+    "@mikro-orm/sqlite": "npm:^7.0.10"
     "@nestjs/cli": "npm:^10.4.0"
     "@nestjs/common": "npm:^10.4.22"
     "@nestjs/config": "npm:^3.3.0"
@@ -7582,6 +7593,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kysely@npm:0.28.15":
+  version: 0.28.15
+  resolution: "kysely@npm:0.28.15"
+  checksum: 10c0/48a3a69ee423e255dde3112261be41e8fd505cd970a868c8dce957f7fa602d3cb9d7a328f95d0e94bd232cf60176fc7512d72ce37cd85664bc483c238dcf4659
+  languageName: node
+  linkType: hard
+
 "leven@npm:^3.1.0":
   version: 3.1.0
   resolution: "leven@npm:3.1.0"
@@ -8483,15 +8501,6 @@ __metadata:
   dependencies:
     node-gyp: "npm:latest"
   checksum: 10c0/41f21c9d12318875a2c429befd06070ce367065a3ef02952cfd4ea17ef69fa14012732f510b82b226e99c254da8d671847ea018cad785f839a5366e02dd56302
-  languageName: node
-  linkType: hard
-
-"node-addon-api@npm:^4.2.0":
-  version: 4.3.0
-  resolution: "node-addon-api@npm:4.3.0"
-  dependencies:
-    node-gyp: "npm:latest"
-  checksum: 10c0/5febe94d58cdef319bc96a357b43d7a13776c93ee3f2edb374000f16454e65cec06035497947d5fdaa50db1cc7ab8e3a30ca8669bb07a1b159f0307dc2c1ccdf
   languageName: node
   linkType: hard
 
@@ -10326,26 +10335,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sqlite3@npm:5.1.6":
-  version: 5.1.6
-  resolution: "sqlite3@npm:5.1.6"
-  dependencies:
-    "@mapbox/node-pre-gyp": "npm:^1.0.0"
-    node-addon-api: "npm:^4.2.0"
-    node-gyp: "npm:8.x"
-    tar: "npm:^6.1.11"
-  peerDependencies:
-    node-gyp: 8.x
-  dependenciesMeta:
-    node-gyp:
-      optional: true
-  peerDependenciesMeta:
-    node-gyp:
-      optional: true
-  checksum: 10c0/85f1dd1f4b9fa906578330e7badc1116c61ef4e7c64a09897268923f5c9ff4ae1e0a447dd4594c0f8c3b20a410fcc5d8d00d1056225a5186c57ea7f7c9b18974
-  languageName: node
-  linkType: hard
-
 "sqlite3@npm:^5.1.7":
   version: 5.1.7
   resolution: "sqlite3@npm:5.1.7"
@@ -10364,13 +10353,6 @@ __metadata:
     node-gyp:
       optional: true
   checksum: 10c0/10daab5d7854bd0ec3c7690c00359cd3444eabc869b68c68dcb61374a8fa5e2f4be06cf0aba78f7a16336d49e83e4631e8af98f8bd33c772fe8d60b45fa60bc1
-  languageName: node
-  linkType: hard
-
-"sqlstring-sqlite@npm:0.1.1":
-  version: 0.1.1
-  resolution: "sqlstring-sqlite@npm:0.1.1"
-  checksum: 10c0/a0c3c933d58ac6d9475b2dc316dbd0bb9bdeedf99f7de393c442676b7a9e2262bade9f9917b9aa83147b56b425e89257a73cce100746360f683992d193e5c6d5
   languageName: node
   linkType: hard
 
